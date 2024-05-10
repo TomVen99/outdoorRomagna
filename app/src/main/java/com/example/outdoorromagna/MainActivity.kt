@@ -14,13 +14,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.outdoorromagna.ui.TravelDiaryNavGraph
-import com.example.outdoorromagna.ui.TravelDiaryRoute
+import com.example.outdoorromagna.ui.OutdoorRomagnaNavGraph
+import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.theme.OutdoorRomagnaTheme
 import com.example.outdoorromagna.utils.LocationService
 import org.koin.android.ext.android.get
+
+import android.util.Log
 
 //test
 class MainActivity : ComponentActivity() {
@@ -40,22 +42,23 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val backStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute by remember {
+                        Log.d("TAG", "Questo è un messaggio di debug")
                         derivedStateOf {
-                            TravelDiaryRoute.routes.find {
+                            OutdoorRomagnaRoute.routes.find {
                                 it.route == backStackEntry?.destination?.route
-                            } ?: TravelDiaryRoute.Home
+                            } ?: OutdoorRomagnaRoute.Login
                         }
                     }
 
-                    Scaffold(
+                    /*Scaffold(
                         topBar = { TopAppBar(navController, currentRoute) },
                         bottomBar = { BottomAppBar(navController, currentRoute )}
                     ) { contentPadding ->
-                        TravelDiaryNavGraph(
+                        OutdoorRomagnaNavGraph(
                             navController,
                             modifier =  Modifier.padding(contentPadding)
                         )
-                    }
+                    }*/
                 }
             }
         }

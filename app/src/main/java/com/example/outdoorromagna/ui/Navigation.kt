@@ -13,51 +13,71 @@ import androidx.navigation.navArgument
 import com.example.outdoorromagna.ui.screens.addtravel.AddTravelScreen
 import com.example.outdoorromagna.ui.screens.addtravel.AddTravelViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreen
+import com.example.outdoorromagna.ui.screens.login.Login
+import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.traveldetails.TravelDetailsScreen
 import org.koin.androidx.compose.koinViewModel
 
-sealed class TravelDiaryRoute(
+sealed class OutdoorRomagnaRoute(
     val route: String,
     val title: String,
     val arguments: List<NamedNavArgument> = emptyList()
 ) {
-    data object Home : TravelDiaryRoute("travels", "Outdoor Romagna")
-    data object TravelDetails : TravelDiaryRoute(
+    data object Login : OutdoorRomagnaRoute("login", "Outdoor Romagna - Login")
+
+    data object Signin : OutdoorRomagnaRoute("signin", "Outdoor Romagna - Signin")
+
+    data object Home : OutdoorRomagnaRoute("travels", "Outdoor Romagna")
+    data object TravelDetails : OutdoorRomagnaRoute(
         "travels/{travelId}",
         "Travel Details",
         listOf(navArgument("travelId") { type = NavType.StringType })
     ) {
         fun buildRoute(travelId: String) = "travels/$travelId"
     }
-    data object AddTravel : TravelDiaryRoute("travels/add", "Add Travel")
-    data object Settings : TravelDiaryRoute("settings", "Settings")
+    data object AddTravel : OutdoorRomagnaRoute("travels/add", "Add Travel")
+    data object Settings : OutdoorRomagnaRoute("settings", "Settings")
 
     companion object {
-        val routes = setOf(Home, TravelDetails, AddTravel, Settings)
+        val routes = setOf(Login, Signin, Home, TravelDetails, AddTravel, Settings)
     }
 }
 
 @Composable
-fun TravelDiaryNavGraph(
+fun OutdoorRomagnaNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val placesVm = koinViewModel<PlacesViewModel>()
-    val placesState by placesVm.state.collectAsStateWithLifecycle()
+    /*val placesVm = koinViewModel<PlacesViewModel>()
+    val placesState by placesVm.state.collectAsStateWithLifecycle()*/
 
     NavHost(
         navController = navController,
-        startDestination = TravelDiaryRoute.Home.route,
+        startDestination = OutdoorRomagnaRoute.Login.route,
         modifier = modifier
     ) {
-        with(TravelDiaryRoute.Home) {
+        with(OutdoorRomagnaRoute.Login) {
+            composable(route) {
+                /*val loginVm = koinViewModel<LoginViewModel>()
+                val state by loginVm.state.collectAsStateWithLifecycle()*/
+                Login(/*state, */navController)
+            }
+        }
+        /*with(OutdoorRomagnaRoute.Signin) {
+            composable(route) {
+                val signinVm = koinViewModel<SigninViewModel>()
+                val signinState by signinVm.state.collectAsStateWithLifecycle()
+                SigninScreen(signinState, navController)
+            }
+        }
+        with(OutdoorRomagnaRoute.Home) {
             composable(route) {
                 HomeScreen(placesState, navController)
             }
         }
-        with(TravelDiaryRoute.TravelDetails) {
+        with(OutdoorRomagnaRoute.TravelDetails) {
             composable(route, arguments) { backStackEntry ->
                 val place = requireNotNull(placesState.places.find {
                     it.id == backStackEntry.arguments?.getString("travelId")?.toInt()
@@ -65,7 +85,7 @@ fun TravelDiaryNavGraph(
                 TravelDetailsScreen(place)
             }
         }
-        with(TravelDiaryRoute.AddTravel) {
+        with(OutdoorRomagnaRoute.AddTravel) {
             composable(route) {
                 val addTravelVm = koinViewModel<AddTravelViewModel>()
                 val state by addTravelVm.state.collectAsStateWithLifecycle()
@@ -77,11 +97,11 @@ fun TravelDiaryNavGraph(
                 )
             }
         }
-        with(TravelDiaryRoute.Settings) {
+        with(OutdoorRomagnaRoute.Settings) {
             composable(route) {
                 val settingsVm = koinViewModel<SettingsViewModel>()
                 SettingsScreen(settingsVm.state, settingsVm::setUsername)
             }
-        }
+        }*/
     }
 }

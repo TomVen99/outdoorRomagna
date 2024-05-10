@@ -1,4 +1,4 @@
-package com.example.outdoorromagna.ui.screens.home
+package com.example.outdoorromagna.ui.screens.signin
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.LocationOn
@@ -30,13 +29,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.Place
-import com.example.outdoorromagna.ui.PlacesState
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
 import com.example.outdoorromagna.ui.composables.Size
 
 @Composable
-fun HomeScreen(state: PlacesState, navController: NavHostController) {
+fun SigninScreen(state: SigninState, navController: NavHostController) {
+
+    /*
     Scaffold( //icona del +
         floatingActionButton = {
             FloatingActionButton(
@@ -67,7 +67,7 @@ fun HomeScreen(state: PlacesState, navController: NavHostController) {
         } else {
             NoItemsPlaceholder(Modifier.padding(contentPadding))
         }
-    }
+    }*/
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

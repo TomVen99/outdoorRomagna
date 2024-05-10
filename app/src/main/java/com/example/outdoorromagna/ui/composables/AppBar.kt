@@ -20,8 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TopAppBarDefaults
@@ -31,13 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.outdoorromagna.ui.TravelDiaryRoute
+import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
     navController: NavHostController,
-    currentRoute: TravelDiaryRoute
+    currentRoute: OutdoorRomagnaRoute
 ) {
     TopAppBar(
         title = {
@@ -104,7 +102,7 @@ fun TopAppBar(
 @Composable
 fun BottomAppBar(
     navController: NavHostController,
-    currentRoute: TravelDiaryRoute
+    currentRoute: OutdoorRomagnaRoute
 ) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,

@@ -1,4 +1,4 @@
-package com.example.outdoorromagna.ui.screens.home
+package com.example.outdoorromagna.ui.screens.login
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.LocationOn
@@ -22,6 +21,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,13 +30,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.Place
-import com.example.outdoorromagna.ui.PlacesState
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
 import com.example.outdoorromagna.ui.composables.Size
 
 @Composable
-fun HomeScreen(state: PlacesState, navController: NavHostController) {
+fun Login(/*state: LoginState, */navController: NavHostController) {
+    MessageCard(msg = "pippo")
+    /*
     Scaffold( //icona del +
         floatingActionButton = {
             FloatingActionButton(
@@ -67,9 +68,15 @@ fun HomeScreen(state: PlacesState, navController: NavHostController) {
         } else {
             NoItemsPlaceholder(Modifier.padding(contentPadding))
         }
-    }
+    }*/
 }
 
+@Composable
+fun MessageCard(msg: String) {
+    Column {
+        Text(msg)
+    }
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelItem(item: Place, onClick: () -> Unit) {
