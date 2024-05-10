@@ -22,6 +22,7 @@ import com.example.outdoorromagna.ui.theme.OutdoorRomagnaTheme
 import com.example.outdoorromagna.utils.LocationService
 import org.koin.android.ext.android.get
 
+//test
 class MainActivity : ComponentActivity() {
     private lateinit var locationService: LocationService
 
