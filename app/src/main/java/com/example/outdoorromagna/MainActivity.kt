@@ -23,9 +23,11 @@ import com.example.outdoorromagna.utils.LocationService
 import org.koin.android.ext.android.get
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -34,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 //test
@@ -51,43 +54,60 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    val backStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute by remember {
-                        Log.d("TAG", "Main activity")
-                        derivedStateOf {
-                            OutdoorRomagnaRoute.routes.find {
-                                it.route == backStackEntry?.destination?.route
-                            } ?: OutdoorRomagnaRoute.Login
-                        }
-                    }
-
-                    var username by remember { mutableStateOf("") }
-                    var password by remember { mutableStateOf("") }
-
                     Column(
                         modifier = Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedTextField(
-                            value = username,
-                            onValueChange = { username = it },
-                            label = { Text("Username") },
-                            modifier = Modifier.fillMaxWidth()
+                        // Immagine sopra il modulo di accesso
+                        Image(
+                            painter = painterResource(id = R.drawable.outdoorromagna), // Sostituisci "R.drawable.your_image_resource" con il tuo ID di risorsa immagine
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(150.dp)
+                                .padding(bottom = 16.dp) // Spazio inferiore tra l'immagine e il modulo di accesso
                         )
-                        OutlinedTextField(
-                            value = password,
-                            onValueChange = { password = it },
-                            label = { Text("Password") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Button(
-                            onClick = {
-                                Log.d("TAG", username + "" + password) },
-                            modifier = Modifier.fillMaxWidth()
+
+                        // Modulo di accesso
+                        val navController = rememberNavController()
+                        val backStackEntry by navController.currentBackStackEntryAsState()
+                        val currentRoute by remember {
+                            Log.d("TAG", "Main activity")
+                            derivedStateOf {
+                                OutdoorRomagnaRoute.routes.find {
+                                    it.route == backStackEntry?.destination?.route
+                                } ?: OutdoorRomagnaRoute.Login
+                            }
+                        }
+
+                        var username by remember { mutableStateOf("") }
+                        var password by remember { mutableStateOf("") }
+
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text("Login")
+                            OutlinedTextField(
+                                value = username,
+                                onValueChange = { username = it },
+                                label = { Text("Username") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            OutlinedTextField(
+                                value = password,
+                                onValueChange = { password = it },
+                                label = { Text("Password") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Button(
+                                onClick = {
+                                    Log.d("TAG", username + "" + password)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Login")
+                            }
                         }
                     }
 
