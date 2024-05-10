@@ -23,6 +23,18 @@ import com.example.outdoorromagna.utils.LocationService
 import org.koin.android.ext.android.get
 
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 
 //test
 class MainActivity : ComponentActivity() {
@@ -42,7 +54,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val backStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute by remember {
-                        Log.d("TAG", "Questo è un messaggio di debug")
+                        Log.d("TAG", "Main activity")
                         derivedStateOf {
                             OutdoorRomagnaRoute.routes.find {
                                 it.route == backStackEntry?.destination?.route
@@ -50,7 +62,37 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    /*Scaffold(
+                    var username by remember { mutableStateOf("") }
+                    var password by remember { mutableStateOf("") }
+
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = username,
+                            onValueChange = { username = it },
+                            label = { Text("Username") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text("Password") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Button(
+                            onClick = {
+                                Log.d("TAG", username + "" + password) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Login")
+                        }
+                    }
+
+                    /*
+                    Scaffold(
                         topBar = { TopAppBar(navController, currentRoute) },
                         bottomBar = { BottomAppBar(navController, currentRoute )}
                     ) { contentPadding ->
@@ -59,6 +101,7 @@ class MainActivity : ComponentActivity() {
                             modifier =  Modifier.padding(contentPadding)
                         )
                     }*/
+
                 }
             }
         }

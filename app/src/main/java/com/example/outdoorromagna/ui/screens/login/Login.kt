@@ -1,6 +1,7 @@
 package com.example.outdoorromagna.ui.screens.login
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,6 +37,7 @@ import com.example.outdoorromagna.ui.composables.Size
 
 @Composable
 fun Login(/*state: LoginState, */navController: NavHostController) {
+    Log.d("TAG", "Login")
     MessageCard(msg = "pippo")
     /*
     Scaffold( //icona del +
