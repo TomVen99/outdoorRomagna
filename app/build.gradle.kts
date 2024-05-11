@@ -40,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -68,6 +69,9 @@ dependencies {
     implementation("io.insert-koin:koin-androidx-compose:3.5.3")
     implementation("io.coil-kt:coil-compose:2.3.0")
     implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation ("com.google.android.gms:play-services-maps:18.2.0")
+    implementation ("com.google.maps.android:maps-compose:4.3.3")
+    implementation ("com.google.android.libraries.places:places:3.4.0")
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")

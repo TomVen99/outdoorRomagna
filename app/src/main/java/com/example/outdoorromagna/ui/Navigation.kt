@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.example.outdoorromagna.ui.screens.addtravel.AddTravelScreen
 import com.example.outdoorromagna.ui.screens.addtravel.AddTravelViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreen
+import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.traveldetails.TravelDetailsScreen
@@ -54,7 +55,9 @@ fun TravelDiaryNavGraph(
     ) {
         with(TravelDiaryRoute.Home) {
             composable(route) {
-                HomeScreen(placesState, navController)
+                val homeScreenVm = koinViewModel<HomeScreenViewModel>()
+                val state by homeScreenVm.state.collectAsStateWithLifecycle()
+                HomeScreen(navController, state, homeScreenVm.actions)
             }
         }
         with(TravelDiaryRoute.TravelDetails) {

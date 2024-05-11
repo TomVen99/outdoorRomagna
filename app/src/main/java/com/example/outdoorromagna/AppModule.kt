@@ -8,7 +8,7 @@ import com.example.outdoorromagna.data.remote.OSMDataSource
 import com.example.outdoorromagna.data.repositories.PlacesRepository
 import com.example.outdoorromagna.data.repositories.SettingsRepository
 import com.example.outdoorromagna.ui.PlacesViewModel
-import com.example.outdoorromagna.ui.screens.addtravel.AddTravelViewModel
+import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.utils.LocationService
 import io.ktor.client.HttpClient
@@ -57,7 +57,7 @@ val appModule = module {
         )
     }
 
-    viewModel { AddTravelViewModel() }
+    viewModel { HomeScreenViewModel() }
 
     viewModel { SettingsViewModel(get()) }
 
