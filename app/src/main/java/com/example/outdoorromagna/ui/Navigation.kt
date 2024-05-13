@@ -50,8 +50,8 @@ fun OutdoorRomagnaNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    /*val placesVm = koinViewModel<PlacesViewModel>()
-    val placesState by placesVm.state.collectAsStateWithLifecycle()*/
+    val usersVm = koinViewModel<UsersViewModel>()
+    val usersState by usersVm.state.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
@@ -60,9 +60,9 @@ fun OutdoorRomagnaNavGraph(
     ) {
         with(OutdoorRomagnaRoute.Login) {
             composable(route) {
-                /*val loginVm = koinViewModel<LoginViewModel>()
-                val state by loginVm.state.collectAsStateWithLifecycle()*/
-                Login(/*state, */navController)
+                val loginVm = koinViewModel<LoginViewModel>()
+                val state by loginVm.state.collectAsStateWithLifecycle()
+                Login(state, actions = loginVm.actions, navController, usersVm)
             }
         }
         /*with(OutdoorRomagnaRoute.Signin) {

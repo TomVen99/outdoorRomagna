@@ -30,14 +30,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.Place
-import com.example.outdoorromagna.ui.PlacesState
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
 import com.example.outdoorromagna.ui.composables.Size
 
 @Composable
-fun HomeScreen(state: PlacesState, navController: NavHostController) {
-    Scaffold( //icona del +
+fun HomeScreen(/*state: PlacesState,*/ navController: NavHostController) {
+    /*Scaffold( //icona del +
         floatingActionButton = {
             FloatingActionButton(
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -126,5 +125,5 @@ fun NoItemsPlaceholder(modifier: Modifier = Modifier) {
             "Tap the + button to add a new place.",
             style = MaterialTheme.typography.bodyLarge
         )
-    }
+    }*/
 }

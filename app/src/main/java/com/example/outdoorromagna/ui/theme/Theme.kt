@@ -75,3 +75,5 @@ fun OutdoorRomagnaTheme(
         content = content
     )
 }
+
+enum class Theme { Light, Dark, System }

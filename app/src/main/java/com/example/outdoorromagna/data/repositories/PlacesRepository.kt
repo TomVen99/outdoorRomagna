@@ -11,7 +11,7 @@ class PlacesRepository(
     private val placesDAO: PlacesDAO,
     private val contentResolver: ContentResolver
 ) {
-    val places: Flow<List<Place>> = placesDAO.getAll()
+    //val places: Flow<List<Place>> = placesDAO.getAllPlaces()
 
     suspend fun upsert(place: Place) {
         if (place.imageUri?.isNotEmpty() == true) {
@@ -20,11 +20,11 @@ class PlacesRepository(
                 contentResolver,
                 "TravelDiary_Place${place.name}"
             )
-            placesDAO.upsert(place.copy(imageUri = imageUri.toString()))
+            //placesDAO.upsert(place.copy(imageUri = imageUri.toString()))
         } else {
-            placesDAO.upsert(place)
+            //placesDAO.upsert(place)
         }
     }
 
-    suspend fun delete(place: Place) = placesDAO.delete(place)
+    //suspend fun delete(place: Place) = placesDAO.deletePlace(place)
 }

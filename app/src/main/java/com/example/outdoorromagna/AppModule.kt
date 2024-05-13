@@ -3,13 +3,17 @@ package com.example.outdoorromagna
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
-import com.example.outdoorromagna.data.database.TravelDiaryDatabase
+import com.example.outdoorromagna.data.database.OutdoorRomagnaDatabase
 import com.example.outdoorromagna.data.remote.OSMDataSource
 import com.example.outdoorromagna.data.repositories.PlacesRepository
 import com.example.outdoorromagna.data.repositories.SettingsRepository
-import com.example.outdoorromagna.ui.PlacesViewModel
+import com.example.outdoorromagna.data.repositories.ThemeRepository
+import com.example.outdoorromagna.data.repositories.UsersRepository
+import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.screens.addtravel.AddTravelViewModel
+import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
+import com.example.outdoorromagna.ui.theme.ThemeViewModel
 import com.example.outdoorromagna.utils.LocationService
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -26,7 +30,7 @@ val appModule = module {
     single {
         Room.databaseBuilder(
             get(),
-            TravelDiaryDatabase::class.java,
+            OutdoorRomagnaDatabase::class.java,
             "travel-diary"
         )
             // Sconsigliato per progetti seri! Lo usiamo solo qui per semplicità
@@ -50,9 +54,13 @@ val appModule = module {
 
     single { SettingsRepository(get()) }
 
+    single { ThemeRepository(get()) }
+
+    single { UsersRepository(get<OutdoorRomagnaDatabase>().placesDAO()) }
+
     single {
         PlacesRepository(
-            get<TravelDiaryDatabase>().placesDAO(),
+            get<OutdoorRomagnaDatabase>().placesDAO(),
             get<Context>().applicationContext.contentResolver
         )
     }
@@ -61,5 +69,10 @@ val appModule = module {
 
     viewModel { SettingsViewModel(get()) }
 
-    viewModel { PlacesViewModel(get()) }
+    viewModel { ThemeViewModel(get()) }
+
+    viewModel { UsersViewModel(get()) }
+
+    viewModel { LoginViewModel() }
+    //viewModel { PlacesViewModel(get()) }
 }
