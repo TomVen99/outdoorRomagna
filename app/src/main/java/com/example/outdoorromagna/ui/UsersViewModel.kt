@@ -1,5 +1,6 @@
 package com.example.outdoorromagna.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,10 +20,10 @@ data class UsersState(val users: List<User>)
 class UsersViewModel(
     private val repository: UsersRepository
 ) : ViewModel() {
-    private val _addUserResult = MutableLiveData<Boolean?>()
-    val addUserResult: LiveData<Boolean?> = _addUserResult
-    private val _addUserLog = MutableLiveData<String?>()
-    val addUserLog: LiveData<String?> = _addUserLog
+    private val _signinResult = MutableLiveData<Boolean?>()
+    val signinResult: LiveData<Boolean?> = _signinResult
+    private val _signinLog = MutableLiveData<String?>()
+    val signinLog: LiveData<String?> = _signinLog
 
     private val _loginResult = MutableLiveData<Boolean?>()
     val loginResult: LiveData<Boolean?> = _loginResult
@@ -36,14 +37,15 @@ class UsersViewModel(
     )
 
     fun addUser(user: User) {
+        Log.d("TAG", "addUser")
         viewModelScope.launch {
             val userMatch = repository.getUser(user.username).firstOrNull()
             if (userMatch == null) {
                 repository.upsert(user)
-                _addUserResult.value = true
+                _signinResult.value = true
             } else {
-                _addUserResult.value = false
-                _addUserLog.value = "errore: username già esistente"
+                _signinResult.value = false
+                _signinLog.value = "errore: username già esistente"
             }
 
         }
@@ -70,7 +72,7 @@ class UsersViewModel(
     }
 
     fun resetValues() {
-        _addUserResult.value = null
+        _signinResult.value = null
         _loginResult.value = null
     }
 

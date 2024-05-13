@@ -1,5 +1,6 @@
 package com.example.outdoorromagna.ui
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,6 +18,8 @@ import com.example.outdoorromagna.ui.screens.login.Login
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
+import com.example.outdoorromagna.ui.screens.signin.SigninScreen
+import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
 import com.example.outdoorromagna.ui.screens.traveldetails.TravelDetailsScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -29,7 +32,7 @@ sealed class OutdoorRomagnaRoute(
 
     data object Signin : OutdoorRomagnaRoute("signin", "Outdoor Romagna - Signin")
 
-    data object Home : OutdoorRomagnaRoute("travels", "Outdoor Romagna")
+    data object Home : OutdoorRomagnaRoute("travels", "Outdoor Romagna - Home")
     data object TravelDetails : OutdoorRomagnaRoute(
         "travels/{travelId}",
         "Travel Details",
@@ -62,16 +65,22 @@ fun OutdoorRomagnaNavGraph(
             composable(route) {
                 val loginVm = koinViewModel<LoginViewModel>()
                 val state by loginVm.state.collectAsStateWithLifecycle()
-                Login(state, actions = loginVm.actions, navController, usersVm)
+                Login(state, actions = loginVm.actions, onSubmit = {usersVm.login(state.toUser())}, navController, usersVm)
             }
         }
-        /*with(OutdoorRomagnaRoute.Signin) {
+        with(OutdoorRomagnaRoute.Signin) {
             composable(route) {
+
                 val signinVm = koinViewModel<SigninViewModel>()
                 val signinState by signinVm.state.collectAsStateWithLifecycle()
-                SigninScreen(signinState, navController)
+                SigninScreen(
+                    state = signinState,
+                    actions = signinVm.actions,
+                    onSubmit = { usersVm.addUser(it) },
+                    navController = navController,
+                    usersVm)
             }
-        }
+        }/*
         with(OutdoorRomagnaRoute.Home) {
             composable(route) {
                 HomeScreen(placesState, navController)
