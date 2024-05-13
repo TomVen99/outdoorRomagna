@@ -1,19 +1,26 @@
 package com.example.outdoorromagna.ui.screens.home
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.Place
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
 import com.example.outdoorromagna.ui.composables.Size
 import com.example.outdoorromagna.ui.composables.BasicMap
+import com.example.outdoorromagna.ui.composables.BottomAppBar
+import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MarkerState
@@ -25,7 +32,18 @@ fun HomeScreen(
     navController: NavHostController,
     state: HomeScreenState,
     actions: MapActions) {
-    /*Scaffold( //icona del +
+    Scaffold(
+        topBar = { TopAppBar(navController, "OutdoorRomagna") },
+        bottomBar = { BottomAppBar(navController) },
+    ){
+        contentPadding ->
+        Column (
+            modifier = Modifier.padding(contentPadding).fillMaxSize()
+        ){
+            CreateMap(navController, state, actions)
+    }
+
+    }/*
         floatingActionButton = {
             FloatingActionButton(
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -55,7 +73,7 @@ fun HomeScreen(
             NoItemsPlaceholder(Modifier.padding(contentPadding), navController)
         }
     }*/
-    CreateMap(navController, state, actions)
+    //CreateMap(navController, state, actions)
 }
 
 @Composable

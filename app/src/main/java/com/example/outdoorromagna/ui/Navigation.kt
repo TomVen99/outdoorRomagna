@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.example.outdoorromagna.ui.screens.addtravel.AddTravelScreen
 import com.example.outdoorromagna.ui.screens.addtravel.AddTravelViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreen
+import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.login.Login
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
@@ -80,14 +81,14 @@ fun OutdoorRomagnaNavGraph(
                     navController = navController,
                     usersVm)
             }
-        }/*
+        }
         with(OutdoorRomagnaRoute.Home) {
             composable(route) {
                 val homeScreenVm = koinViewModel<HomeScreenViewModel>()
                 val state by homeScreenVm.state.collectAsStateWithLifecycle()
                 HomeScreen(navController, state, homeScreenVm.actions)
             }
-        }
+        }/*
         with(OutdoorRomagnaRoute.TravelDetails) {
             composable(route, arguments) { backStackEntry ->
                 val place = requireNotNull(placesState.places.find {

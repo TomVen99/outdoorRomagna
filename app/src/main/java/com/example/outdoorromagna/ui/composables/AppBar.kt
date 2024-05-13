@@ -36,12 +36,12 @@ import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 @Composable
 fun TopAppBar(
     navController: NavHostController,
-    currentRoute: OutdoorRomagnaRoute
+    currentRoute: String
 ) {
     TopAppBar(
         title = {
             Text(
-                currentRoute.title,
+                currentRoute,
                 fontWeight = FontWeight.Medium,
             )
         },
@@ -102,8 +102,7 @@ fun TopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomAppBar(
-    navController: NavHostController,
-    currentRoute: OutdoorRomagnaRoute
+    navController: NavHostController
 ) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,

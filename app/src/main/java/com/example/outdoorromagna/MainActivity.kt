@@ -126,9 +126,9 @@ class MainActivity : ComponentActivity() {
                     val ctx = LocalContext.current
 
                     Scaffold(
-                        topBar = { TopAppBar(navController, currentRoute) },
-                        bottomBar = { BottomAppBar(navController, currentRoute) },
-                        snackbarHost = { SnackbarHost(snackbarHostState) }
+                        /*topBar = { TopAppBar(navController, currentRoute) },
+                        bottomBar = { BottomAppBar(navController, currentRoute) },*/
+                        //snackbarHost = { SnackbarHost(snackbarHostState) }
                     ) { contentPadding ->
                         OutdoorRomagnaNavGraph(
                             navController,
