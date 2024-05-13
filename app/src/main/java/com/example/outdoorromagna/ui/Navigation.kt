@@ -83,7 +83,9 @@ fun OutdoorRomagnaNavGraph(
         }/*
         with(OutdoorRomagnaRoute.Home) {
             composable(route) {
-                HomeScreen(placesState, navController)
+                val homeScreenVm = koinViewModel<HomeScreenViewModel>()
+                val state by homeScreenVm.state.collectAsStateWithLifecycle()
+                HomeScreen(navController, state, homeScreenVm.actions)
             }
         }
         with(OutdoorRomagnaRoute.TravelDetails) {

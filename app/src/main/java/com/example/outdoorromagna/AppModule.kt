@@ -12,6 +12,7 @@ import com.example.outdoorromagna.data.repositories.UsersRepository
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.screens.addtravel.AddTravelViewModel
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
+import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
 import com.example.outdoorromagna.ui.theme.ThemeViewModel
@@ -66,7 +67,7 @@ val appModule = module {
         )
     }
 
-    viewModel { AddTravelViewModel() }
+    viewModel { HomeScreenViewModel() }
 
     viewModel { SettingsViewModel(get()) }
 
