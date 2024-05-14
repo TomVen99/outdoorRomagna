@@ -262,7 +262,7 @@ fun Login(
             if (signinResult == false) {
                 Text(signinLog.toString(), color = Color.Red)
             } else if (signinResult == true) {
-                navController.navigate(OutdoorRomagnaRoute.Home.route)//buildWithoutPosition(state.username))
+                navController.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition(state.username))
                 //Text("Vado alla Home", color = Color.Red)
             }
         }

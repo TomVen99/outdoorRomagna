@@ -20,8 +20,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.outdoorromagna.ui.OutdoorRomagnaNavGraph
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
-import com.example.outdoorromagna.ui.composables.BottomAppBar
-import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.theme.OutdoorRomagnaTheme
 import com.example.outdoorromagna.utils.LocationService
 import org.koin.android.ext.android.get

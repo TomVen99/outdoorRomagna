@@ -15,7 +15,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.Place
+import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
 import com.example.outdoorromagna.ui.composables.Size
 import com.example.outdoorromagna.ui.composables.BasicMap
@@ -31,10 +33,12 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(
     navController: NavHostController,
     state: HomeScreenState,
-    actions: MapActions) {
+    actions: MapActions,
+    user : User
+) {
     Scaffold(
         topBar = { TopAppBar(navController, "OutdoorRomagna") },
-        bottomBar = { BottomAppBar(navController) },
+        bottomBar = { BottomAppBar(navController, user) },
     ){
         contentPadding ->
         Column (

@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.data.repositories.UsersRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -67,7 +69,6 @@ class UsersViewModel(
                 _loginResult.value = false
                 _loginLog.value = "errore: Username non esiste"
             }
-
         }
     }
 
@@ -91,4 +92,5 @@ class UsersViewModel(
         random.nextBytes(salt)
         return salt
     }
+
 }

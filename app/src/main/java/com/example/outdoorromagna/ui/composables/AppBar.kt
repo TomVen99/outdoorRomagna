@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 
 
@@ -102,7 +103,8 @@ fun TopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomAppBar(
-    navController: NavHostController
+    navController: NavHostController,
+    user: User
 ) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -148,7 +150,10 @@ fun BottomAppBar(
 
                 Button(
                     modifier = Modifier.padding(end = 10.dp),
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        //navController.navigate(OutdoorRomagnaRoute.Profile.route)
+                        navController.navigate(OutdoorRomagnaRoute.Profile.buildRoute(user.id.toString()))
+                              },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding
                 ) {
                     Column(
