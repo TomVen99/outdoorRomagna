@@ -22,8 +22,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,14 +36,20 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.screens.home.HomeScreenActions
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
     navController: NavHostController,
-    currentRoute: String
+    currentRoute: String,
+    showSearch: Boolean = false,
+    actions: HomeScreenActions? = null
 ) {
+    //var showSearch by remember { mutableStateOf<Boolean>(false) }
     TopAppBar(
         title = {
             Text(
@@ -55,52 +66,39 @@ fun TopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = "Cerca"
+            if(showSearch) {
+                IconButton(onClick = { actions?.setShowSearchBar(true) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = "Cerca"
                     )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     )
-    /*CenterAlignedTopAppBar(
-        title = {
-            Text(
-                currentRoute.title,
-                fontWeight = FontWeight.Medium,
-            )
-        },
-        navigationIcon = {
-            if (navController.previousBackStackEntry != null) {
-                IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(
-                        imageVector = Icons.Outlined.ArrowBack,
-                        contentDescription = "Back button"
-                    )
-                }
-            }
-        },
-        actions = {
-            if (currentRoute.route == TravelDiaryRoute.Home.route) {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(Icons.Outlined.Search, contentDescription = "Search")
-                }
-            }
-            if (currentRoute.route != TravelDiaryRoute.Settings.route) {
-                IconButton(onClick = { navController.navigate(TravelDiaryRoute.Settings.route) }) {
-                    Icon(Icons.Outlined.Settings, "Settings")
-                }
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
-    )*/
 }
-@OptIn(ExperimentalMaterial3Api::class)
+/*
+@Composable
+fun showSearchBar {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column {
+            SearchBar { query ->
+                performSearch(query = query, context = context) { results ->
+                    if (results.isNotEmpty()) {
+                        placeLocations = results
+                        center = results.first()
+                        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(center, 12f))
+                    }
+                }
+            }
+        }
+    }
+}*/
+
 @Composable
 fun BottomAppBar(
     navController: NavHostController,

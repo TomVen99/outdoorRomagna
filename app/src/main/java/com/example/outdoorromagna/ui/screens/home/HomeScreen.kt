@@ -1,6 +1,7 @@
 package com.example.outdoorromagna.ui.screens.home
 
 import android.Manifest
+import android.content.Context
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -9,14 +10,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -35,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.outdoorromagna.data.database.Place
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.UsersViewModel
@@ -46,9 +51,16 @@ import com.example.camera.utils.PermissionStatus
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.utils.LocationService
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -60,6 +72,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import org.koin.compose.koinInject
 
 data class MapTypes(val mapTypeId: MapType, val title: String, val url: String)
+
+data class PlaceDetails(val latLng: LatLng, val name: String)
 
 val mapTypes = listOf(
     MapTypes(MapType.NORMAL, "Default", ""),
@@ -76,12 +90,19 @@ fun HomeScreen(
     user : User
 ) {
     Scaffold(
-        topBar = { TopAppBar(navController, "OutdoorRomagna") },
+        topBar = { TopAppBar(
+                    navController = navController,
+                    currentRoute = "OutdoorRomagna",
+                    actions = actions,
+                    showSearch =  true)
+                 },
         bottomBar = { BottomAppBar(navController, user) },
     ){
         contentPadding ->
         Column (
-            modifier = Modifier.padding(contentPadding).fillMaxSize()
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxSize()
         ){
             //CreateMap(navController, state, actions)
             var center by remember {
@@ -91,8 +112,8 @@ fun HomeScreen(
                         12.2036f.toDouble()
                     )
                 )
-            }  // Coordinate iniziali di Roma
-            var placeLocations by remember { mutableStateOf(listOf<LatLng>()) }
+            }
+            var placeLocations by remember { mutableStateOf(listOf<PlaceDetails>()) }
             val cameraPositionState = rememberCameraPositionState {
                 position = CameraPosition(center, 10f, 0f, 0f)
             }
@@ -126,7 +147,7 @@ fun HomeScreen(
                         .padding(innerPadding)
                 ) {
                     MapView(
-                        placeLocations,
+                        placeLocations.map { x -> x.latLng },
                         cameraPositionState,
                         { showButton = true },
                         updateMarkerPosition = { markerPosition = it },
@@ -181,6 +202,29 @@ fun HomeScreen(
                                 }
                             }
                         }
+                    if (state.showSearchBar) {
+                        SearchBar { query ->
+                            performSearch(query = query, context = context) { results ->
+                                if (results.isNotEmpty()) {
+                                    placeLocations = results
+                                    Log.d("tag", results.toString())
+                                    center = results.first().latLng //forse da togliere
+                                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(center, 12f)) //forse da togliere
+                                }
+                            }
+                        }
+                        /*if(placeLocations.isNotEmpty()) {
+                            DropdownMenu(
+                                modifier = Modifier.fillMaxWidth(),
+                                expanded = true,
+                                onDismissRequest = { /*actions.setShowSearchBar(false)*/ }) {
+                                placeLocations.forEach { place ->
+                                    DropdownMenuItem(text = { place.name }, onClick = { /*TODO*/ })
+                                }
+                            }
+                        }*/
+                    }
+
 
                     /*if (showButton) { //se clicca su un punto della mappa
                         addLocation()*/
@@ -204,7 +248,7 @@ fun addLocation() {
     ) {
         Row (modifier = Modifier.padding(8.dp)){
             Icon(Icons.Outlined.Add, "Share Travel")
-            Text(text = "Aggiungi location")
+            Text(text = "Aggiungi percorso")
         }
     }
 }
@@ -235,8 +279,7 @@ fun MapView(
             markerPosition = latLng
             updateMarkerPosition(markerPosition)  // Aggiorna la posizione ogni volta che viene cliccato un nuovo punto
         },
-        properties = MapProperties(mapType = mapView),
-        onMapLoaded = { }
+        properties = MapProperties(mapType = mapView)
     ) {
         // Visualizza il marker nella posizione memorizzata
         markerPosition?.let {
@@ -304,4 +347,62 @@ fun rememberPermission(
         }
     }
     return permissionHandler
+}
+
+@Composable
+private fun SearchBar(onQueryChanged: (String) -> Unit) {
+    var text by remember { mutableStateOf("") }
+
+    TextField(
+        value = text,
+        onValueChange = {
+            text = it
+            onQueryChanged(it)
+        },
+        label = { Text("Cerca luogo") },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+        trailingIcon = {
+            Icon(Icons.Default.Search, contentDescription = "Search")
+        }
+    )
+}
+
+private fun performSearch(query: String, context: Context, onResult: (List<PlaceDetails>) -> Unit) {
+    if (!Places.isInitialized()) {
+        Places.initialize(context, "AIzaSyB6IrzeS3vCCiPHToNAG5u0tZkIyJx1IbM")
+    }
+    val placesClient = Places.createClient(context)
+    val request = FindAutocompletePredictionsRequest.builder()
+        .setQuery(query)
+        .build()
+
+    placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+        val locations = mutableListOf<PlaceDetails>()
+        for (prediction in response.autocompletePredictions) {
+            fetchPlaceDetails(prediction.placeId, placesClient) { latLng ->
+                latLng?.let {
+                    locations.add(PlaceDetails(it, prediction.getFullText(null).toString()))
+                    if (locations.size == response.autocompletePredictions.size) {
+                        onResult(locations)
+                    }
+                }
+            }
+        }
+    }.addOnFailureListener { exception ->
+        Log.e("SearchPlaces", "Error fetching autocomplete predictions", exception)
+    }
+}
+
+//usata per richiedere la latlng
+private fun fetchPlaceDetails(placeId: String, placesClient: PlacesClient, onResult: (LatLng?) -> Unit) {
+    val placeFields = listOf(Place.Field.LAT_LNG)
+    val request = FetchPlaceRequest.newInstance(placeId, placeFields)
+
+    placesClient.fetchPlace(request).addOnSuccessListener { fetchPlaceResponse ->
+        onResult(fetchPlaceResponse.place.latLng)
+    }.addOnFailureListener { exception ->
+        Log.e("FetchPlaceDetails", "Error fetching place details", exception)
+        onResult(null)
+    }
 }
