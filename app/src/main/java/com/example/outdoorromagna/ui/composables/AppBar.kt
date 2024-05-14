@@ -152,7 +152,7 @@ fun BottomAppBar(
                     modifier = Modifier.padding(end = 10.dp),
                     onClick = {
                         //navController.navigate(OutdoorRomagnaRoute.Profile.route)
-                        navController.navigate(OutdoorRomagnaRoute.Profile.buildRoute(user.id.toString()))
+                        navController.navigate(OutdoorRomagnaRoute.Profile.buildRoute(user.username))
                               },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding
                 ) {

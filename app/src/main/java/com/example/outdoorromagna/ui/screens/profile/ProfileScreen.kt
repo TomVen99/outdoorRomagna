@@ -1,8 +1,16 @@
 package com.example.outdoorromagna.ui.screens.profile
 
 import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,22 +20,41 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.UsersViewModel
@@ -36,17 +63,18 @@ import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.rememberPermission
 import com.example.outdoorromagna.utils.rememberCameraLauncher
 import com.google.android.gms.maps.model.LatLng
+import java.util.Objects
 
 
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
     user: User,
-    //onModify: (User) -> Unit,
+    onModify: (User) -> Unit,
     state: ProfileState,
     actions: ProfileActions,
     viewModel : UsersViewModel
-) {
+) {/*
     val ctx = LocalContext.current
 
     val cameraLauncher = rememberCameraLauncher()
@@ -162,5 +190,115 @@ fun ProfileScreen(
     if (cameraLauncher.capturedImageUri.path?.isNotEmpty() == true) {
         //onModify(User(user.id, user.username, user.password, cameraLauncher.capturedImageUri.toString(), user.salt))
     }
-    //DropMenu(user = user, navController = navController)
+    //DropMenu(user = user, navController = navController)*/
+
+
+    val ctx = LocalContext.current
+
+    val cameraLauncher = rememberCameraLauncher()
+
+    val cameraPermission = rememberPermission(Manifest.permission.CAMERA) { status ->
+        if (status.isGranted) {
+            cameraLauncher.captureImage()
+        } else {
+            Toast.makeText(ctx, "Permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun takePicture() {
+        if (cameraPermission.status.isGranted) {
+            cameraLauncher.captureImage()
+        } else {
+            cameraPermission.launchPermissionRequest()
+        }
+    }
+
+    Scaffold (
+        topBar = { TopAppBar(navController, "OutdoorRomagna") },
+        bottomBar = { BottomAppBar(navController, user) },
+    ){
+        contentPadding -> //perchè da errore???????????????????????????
+        Column (
+            modifier = Modifier.padding(all = 12.dp).fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Nome e Cognome",
+                fontSize = 25.sp,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            Spacer(modifier = Modifier.size(15.dp))
+
+            Spacer(modifier = Modifier.size(15.dp))
+
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
+                onClick = {
+                    takePicture()
+                }
+                ,
+            ) {
+                Icon(
+                    Icons.Filled.PhotoCamera,
+                    contentDescription = "Camera icon",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text("Scatta foto")
+            }
+
+            Spacer(modifier = Modifier.size(15.dp))
+
+            Row(
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Icon(
+                    Icons.Filled.AccountCircle,
+                    contentDescription = "account image"//stringResource(id = 0)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(
+                    /*text = if (user?.firstName?.isNotEmpty() == true
+                        && user?.lastName?.isNotEmpty() == true) {
+                        user.firstName + " " + user.lastName
+                    } else "Nome Cognome",*/
+                    text = user.username,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            Spacer(modifier = Modifier.size(15.dp))
+
+            Row(
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Icon(
+                    Icons.Filled.Mail,
+                    contentDescription = "mail"//stringResource(id = 1)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(
+                    text = "email",
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+    }
+
+    // Update the user's profile picture if a new picture is taken
+    if (cameraLauncher.capturedImageUri.path?.isNotEmpty() == true) {
+        onModify(User(user.id, user.username, user.password, cameraLauncher.capturedImageUri.toString(), user.salt))
+    }
 }

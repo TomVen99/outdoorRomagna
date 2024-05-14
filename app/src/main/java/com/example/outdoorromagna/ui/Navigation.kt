@@ -14,19 +14,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.outdoorromagna.ui.screens.addtravel.AddTravelScreen
-import com.example.outdoorromagna.ui.screens.addtravel.AddTravelViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreen
 import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.login.Login
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.profile.ProfileScreen
 import com.example.outdoorromagna.ui.screens.profile.ProfileViewModel
-import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
-import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninScreen
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
-import com.example.outdoorromagna.ui.screens.traveldetails.TravelDetailsScreen
 import org.koin.androidx.compose.koinViewModel
 
 sealed class OutdoorRomagnaRoute(
@@ -55,6 +50,16 @@ sealed class OutdoorRomagnaRoute(
                 = "home/$userUsername/$latitude/$longitude"
         fun buildWithoutPosition (userUsername: String) = "home/$userUsername/0/0"
     }
+
+    data object Profile : OutdoorRomagnaRoute(
+        "profile/{userUsername}",
+        "Profile",
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType }
+        )
+    ) {
+        fun buildRoute(userUsername: String) = "profile/$userUsername"
+    }
     data object TravelDetails : OutdoorRomagnaRoute(
         "travels/{travelId}",
         "Travel Details",
@@ -64,10 +69,6 @@ sealed class OutdoorRomagnaRoute(
     }
     data object AddTravel : OutdoorRomagnaRoute("travels/add", "Add Travel")
     data object Settings : OutdoorRomagnaRoute("settings", "Settings")
-
-    data object Profile : OutdoorRomagnaRoute("profile", "Profile") {
-        fun buildRoute(userId: String) = "profile/$userId"
-    }
 
     companion object {
         val routes = setOf(Login, Signin, Home, TravelDetails, AddTravel, Settings, Profile)
@@ -143,13 +144,17 @@ fun OutdoorRomagnaNavGraph(
             composable(route, arguments) {backStackEntry ->
                 val profileVm = koinViewModel<ProfileViewModel>()
                 val state by profileVm.state.collectAsStateWithLifecycle()
+                /*val user =  backStackEntry.arguments?.getString("userUsername") ?: userDefault
+                user = if (user == "null") userDefault else user
+                userDefault = user*/
                 val user = requireNotNull(usersState.users.find {
-                    it.id == backStackEntry.arguments?.getString("userId")!!.toInt()
+                    //it.id == backStackEntry.arguments?.getString("userId")!!.toInt()
+                    it.username == backStackEntry.arguments?.getString("userUsername")
                 })
                 ProfileScreen(
                     navController = navController,
                     user = user,
-                    //onModify = usersVm::addUserWithoutControl,
+                    onModify = usersVm::addUserWithoutControl,
                     state = state,
                     actions = profileVm.actions,
                     viewModel = usersVm
