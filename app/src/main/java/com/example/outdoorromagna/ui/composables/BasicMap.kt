@@ -1,39 +1,33 @@
 package com.example.outdoorromagna.ui.composables
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.GpsFixed
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.camera.utils.PermissionHandler
 import com.example.camera.utils.PermissionStatus
-import com.example.outdoorromagna.ui.screens.home.MapActions
 import com.example.outdoorromagna.utils.LocationService
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -42,12 +36,23 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
-import org.koin.compose.koinInject
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+/*data class MapTypes(val mapTypeId: MapType, val title: String, val url: String)
+
+private val mapTypes = listOf(
+    MapTypes(MapType.NORMAL, "Default", ""),
+    MapTypes(MapType.HYBRID, "Satellite", ""),
+    MapTypes(MapType.TERRAIN, "Rilievo", "")
+)
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BasicMap(
     navController: NavHostController,
@@ -55,16 +60,23 @@ fun BasicMap(
     longitude: Double,
     actions: MapActions
 ) {
-    var center by remember { mutableStateOf(LatLng(latitude.toDouble(), longitude.toDouble())) }  // Coordinate iniziali di Roma
+    var center by remember {
+        mutableStateOf(
+            LatLng(
+                latitude.toDouble(),
+                longitude.toDouble()
+            )
+        )
+    }  // Coordinate iniziali di Roma
     var placeLocations by remember { mutableStateOf(listOf<LatLng>()) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition(center, 10f, 0f, 0f)
     }
     val context = LocalContext.current
     var showButton by remember { mutableStateOf(false) }
+    var showPopUp by remember { mutableStateOf(false) }
     var markerPosition by remember { mutableStateOf<LatLng?>(null) }
-
-
+    var mapViewType by remember { mutableStateOf<MapType>(MapType.TERRAIN) }
     val locationService = koinInject<LocationService>()
 
     val locationPermission = rememberPermission(
@@ -85,17 +97,21 @@ fun BasicMap(
     }
 
     Scaffold { innerPadding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
-                MapView(placeLocations, cameraPositionState, {
-                    showButton = true
-                }, updateMarkerPosition = {
-                    markerPosition = it
-                },
-                    navController
-                )
-            FloatingActionButton(
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            MapView(
+                placeLocations,
+                cameraPositionState,
+                { showButton = true },
+                updateMarkerPosition = { markerPosition = it },
+                navController,
+                mapViewType
+            )
+
+            FloatingActionButton( //bottone del gps
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 onClick = {
@@ -104,28 +120,68 @@ fun BasicMap(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(start = 10.dp, bottom = 30.dp)
+                    .size(48.dp),
+                shape = CircleShape
             ) {
                 Icon(Icons.Outlined.GpsFixed, "Use localization")
             }
-            /*if (showButton) { //se clicca su un punto della mappa
-                FloatingActionButton(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    onClick = { },
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(start = 16.dp, bottom = 32.dp)
+
+            FloatingActionButton( //bottone per cambiare la modalità di visualizzazione
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                onClick = {
+                    showPopUp = true
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(end = 10.dp, top = 10.dp)
+                    .size(48.dp),
+                shape = CircleShape
+            ) {
+                Icon(Icons.Outlined.Layers, "Choose map type")
+            }
+
+            if (showPopUp)
+                ModalBottomSheet(
+                    onDismissRequest = { showPopUp = false }
                 ) {
-                    Row (modifier = Modifier.padding(8.dp)){
-                        Icon(Icons.Outlined.Add, "Share Travel")
-                        Text(text = "Aggiungi location")
+                    Column(modifier = Modifier.padding(bottom = 50.dp)) {
+                        mapTypes.forEach { type ->
+                            Row {
+                                Button(onClick = {
+                                    mapViewType = type.mapTypeId
+                                    showPopUp = false
+                                }) {
+                                    Text(text = type.title)
+                                }
+                            }
+                        }
                     }
                 }
-            }*/
+
+            /*if (showButton) { //se clicca su un punto della mappa
+                addLocation()*/
 
         }
     }
+}*/
+
+@Composable
+fun addLocation() {
+    FloatingActionButton(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        onClick = { },
+        modifier = Modifier
+            .padding(start = 16.dp, bottom = 32.dp)
+    ) {
+        Row (modifier = Modifier.padding(8.dp)){
+            Icon(Icons.Outlined.Add, "Share Travel")
+            Text(text = "Aggiungi location")
+        }
+    }
 }
+
 
 fun requestLocation(locationPermission: PermissionHandler, locationService: LocationService) {
     if (locationPermission.status.isGranted) {
@@ -141,17 +197,24 @@ fun MapView(
     cameraPositionState: CameraPositionState,
     onMarkerClick: () -> Unit,
     updateMarkerPosition: (LatLng?) -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    mapView: MapType
 ) {
-    var markerPosition by remember { mutableStateOf<LatLng?>(null) }  // Aggiunge lo stato per memorizzare la posizione del marker
-
+    var markerPosition by remember { mutableStateOf<LatLng?>(null) }
+    var uiSettings by remember { mutableStateOf(MapUiSettings()) }
+    var properties by remember {
+        mutableStateOf(MapProperties(mapType = mapView))
+    }
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         onMapClick = { latLng ->
             markerPosition = latLng
             updateMarkerPosition(markerPosition)  // Aggiorna la posizione ogni volta che viene cliccato un nuovo punto
-        }
+        },
+        properties = properties,
+        uiSettings = uiSettings,
+        onMapLoaded = { }
     ) {
         // Visualizza il marker nella posizione memorizzata
         markerPosition?.let {

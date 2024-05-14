@@ -2,6 +2,7 @@ package com.example.outdoorromagna.ui.screens.home
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.google.maps.android.compose.MapType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -11,6 +12,7 @@ data class HomeScreenState(
     val date: String = "",
     val description: String = "",
     val imageUri: Uri = Uri.EMPTY,
+    val mapView: MapType = MapType.NORMAL,
 
     val showLocationDisabledAlert: Boolean = false,
     val showLocationPermissionDeniedAlert: Boolean = false,
@@ -27,11 +29,12 @@ data class HomeScreenState(
     )*/
 }
 
-interface MapActions {
+interface HomeScreenActions {
     fun setDestination(title: String)
     fun setDate(date: String)
     fun setDescription(description: String)
     fun setImageUri(imageUri: Uri)
+    fun setMapView(mapViewType: MapType)
 
     fun setShowLocationDisabledAlert(show: Boolean)
     fun setShowLocationPermissionDeniedAlert(show: Boolean)
@@ -43,7 +46,7 @@ class HomeScreenViewModel : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state = _state.asStateFlow()
 
-    val actions = object : MapActions {
+    val actions = object : HomeScreenActions {
         override fun setDestination(title: String) =
             _state.update { it.copy(destination = title) }
 
@@ -55,6 +58,9 @@ class HomeScreenViewModel : ViewModel() {
 
         override fun setImageUri(imageUri: Uri) =
             _state.update { it.copy(imageUri = imageUri) }
+
+        override fun setMapView(mapViewType: MapType) =
+            _state.update { it.copy(mapView = mapViewType) }
 
         override fun setShowLocationDisabledAlert(show: Boolean) =
             _state.update { it.copy(showLocationDisabledAlert = show) }

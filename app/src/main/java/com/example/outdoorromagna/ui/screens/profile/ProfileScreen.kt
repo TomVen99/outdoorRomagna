@@ -31,7 +31,6 @@ import coil.compose.AsyncImage
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.UsersViewModel
-import com.example.outdoorromagna.ui.composables.BasicMap
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.rememberPermission
