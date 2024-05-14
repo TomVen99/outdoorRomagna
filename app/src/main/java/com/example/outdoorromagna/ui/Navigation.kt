@@ -22,6 +22,7 @@ import com.example.outdoorromagna.ui.screens.profile.ProfileScreen
 import com.example.outdoorromagna.ui.screens.profile.ProfileViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninScreen
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
+import com.example.outdoorromagna.ui.screens.tracks.*
 import org.koin.androidx.compose.koinViewModel
 
 sealed class OutdoorRomagnaRoute(
@@ -59,6 +60,27 @@ sealed class OutdoorRomagnaRoute(
         )
     ) {
         fun buildRoute(userUsername: String) = "profile/$userUsername"
+    }
+
+    data object Tracks : OutdoorRomagnaRoute(
+        "tracks/{userUsername}",
+        "tracks",
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType }
+        )
+    /*,
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType },
+            navArgument("latitude") { type = NavType.FloatType },
+            navArgument("longitude") { type = NavType.FloatType }
+        )*/
+    ) {
+        fun buildRoute(userUsername: String) = "tracks/$userUsername"
+        /*
+        fun buildRoute(userUsername: String, latitude: Float?, longitude: Float?)
+                = "home/$userUsername/$latitude/$longitude"
+        fun buildWithoutPosition (userUsername: String) = "home/$userUsername/0/0"
+        */
     }
     data object TravelDetails : OutdoorRomagnaRoute(
         "travels/{travelId}",
@@ -157,6 +179,34 @@ fun OutdoorRomagnaNavGraph(
                     onModify = usersVm::addUserWithoutControl,
                     state = state,
                     actions = profileVm.actions,
+                    viewModel = usersVm
+                )
+            }
+        }
+        with(OutdoorRomagnaRoute.Tracks) {
+            composable(route, arguments) {backStackEntry ->
+                val tracksVm = koinViewModel<TracksViewModel>()
+                val state by tracksVm.state.collectAsStateWithLifecycle()
+                /*var user =  backStackEntry.arguments?.getString("userUsername") ?: userDefault
+                user = if (user == "null") userDefault else user
+                userDefault = user*/
+                val user = requireNotNull(usersState.users.find {
+                    val bundle = backStackEntry.arguments
+                    val keySet = bundle?.keySet()
+                    keySet?.forEach { key ->
+                        val value = bundle.get(key)
+                        Log.d("TAG", "$key: $value")
+                    }
+                    Log.d("TAG", "it username " + it.username)
+                    //it.id == backStackEntry.arguments?.getString("userId")!!.toInt()
+                    it.username == backStackEntry.arguments?.getString("userUsername")
+                })
+                TracksScreen(
+                    navController = navController,
+                    user = user,
+                    //onModify = usersVm::addUserWithoutControl,
+                    state = state,
+                    actions = tracksVm.actions,
                     viewModel = usersVm
                 )
             }

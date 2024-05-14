@@ -115,7 +115,9 @@ fun BottomAppBar(
             ) {
                 Button(
                     modifier = Modifier.padding(start = 10.dp),
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        navController.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition(user.username))
+                              },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding
                 ) {
                     Column(
@@ -132,7 +134,9 @@ fun BottomAppBar(
                 }
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        navController.navigate(OutdoorRomagnaRoute.Tracks.buildRoute(user.username))
+                              },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding
                 ) {
                     Column(

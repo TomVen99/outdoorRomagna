@@ -16,6 +16,7 @@ import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.profile.ProfileViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
+import com.example.outdoorromagna.ui.screens.tracks.TracksViewModel
 import com.example.outdoorromagna.ui.theme.ThemeViewModel
 import com.example.outdoorromagna.utils.LocationService
 import io.ktor.client.HttpClient
@@ -81,6 +82,8 @@ val appModule = module {
     viewModel { SigninViewModel() }
 
     viewModel { ProfileViewModel() }
+
+    viewModel { TracksViewModel() }
 
     //viewModel { PlacesViewModel(get()) }
 }
