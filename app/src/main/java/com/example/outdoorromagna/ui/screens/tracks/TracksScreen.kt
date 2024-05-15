@@ -14,11 +14,14 @@ import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -45,13 +48,21 @@ fun TracksScreen(
     actions: TracksActions,
     viewModel : UsersViewModel
 ) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     Scaffold(
-        topBar = { TopAppBar(navController, "OutdoorRomagna") },
+        topBar = {TopAppBar(
+            navController = navController,
+            currentRoute = "OutdoorRomagna",
+            showSearch =  true,
+            drawerState = drawerState,
+            scope = scope)
+                 },
         bottomBar = { BottomAppBar(navController, user) },
     ) { 
         contentPadding ->
         Column (
-            modifier = Modifier.padding(all = 12.dp).fillMaxSize(),
+            modifier = Modifier.padding(contentPadding).fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

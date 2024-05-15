@@ -13,6 +13,7 @@ data class HomeScreenState(
     val description: String = "",
     val imageUri: Uri = Uri.EMPTY,
     val mapView: MapType = MapType.NORMAL,
+    val showSearchBar: Boolean = false,
 
     val showLocationDisabledAlert: Boolean = false,
     val showLocationPermissionDeniedAlert: Boolean = false,
@@ -40,6 +41,7 @@ interface HomeScreenActions {
     fun setShowLocationPermissionDeniedAlert(show: Boolean)
     fun setShowLocationPermissionPermanentlyDeniedSnackbar(show: Boolean)
     fun setShowNoInternetConnectivitySnackbar(show: Boolean)
+    fun setShowSearchBar(show: Boolean)
 }
 
 class HomeScreenViewModel : ViewModel() {
@@ -73,5 +75,8 @@ class HomeScreenViewModel : ViewModel() {
 
         override fun setShowNoInternetConnectivitySnackbar(show: Boolean) =
             _state.update { it.copy(showNoInternetConnectivitySnackbar = show) }
+
+        override fun setShowSearchBar(show: Boolean) =
+            _state.update { it.copy(showSearchBar = show) }
     }
 }

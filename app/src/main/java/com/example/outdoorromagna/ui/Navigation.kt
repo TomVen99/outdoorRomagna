@@ -177,9 +177,9 @@ fun OutdoorRomagnaNavGraph(
                     navController = navController,
                     user = user,
                     onModify = usersVm::addUserWithoutControl,
-                    state = state,
+                    /*state = state,
                     actions = profileVm.actions,
-                    viewModel = usersVm
+                    viewModel = usersVm*/
                 )
             }
         }

@@ -1,30 +1,45 @@
 package com.example.outdoorromagna.ui.screens.profile
 
 import android.Manifest
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.UsersViewModel
@@ -32,6 +47,7 @@ import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.rememberPermission
 import com.example.outdoorromagna.utils.rememberCameraLauncher
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -39,9 +55,9 @@ fun ProfileScreen(
     navController: NavHostController,
     user: User,
     onModify: (User) -> Unit,
-    state: ProfileState,
-    actions: ProfileActions,
-    viewModel : UsersViewModel
+    //state: ProfileState,
+    //actions: ProfileActions,
+    //viewModel : UsersViewModel
 ) {/*
     val ctx = LocalContext.current
 
@@ -180,14 +196,52 @@ fun ProfileScreen(
             cameraPermission.launchPermissionRequest()
         }
     }
-
-    Scaffold (
-        topBar = { TopAppBar(navController, "OutdoorRomagna") },
+/*
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet { Text(text = "menu") }
+        },
+    ) {
+        Scaffold(
+            floatingActionButton = {
+                ExtendedFloatingActionButton(
+                    text = { Text("Show drawer") },
+                    icon = { Icon(Icons.Filled.Add, contentDescription = "") },
+                    onClick = {
+                        scope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
+                            }
+                        }
+                    }
+                )
+            }
+        ) { contentPadding ->
+            Column (
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .fillMaxSize()
+            ){
+                Text(text = "pippo")
+            }
+        }
+    }*/
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    Scaffold(
+        topBar = { TopAppBar(
+            navController = navController,
+            currentRoute = "OutdoorRomagna",
+            showSearch =  true,
+            drawerState = drawerState,
+            scope = scope) },
         bottomBar = { BottomAppBar(navController, user) },
-    ){
-        contentPadding -> //perchè da errore???????????????????????????
-        Column (
-            modifier = Modifier.padding(all = 12.dp).fillMaxSize(),
+    ){ contentPadding ->
+        Column(
+            modifier = Modifier.padding(contentPadding).fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -209,8 +263,7 @@ fun ProfileScreen(
                 ),
                 onClick = {
                     takePicture()
-                }
-                ,
+                },
             ) {
                 Icon(
                     Icons.Filled.PhotoCamera,
@@ -233,9 +286,9 @@ fun ProfileScreen(
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(
                     /*text = if (user?.firstName?.isNotEmpty() == true
-                        && user?.lastName?.isNotEmpty() == true) {
-                        user.firstName + " " + user.lastName
-                    } else "Nome Cognome",*/
+                && user?.lastName?.isNotEmpty() == true) {
+                user.firstName + " " + user.lastName
+            } else "Nome Cognome",*/
                     text = user.username,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -270,3 +323,6 @@ fun ProfileScreen(
         onModify(User(user.id, user.username, user.password, cameraLauncher.capturedImageUri.toString(), user.salt))
     }
 }
+
+
+
