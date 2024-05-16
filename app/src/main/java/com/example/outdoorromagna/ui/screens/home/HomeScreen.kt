@@ -292,7 +292,8 @@ fun HomeScreen(
         }
     }
     SideBarMenu(
-        myScaffold = myScaffold
+        myScaffold = myScaffold,
+        navController
     )
 }
 

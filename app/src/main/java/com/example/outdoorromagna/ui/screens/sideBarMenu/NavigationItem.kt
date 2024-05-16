@@ -1,24 +1,38 @@
 package com.example.outdoorromagna.ui.screens.sideBarMenu
 
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Directions
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -44,9 +58,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.outdoorromagna.R
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
@@ -59,6 +76,7 @@ data class NavigationItem(
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
     val badgeCount: Int? = null,
+    val route: OutdoorRomagnaRoute
 )
 
 var drawerState: DrawerState = DrawerState(DrawerValue.Closed)
@@ -70,25 +88,35 @@ fun getMyDrawerState() : DrawerState {
 val items = listOf(
     NavigationItem(
         title = "Mappa",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home
+        selectedIcon = Icons.Filled.Map,
+        unselectedIcon = Icons.Outlined.Map,
+        route = OutdoorRomagnaRoute.Home
     ),
     NavigationItem(
         title = "Percorsi",
-        selectedIcon = Icons.Filled.Info,
-        unselectedIcon = Icons.Outlined.Info,
+        selectedIcon = Icons.Filled.Directions,
+        unselectedIcon = Icons.Outlined.Directions,
         badgeCount = 45,
+        route = OutdoorRomagnaRoute.Tracks
     ),
     NavigationItem(
         title = "Profilo",
+        selectedIcon = Icons.Filled.Person,
+        unselectedIcon = Icons.Outlined.Person,
+        route = OutdoorRomagnaRoute.Profile
+    ),
+    NavigationItem(
+        title = "Impostazioni",
         selectedIcon = Icons.Filled.Settings,
         unselectedIcon = Icons.Outlined.Settings,
+        route = OutdoorRomagnaRoute.Settings
     ),
 )
 
 @Composable
 fun SideBarMenu (
-    myScaffold: @Composable () -> Unit
+    myScaffold: @Composable () -> Unit,
+    navController: NavHostController
 ){
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -104,19 +132,34 @@ fun SideBarMenu (
                 ModalDrawerSheet (
                     drawerContainerColor = LightBrown
                 ){
+                    Image(
+                        painter = painterResource(id = R.drawable.outdoorromagna),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        alignment = Alignment.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "Utente")
                     Spacer(modifier = Modifier.height(16.dp))
                     items.forEachIndexed { index, item ->
                         NavigationDrawerItem(
                             modifier = Modifier
                                 .alpha(0.5.toFloat())
                                 .padding(horizontal = 5.dp, vertical = 5.dp)
-                                .border(shape = RoundedCornerShape(25.dp),width = 1.dp, color = DarkBrown), // Imposta lo spessore e il colore del bordo
+                                .border(
+                                    shape = RoundedCornerShape(25.dp),
+                                    width = 1.dp,
+                                    color = DarkBrown
+                                ), // Imposta lo spessore e il colore del bordo
+
                             label = {
                                 Text(text = item.title)
                             },
                             selected = index == selectedItemIndex,
                             onClick = {
-                                //navController.navigate(item.route)
+                                navController.navigate(item.route.currentRoute)//.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition("a"))
                                 selectedItemIndex = index
                                 scope.launch {
                                     drawerState.close()

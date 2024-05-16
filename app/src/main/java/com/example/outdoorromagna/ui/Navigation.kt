@@ -20,6 +20,8 @@ import com.example.outdoorromagna.ui.screens.login.Login
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.profile.ProfileScreen
 import com.example.outdoorromagna.ui.screens.profile.ProfileViewModel
+import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
+import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninScreen
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
 import com.example.outdoorromagna.ui.screens.tracks.*
@@ -28,11 +30,12 @@ import org.koin.androidx.compose.koinViewModel
 sealed class OutdoorRomagnaRoute(
     val route: String,
     val title: String,
+    var currentRoute: String,
     val arguments: List<NamedNavArgument> = emptyList()
 ) {
-    data object Login : OutdoorRomagnaRoute("login", "Outdoor Romagna - Login")
+    data object Login : OutdoorRomagnaRoute("login", "Outdoor Romagna - Login", "")
 
-    data object Signin : OutdoorRomagnaRoute("signin", "Outdoor Romagna - Signin")
+    data object Signin : OutdoorRomagnaRoute("signin", "Outdoor Romagna - Signin", "")
 
     /*data object Home : OutdoorRomagnaRoute(
         "home",
@@ -41,30 +44,50 @@ sealed class OutdoorRomagnaRoute(
     data object Home : OutdoorRomagnaRoute(
         "home/{userUsername}/{latitude}/{longitude}",
         "homePage",
+        "",
         listOf(
             navArgument("userUsername") { type = NavType.StringType },
             navArgument("latitude") { type = NavType.FloatType },
             navArgument("longitude") { type = NavType.FloatType }
         )
     ) {
-        fun buildRoute(userUsername: String, latitude: Float?, longitude: Float?)
-                = "home/$userUsername/$latitude/$longitude"
-        fun buildWithoutPosition (userUsername: String) = "home/$userUsername/0/0"
+        fun buildRoute(userUsername: String, latitude: Float?, longitude: Float?): String{
+            setMyCurrentRoute("home/$userUsername/$latitude/$longitude")
+            return currentRoute
+        }
+
+        fun buildWithoutPosition (userUsername: String) : String {
+            setMyCurrentRoute("home/$userUsername/0/0")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
     }
 
     data object Profile : OutdoorRomagnaRoute(
         "profile/{userUsername}",
         "Profile",
+        "",
         listOf(
             navArgument("userUsername") { type = NavType.StringType }
         )
     ) {
-        fun buildRoute(userUsername: String) = "profile/$userUsername"
+        fun buildRoute(userUsername: String): String{
+            setMyCurrentRoute("profile/$userUsername")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
     }
 
     data object Tracks : OutdoorRomagnaRoute(
         "tracks/{userUsername}",
         "tracks",
+        "",
         listOf(
             navArgument("userUsername") { type = NavType.StringType }
         )
@@ -75,7 +98,14 @@ sealed class OutdoorRomagnaRoute(
             navArgument("longitude") { type = NavType.FloatType }
         )*/
     ) {
-        fun buildRoute(userUsername: String) = "tracks/$userUsername"
+        fun buildRoute(userUsername: String) : String {
+            setMyCurrentRoute("tracks/$userUsername")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
         /*
         fun buildRoute(userUsername: String, latitude: Float?, longitude: Float?)
                 = "home/$userUsername/$latitude/$longitude"
@@ -85,12 +115,30 @@ sealed class OutdoorRomagnaRoute(
     data object TravelDetails : OutdoorRomagnaRoute(
         "travels/{travelId}",
         "Travel Details",
+        "",
         listOf(navArgument("travelId") { type = NavType.StringType })
     ) {
         fun buildRoute(travelId: String) = "home/$travelId"
     }
-    data object AddTravel : OutdoorRomagnaRoute("travels/add", "Add Travel")
-    data object Settings : OutdoorRomagnaRoute("settings", "Settings")
+    data object AddTravel : OutdoorRomagnaRoute("travels/add", "Add Travel", "")
+    //data object Settings : OutdoorRomagnaRoute("settings", "Settings", "")
+    data object Settings : OutdoorRomagnaRoute(
+        "settings/{userUsername}",
+        "Settings",
+        "",
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType }
+        )
+    ) {
+        fun buildRoute(userUsername: String): String{
+            setMyCurrentRoute("settings/$userUsername")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
+    }
 
     companion object {
         val routes = setOf(Login, Signin, Home, TravelDetails, AddTravel, Settings, Profile)
@@ -210,7 +258,18 @@ fun OutdoorRomagnaNavGraph(
                     viewModel = usersVm
                 )
             }
-        }/*
+        }
+        with(OutdoorRomagnaRoute.Settings) {
+            composable(route) {
+                val settingsVm = koinViewModel<SettingsViewModel>()
+                SettingsScreen(
+                    /*settingsVm.state,
+                    settingsVm::setUsername,*/
+                    settingsVm
+                )
+            }
+        }
+        /*
         with(OutdoorRomagnaRoute.TravelDetails) {
             composable(route, arguments) { backStackEntry ->
                 val place = requireNotNull(placesState.places.find {
@@ -231,12 +290,7 @@ fun OutdoorRomagnaNavGraph(
                 )
             }
         }
-        with(OutdoorRomagnaRoute.Settings) {
-            composable(route) {
-                val settingsVm = koinViewModel<SettingsViewModel>()
-                SettingsScreen(settingsVm.state, settingsVm::setUsername)
-            }
-        }*/
+        */
     }
 }
 

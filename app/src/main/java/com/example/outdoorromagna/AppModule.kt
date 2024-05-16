@@ -10,7 +10,6 @@ import com.example.outdoorromagna.data.repositories.SettingsRepository
 import com.example.outdoorromagna.data.repositories.ThemeRepository
 import com.example.outdoorromagna.data.repositories.UsersRepository
 import com.example.outdoorromagna.ui.UsersViewModel
-import com.example.outdoorromagna.ui.screens.addtravel.AddTravelViewModel
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.profile.ProfileViewModel

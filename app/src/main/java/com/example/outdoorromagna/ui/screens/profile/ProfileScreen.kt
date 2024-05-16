@@ -188,7 +188,8 @@ fun ProfileScreen(
     }
 
     SideBarMenu(
-        myScaffold = myScaffold
+        myScaffold = myScaffold,
+        navController
     )
 
 }

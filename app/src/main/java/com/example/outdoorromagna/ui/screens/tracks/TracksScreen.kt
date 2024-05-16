@@ -81,6 +81,7 @@ fun TracksScreen(
         }
     }
     SideBarMenu(
-        myScaffold = myScaffold
+        myScaffold = myScaffold,
+        navController
     )
 }
