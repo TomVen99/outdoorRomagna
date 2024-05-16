@@ -3,6 +3,9 @@ package com.example.outdoorromagna.ui.screens.profile
 import android.Manifest
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -47,6 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -61,6 +66,8 @@ import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.rememberPermission
+import com.example.outdoorromagna.ui.theme.DarkBrown
+import com.example.outdoorromagna.ui.theme.LightBrown
 import com.example.outdoorromagna.utils.rememberCameraLauncher
 import kotlinx.coroutines.launch
 
@@ -344,20 +351,20 @@ fun ProfileScreen(
         val title: String,
         val selectedIcon: ImageVector,
         val unselectedIcon: ImageVector,
-        val badgeCount: Int? = null
+        val badgeCount: Int? = null,
     )
 
     val items = listOf(
         NavigationItem(
             title = "All",
             selectedIcon = Icons.Filled.Home,
-            unselectedIcon = Icons.Outlined.Home,
+            unselectedIcon = Icons.Outlined.Home
         ),
         NavigationItem(
             title = "Urgent",
             selectedIcon = Icons.Filled.Info,
             unselectedIcon = Icons.Outlined.Info,
-            badgeCount = 45
+            badgeCount = 45,
         ),
         NavigationItem(
             title = "Settings",
@@ -377,16 +384,22 @@ fun ProfileScreen(
         }
         ModalNavigationDrawer(
             drawerContent = {
-                ModalDrawerSheet {
+                ModalDrawerSheet (
+                    drawerContainerColor = LightBrown
+                ){
                     Spacer(modifier = Modifier.height(16.dp))
                     items.forEachIndexed { index, item ->
                         NavigationDrawerItem(
+                            modifier = Modifier
+                                .alpha(0.5.toFloat())
+                                .padding(horizontal = 5.dp, vertical = 5.dp)
+                                .border(shape = RoundedCornerShape(25.dp),width = 1.dp, color = DarkBrown), // Imposta lo spessore e il colore del bordo
                             label = {
                                 Text(text = item.title)
                             },
                             selected = index == selectedItemIndex,
                             onClick = {
-//                                            navController.navigate(item.route)
+                                //navController.navigate(item.route)
                                 selectedItemIndex = index
                                 scope.launch {
                                     drawerState.close()
@@ -405,40 +418,26 @@ fun ProfileScreen(
                                     Text(text = item.badgeCount.toString())
                                 }
                             },
-                            modifier = Modifier
-                                .padding(NavigationDrawerItemDefaults.ItemPadding)
                         )
+
                     }
                 }
             },
             drawerState = drawerState
         ) {
             Scaffold(
-                /*topBar = {
-                    androidx.compose.material3.TopAppBar(
-                        title = {
-                            Text(text = "Todo App")
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                scope.launch {
-                                    drawerState.open()
-                                }
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = "Menu"
-                                )
-                            }
-                        }
-                    )
-                }*/
                 topBar = {
                     TopAppBar(
                         navController = navController,
-                        currentRoute = OutdoorRomagnaRoute.Home.title,
+                        currentRoute = OutdoorRomagnaRoute.Profile.title,
                         drawerState = drawerState,
                         scope = scope
+                    )
+                },
+                bottomBar = {
+                    BottomAppBar(
+                        navController = navController,
+                        user = user
                     )
                 }
             ) { contentPadding ->
@@ -526,6 +525,7 @@ fun ProfileScreen(
         }
     }
 }
+
 
 
 
