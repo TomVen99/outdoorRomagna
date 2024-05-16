@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
@@ -59,6 +60,7 @@ data class NavigationItem(
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
     val badgeCount: Int? = null,
+    val route: OutdoorRomagnaRoute
 )
 
 var drawerState: DrawerState = DrawerState(DrawerValue.Closed)
@@ -71,24 +73,28 @@ val items = listOf(
     NavigationItem(
         title = "Mappa",
         selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home
+        unselectedIcon = Icons.Outlined.Home,
+        route = OutdoorRomagnaRoute.Home
     ),
     NavigationItem(
         title = "Percorsi",
         selectedIcon = Icons.Filled.Info,
         unselectedIcon = Icons.Outlined.Info,
         badgeCount = 45,
+        route = OutdoorRomagnaRoute.Tracks
     ),
     NavigationItem(
         title = "Profilo",
         selectedIcon = Icons.Filled.Settings,
         unselectedIcon = Icons.Outlined.Settings,
+        route = OutdoorRomagnaRoute.Profile
     ),
 )
 
 @Composable
 fun SideBarMenu (
-    myScaffold: @Composable () -> Unit
+    myScaffold: @Composable () -> Unit,
+    navController: NavHostController
 ){
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -116,7 +122,7 @@ fun SideBarMenu (
                             },
                             selected = index == selectedItemIndex,
                             onClick = {
-                                //navController.navigate(item.route)
+                                navController.navigate(item.route.currentRoute)//.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition("a"))
                                 selectedItemIndex = index
                                 scope.launch {
                                     drawerState.close()

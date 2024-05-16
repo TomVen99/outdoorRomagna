@@ -202,9 +202,10 @@ fun BottomAppBar(
                     }
                 }
 
+                OutdoorRomagnaRoute.Tracks.buildRoute(user.username)
                 Button(
                     onClick = {
-                        navController.navigate(OutdoorRomagnaRoute.Tracks.buildRoute(user.username))
+                        navController.navigate(OutdoorRomagnaRoute.Tracks.currentRoute)
                     },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding
                 ) {
@@ -221,11 +222,12 @@ fun BottomAppBar(
                     }
                 }
 
+                OutdoorRomagnaRoute.Profile.buildRoute(user.username)
                 Button(
                     modifier = Modifier.padding(end = 10.dp),
                     onClick = {
                         //navController.navigate(OutdoorRomagnaRoute.Profile.route)
-                        navController.navigate(OutdoorRomagnaRoute.Profile.buildRoute(user.username))
+                        navController.navigate(OutdoorRomagnaRoute.Profile.currentRoute)
                     },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding
                 ) {
