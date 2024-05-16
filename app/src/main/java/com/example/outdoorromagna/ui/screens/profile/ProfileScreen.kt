@@ -66,11 +66,13 @@ import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.rememberPermission
+import com.example.outdoorromagna.ui.screens.sideBarMenu.SideBarMenu
+import com.example.outdoorromagna.ui.screens.sideBarMenu.getMyDrawerState
+import com.example.outdoorromagna.ui.screens.sideBarMenu.items
 import com.example.outdoorromagna.ui.theme.DarkBrown
 import com.example.outdoorromagna.ui.theme.LightBrown
 import com.example.outdoorromagna.utils.rememberCameraLauncher
 import kotlinx.coroutines.launch
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +83,8 @@ fun ProfileScreen(
     //state: ProfileState,
     //actions: ProfileActions,
     //viewModel : UsersViewModel
-) {/*
+) {
+    /*
     val ctx = LocalContext.current
 
     val cameraLauncher = rememberCameraLauncher()
@@ -346,34 +349,117 @@ fun ProfileScreen(
         onModify(User(user.id, user.username, user.password, cameraLauncher.capturedImageUri.toString(), user.salt))
     }*/
 
+    //val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-    data class NavigationItem(
-        val title: String,
-        val selectedIcon: ImageVector,
-        val unselectedIcon: ImageVector,
-        val badgeCount: Int? = null,
+    val myScaffold: @Composable () -> Unit = {
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navController = navController,
+                    currentRoute = OutdoorRomagnaRoute.Profile.title,
+                    drawerState = getMyDrawerState(),
+                    scope = scope
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    navController = navController,
+                    user = user
+                )
+            }
+        ) { contentPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Log.d("TAG", "dentro myscaffold")
+                Text(
+                    text = "Nome e Cognome",
+                    fontSize = 25.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                Spacer(modifier = Modifier.size(15.dp))
+
+                Spacer(modifier = Modifier.size(15.dp))
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
+                    onClick = {
+                        //takePicture()
+                    },
+                ) {
+                    Icon(
+                        Icons.Filled.PhotoCamera,
+                        contentDescription = "Camera icon",
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("Scatta foto")
+                }
+
+                Spacer(modifier = Modifier.size(15.dp))
+
+                Row(
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Icon(
+                        Icons.Filled.AccountCircle,
+                        contentDescription = "account image"//stringResource(id = 0)
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(
+                        /*text = if (user?.firstName?.isNotEmpty() == true
+                    && user?.lastName?.isNotEmpty() == true) {
+                    user.firstName + " " + user.lastName
+                } else "Nome Cognome",*/
+                        text = user.username,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.size(15.dp))
+
+                Row(
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Icon(
+                        Icons.Filled.Mail,
+                        contentDescription = "mail"//stringResource(id = 1)
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(
+                        text = "email",
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+
+            }
+        }
+    }
+
+    SideBarMenu(
+        myScaffold = myScaffold
     )
 
-    val items = listOf(
-        NavigationItem(
-            title = "All",
-            selectedIcon = Icons.Filled.Home,
-            unselectedIcon = Icons.Outlined.Home
-        ),
-        NavigationItem(
-            title = "Urgent",
-            selectedIcon = Icons.Filled.Info,
-            unselectedIcon = Icons.Outlined.Info,
-            badgeCount = 45,
-        ),
-        NavigationItem(
-            title = "Settings",
-            selectedIcon = Icons.Filled.Settings,
-            unselectedIcon = Icons.Outlined.Settings,
-        ),
-    )
 
-    Surface(
+    /*Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
@@ -523,11 +609,6 @@ fun ProfileScreen(
                 }
             }
         }
-    }
+    }*/
 }
-
-
-
-
-
 
