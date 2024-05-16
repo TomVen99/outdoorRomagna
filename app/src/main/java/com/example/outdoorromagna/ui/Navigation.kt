@@ -263,8 +263,9 @@ fun OutdoorRomagnaNavGraph(
             composable(route) {
                 val settingsVm = koinViewModel<SettingsViewModel>()
                 SettingsScreen(
-                    settingsVm.state,
-                    settingsVm::setUsername
+                    /*settingsVm.state,
+                    settingsVm::setUsername,*/
+                    settingsVm
                 )
             }
         }

@@ -8,11 +8,47 @@ import androidx.lifecycle.viewModelScope
 import com.example.outdoorromagna.data.repositories.SettingsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class SettingsState(val username: String)
 
+class SettingsViewModel @Inject constructor (
+    private val settingsRepository: SettingsRepository
+) : ViewModel() {
+    val theme = settingsRepository.preferenceFlow
+
+    fun saveTheme(theme:String) {
+        viewModelScope.launch {
+            settingsRepository.saveToDataStore(theme)
+        }
+    }
+}
+/*class SettingsViewModel @Inject constructor (
+    private val settingsRepository: SettingsRepository
+) : ViewModel() {
+    var state by mutableStateOf(SettingsState(""))
+        private set
+    val theme = settingsRepository.preferenceFlow
+
+    fun saveTheme(theme:String) {
+        viewModelScope.launch {
+            settingsRepository.saveToDataStore(theme)
+        }
+    }
+    /*fun setUsername(value: String) {
+        state = SettingsState(value)
+        viewModelScope.launch { settingsRepository.setUsername(value) }
+    }
+
+    init {
+        viewModelScope.launch {
+            state = SettingsState(settingsRepository.username.first())
+        }
+    }*/
+}/*
+
 class SettingsViewModel (
-    private val repository: SettingsRepository
+    private val repository: SettingsRepository_
 ) : ViewModel() {
     var state by mutableStateOf(SettingsState(""))
         private set
@@ -27,4 +63,13 @@ class SettingsViewModel (
             state = SettingsState(repository.username.first())
         }
     }
+
+    val theme = settingsRepository.preferenceFlow
+
+    fun saveTheme(theme:String) {
+        viewModelScope.launch {
+            settingsRepository.saveToDataStore(theme)
+        }
+    }
 }
+*/
