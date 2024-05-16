@@ -20,6 +20,8 @@ import com.example.outdoorromagna.ui.screens.login.Login
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.profile.ProfileScreen
 import com.example.outdoorromagna.ui.screens.profile.ProfileViewModel
+import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
+import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninScreen
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
 import com.example.outdoorromagna.ui.screens.tracks.*
@@ -119,7 +121,24 @@ sealed class OutdoorRomagnaRoute(
         fun buildRoute(travelId: String) = "home/$travelId"
     }
     data object AddTravel : OutdoorRomagnaRoute("travels/add", "Add Travel", "")
-    data object Settings : OutdoorRomagnaRoute("settings", "Settings", "")
+    //data object Settings : OutdoorRomagnaRoute("settings", "Settings", "")
+    data object Settings : OutdoorRomagnaRoute(
+        "settings/{userUsername}",
+        "Settings",
+        "",
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType }
+        )
+    ) {
+        fun buildRoute(userUsername: String): String{
+            setMyCurrentRoute("settings/$userUsername")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
+    }
 
     companion object {
         val routes = setOf(Login, Signin, Home, TravelDetails, AddTravel, Settings, Profile)
@@ -239,7 +258,17 @@ fun OutdoorRomagnaNavGraph(
                     viewModel = usersVm
                 )
             }
-        }/*
+        }
+        with(OutdoorRomagnaRoute.Settings) {
+            composable(route) {
+                val settingsVm = koinViewModel<SettingsViewModel>()
+                SettingsScreen(
+                    settingsVm.state,
+                    settingsVm::setUsername
+                )
+            }
+        }
+        /*
         with(OutdoorRomagnaRoute.TravelDetails) {
             composable(route, arguments) { backStackEntry ->
                 val place = requireNotNull(placesState.places.find {
@@ -260,12 +289,7 @@ fun OutdoorRomagnaNavGraph(
                 )
             }
         }
-        with(OutdoorRomagnaRoute.Settings) {
-            composable(route) {
-                val settingsVm = koinViewModel<SettingsViewModel>()
-                SettingsScreen(settingsVm.state, settingsVm::setUsername)
-            }
-        }*/
+        */
     }
 }
 
