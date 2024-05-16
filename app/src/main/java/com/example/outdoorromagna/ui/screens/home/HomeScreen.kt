@@ -53,6 +53,8 @@ import com.example.camera.utils.PermissionHandler
 import com.example.camera.utils.PermissionStatus
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
+import com.example.outdoorromagna.ui.screens.sideBarMenu.SideBarMenu
+import com.example.outdoorromagna.ui.screens.sideBarMenu.getMyDrawerState
 import com.example.outdoorromagna.utils.LocationService
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -92,136 +94,143 @@ fun HomeScreen(
     actions: HomeScreenActions,
     user : User
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    //val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    Log.d("TAG", "Home" + drawerState.toString())
-    Scaffold(
-        topBar = { TopAppBar(
+    //Log.d("TAG", "Home" + drawerState.toString())
+    val myScaffold: @Composable () -> Unit = {
+        Scaffold(
+            topBar = {
+                TopAppBar(
                     navController = navController,
                     currentRoute = "OutdoorRomagna",
                     actions = actions,
-                    showSearch =  true,
-                    drawerState = drawerState,
-                    scope = scope)
-                 },
-        bottomBar = { BottomAppBar(navController, user) },
-    ){
-        contentPadding ->
-        Column (
-            modifier = Modifier
-                .padding(contentPadding)
-                .fillMaxSize()
-        ){
-            //CreateMap(navController, state, actions)
-            var center by remember {
-                mutableStateOf(
-                    LatLng(
-                        44.1528f.toDouble(),
-                        12.2036f.toDouble()
-                    )
+                    showSearch = true,
+                    drawerState = getMyDrawerState(),
+                    scope = scope
                 )
-            }
-            var placeLocations by remember { mutableStateOf(listOf<PlaceDetails>()) }
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition(center, 10f, 0f, 0f)
-            }
-            val context = LocalContext.current
-            var showButton by remember { mutableStateOf(false) }
-            var showPopUp by remember { mutableStateOf(false) }
-            var markerPosition by remember { mutableStateOf<LatLng?>(null) }
-            val locationService = koinInject<LocationService>()
-
-            val locationPermission = rememberPermission(
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) { status ->
-                when (status) {
-                    PermissionStatus.Granted ->
-                        locationService.requestCurrentLocation()
-
-                    PermissionStatus.Denied ->
-                        actions.setShowLocationPermissionDeniedAlert(true)
-
-                    PermissionStatus.PermanentlyDenied ->
-                        actions.setShowLocationPermissionPermanentlyDeniedSnackbar(true)
-
-                    PermissionStatus.Unknown -> {}
-                }
-            }
-
-            Scaffold { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    MapView(
-                        placeLocations.map { x -> x.latLng },
-                        cameraPositionState,
-                        { showButton = true },
-                        updateMarkerPosition = { markerPosition = it },
-                        navController,
-                        state.mapView
+            },
+            bottomBar = { BottomAppBar(navController, user) },
+        ) { contentPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .fillMaxSize()
+            ) {
+                //CreateMap(navController, state, actions)
+                var center by remember {
+                    mutableStateOf(
+                        LatLng(
+                            44.1528f.toDouble(),
+                            12.2036f.toDouble()
+                        )
                     )
+                }
+                var placeLocations by remember { mutableStateOf(listOf<PlaceDetails>()) }
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition(center, 10f, 0f, 0f)
+                }
+                val context = LocalContext.current
+                var showButton by remember { mutableStateOf(false) }
+                var showPopUp by remember { mutableStateOf(false) }
+                var markerPosition by remember { mutableStateOf<LatLng?>(null) }
+                val locationService = koinInject<LocationService>()
 
-                    FloatingActionButton( //bottone del gps
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        onClick = {
-                            requestLocation(locationPermission, locationService)
-                        },
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = 10.dp, bottom = 30.dp)
-                            .size(48.dp),
-                        shape = CircleShape
-                    ) {
-                        Icon(Icons.Outlined.GpsFixed, "Use localization")
+                val locationPermission = rememberPermission(
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) { status ->
+                    when (status) {
+                        PermissionStatus.Granted ->
+                            locationService.requestCurrentLocation()
+
+                        PermissionStatus.Denied ->
+                            actions.setShowLocationPermissionDeniedAlert(true)
+
+                        PermissionStatus.PermanentlyDenied ->
+                            actions.setShowLocationPermissionPermanentlyDeniedSnackbar(true)
+
+                        PermissionStatus.Unknown -> {}
                     }
+                }
 
-                    FloatingActionButton( //bottone per cambiare la modalità di visualizzazione
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        onClick = {
-                            showPopUp = true
-                        },
+                Scaffold { innerPadding ->
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(end = 10.dp, top = 10.dp)
-                            .size(48.dp),
-                        shape = CircleShape
+                            .fillMaxSize()
+                            .padding(innerPadding)
                     ) {
-                        Icon(Icons.Outlined.Layers, "Choose map type")
-                    }
+                        MapView(
+                            placeLocations.map { x -> x.latLng },
+                            cameraPositionState,
+                            { showButton = true },
+                            updateMarkerPosition = { markerPosition = it },
+                            navController,
+                            state.mapView
+                        )
 
-                    if (showPopUp)
-                        ModalBottomSheet(
-                            onDismissRequest = { showPopUp = false }
+                        FloatingActionButton( //bottone del gps
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            onClick = {
+                                requestLocation(locationPermission, locationService)
+                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(start = 10.dp, bottom = 30.dp)
+                                .size(48.dp),
+                            shape = CircleShape
                         ) {
-                            Column(modifier = Modifier.padding(bottom = 50.dp)) {
-                                mapTypes.forEach { type ->
-                                    Row {
-                                        Button(onClick = {
-                                            actions.setMapView(type.mapTypeId)
-                                            showPopUp = false
-                                        }) {
-                                            Text(text = type.title)
+                            Icon(Icons.Outlined.GpsFixed, "Use localization")
+                        }
+
+                        FloatingActionButton( //bottone per cambiare la modalità di visualizzazione
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            onClick = {
+                                showPopUp = true
+                            },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 10.dp, top = 10.dp)
+                                .size(48.dp),
+                            shape = CircleShape
+                        ) {
+                            Icon(Icons.Outlined.Layers, "Choose map type")
+                        }
+
+                        if (showPopUp)
+                            ModalBottomSheet(
+                                onDismissRequest = { showPopUp = false }
+                            ) {
+                                Column(modifier = Modifier.padding(bottom = 50.dp)) {
+                                    mapTypes.forEach { type ->
+                                        Row {
+                                            Button(onClick = {
+                                                actions.setMapView(type.mapTypeId)
+                                                showPopUp = false
+                                            }) {
+                                                Text(text = type.title)
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    if (state.showSearchBar) {
-                        SearchBar { query ->
-                            performSearch(query = query, context = context) { results ->
-                                if (results.isNotEmpty()) {
-                                    placeLocations = results
-                                    Log.d("tag", results.toString())
-                                    center = results.first().latLng //forse da togliere
-                                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(center, 12f)) //forse da togliere
+                        if (state.showSearchBar) {
+                            SearchBar { query ->
+                                performSearch(query = query, context = context) { results ->
+                                    if (results.isNotEmpty()) {
+                                        placeLocations = results
+                                        Log.d("tag", results.toString())
+                                        center = results.first().latLng //forse da togliere
+                                        cameraPositionState.move(
+                                            CameraUpdateFactory.newLatLngZoom(
+                                                center,
+                                                12f
+                                            )
+                                        ) //forse da togliere
+                                    }
                                 }
                             }
-                        }
-                        /*if(placeLocations.isNotEmpty()) {
+                            /*if(placeLocations.isNotEmpty()) {
                             DropdownMenu(
                                 modifier = Modifier.fillMaxWidth(),
                                 expanded = true,
@@ -231,17 +240,21 @@ fun HomeScreen(
                                 }
                             }
                         }*/
-                    }
+                        }
 
 
-                    /*if (showButton) { //se clicca su un punto della mappa
+                        /*if (showButton) { //se clicca su un punto della mappa
                         addLocation()*/
 
+                    }
                 }
-            }
 
+            }
         }
     }
+    SideBarMenu(
+        myScaffold = myScaffold
+    )
 }
 
 

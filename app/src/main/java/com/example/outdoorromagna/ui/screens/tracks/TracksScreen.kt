@@ -36,6 +36,8 @@ import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.rememberPermission
 import com.example.outdoorromagna.ui.screens.profile.ProfileActions
 import com.example.outdoorromagna.ui.screens.profile.ProfileState
+import com.example.outdoorromagna.ui.screens.sideBarMenu.SideBarMenu
+import com.example.outdoorromagna.ui.screens.sideBarMenu.getMyDrawerState
 import com.example.outdoorromagna.utils.rememberCameraLauncher
 
 
@@ -48,31 +50,37 @@ fun TracksScreen(
     actions: TracksActions,
     viewModel : UsersViewModel
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    /*val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)*/
     val scope = rememberCoroutineScope()
-    Scaffold(
-        topBar = {TopAppBar(
-            navController = navController,
-            currentRoute = "OutdoorRomagna",
-            showSearch =  true,
-            drawerState = drawerState,
-            scope = scope)
-                 },
-        bottomBar = { BottomAppBar(navController, user) },
-    ) { 
-        contentPadding ->
-        Column (
-            modifier = Modifier.padding(contentPadding).fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Track screen",
-                fontSize = 25.sp,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
+    val myScaffold: @Composable () -> Unit = {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navController = navController,
+                    currentRoute = "OutdoorRomagna",
+                    showSearch = true,
+                    drawerState = getMyDrawerState(),
+                    scope = scope
+                )
+            },
+            bottomBar = { BottomAppBar(navController, user) },
+        ) { contentPadding ->
+            Column(
+                modifier = Modifier.padding(contentPadding).fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Track screen",
+                    fontSize = 25.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
 
+        }
     }
+    SideBarMenu(
+        myScaffold = myScaffold
+    )
 }
