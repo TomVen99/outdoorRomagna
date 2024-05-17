@@ -78,7 +78,8 @@ fun TracksScreen(
                     showSearch = false,
                     drawerState = getMyDrawerState(),
                     scope = scope,
-                    showFilter = true
+                    showFilter = true,
+                    trackActions = actions
                 )
             },
             bottomBar = { BottomAppBar(navController, user) },
@@ -118,7 +119,6 @@ fun TracksScreen(
                         },
                     )
                 }
-
                 Log.d("TAG", "showFilterBar " + state.showFilterBar.toString())
                 if (state.showFilterBar) {
                     Column {
