@@ -63,7 +63,6 @@ fun SettingsScreen(
             style = MaterialTheme.typography.bodyLarge
         )
     }*/
-    val themeViewModel = koinViewModel<ThemeViewModel>()
     val scope = rememberCoroutineScope()
     val myScaffold: @Composable () -> Unit = {
         val theme by settingsVm.theme.collectAsState(initial = "")
