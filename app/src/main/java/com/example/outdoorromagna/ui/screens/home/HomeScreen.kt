@@ -29,9 +29,6 @@ import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -229,6 +226,7 @@ fun HomeScreen(
                                     }
                                 }
                             }
+                        Log.d("TAG", state.showSearchBar.toString())
                         if (state.showSearchBar) {
                             Column {
                                 Row {

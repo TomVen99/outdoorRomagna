@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -16,15 +17,19 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,6 +50,7 @@ import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.rememberPermission
+import com.example.outdoorromagna.ui.screens.home.HomeScreenActions
 import com.example.outdoorromagna.ui.screens.profile.ProfileActions
 import com.example.outdoorromagna.ui.screens.profile.ProfileState
 import com.example.outdoorromagna.ui.screens.sideBarMenu.SideBarMenu
@@ -68,9 +75,10 @@ fun TracksScreen(
                 TopAppBar(
                     navController = navController,
                     currentRoute = "OutdoorRomagna",
-                    showSearch = true,
+                    showSearch = false,
                     drawerState = getMyDrawerState(),
-                    scope = scope
+                    scope = scope,
+                    showFilter = true
                 )
             },
             bottomBar = { BottomAppBar(navController, user) },
@@ -83,24 +91,68 @@ fun TracksScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 var isFavorite by remember { mutableStateOf(false) }
+                // qui si dovrà fare richiesta al database
                 val items = listOf("Pippo", "pluto", "paperino")
-                items.forEach() { text ->
+                val trackItems = listOf<TrackItem>(
+                    TrackItem("Pippo", true, "prima pippo"),
+                    TrackItem("pluto", false, "prima pluto"),
+                    TrackItem("paperino", true, "prima paperino"))
+
+                var expanded by remember { mutableStateOf(false) }
+                trackItems.forEach() { item ->
                     ListItem(
-                        headlineContent = { Text(text= text) },
+                        headlineContent = { Text(text= item.title) },
                         supportingContent = {
-                            Text("Secondary text that is long and perhaps goes onto another line")
+                            item.shortDescription?.let { Text(text = it) }
                         },
                         trailingContent = {
                             IconButton(onClick = {
-                                isFavorite = !isFavorite
+                                expanded = true
+                                item.isFavorite = !item.isFavorite
                                 Log.d("TAG", "addFavorite")
                             })
                             {
-                                Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                Icon(imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                     contentDescription = "Add to favorites")
                             }
                         },
                     )
+                }
+
+                Log.d("TAG", "showFilterBar " + state.showFilterBar.toString())
+                if (state.showFilterBar) {
+                    Column {
+                        Row {
+                            FilterBar(actions = actions)
+                            /*var selectedFilter by remember { mutableStateOf("Tutti") }
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                DropdownMenuItem(onClick = {
+                                    selectedFilter = "Opzione 1"
+                                    expanded = false
+                                },
+                                    text = { Text("Opzione 1") }
+                                )
+                                DropdownMenuItem(onClick = {
+                                    selectedFilter = "Opzione 2"
+                                    expanded = false
+                                },
+                                    text = { Text("Opzione 2") }
+                                )
+                                DropdownMenuItem(onClick = {
+                                    selectedFilter = "Opzione 3"
+                                    expanded = false
+                                },
+                                    text = { Text("Opzione 3") }
+                                )
+                            }
+
+                            Log.d("TAG", "Filtro selezionato: $selectedFilter")
+                             */
+                        }
+                    }
                 }
                 /*Text(
                     text = "Track screen",
@@ -118,3 +170,26 @@ fun TracksScreen(
         navController
     )
 }
+        @Composable
+        private fun FilterBar(/*onQueryChanged: (String) -> Unit, */actions: TracksActions) {
+            var text by remember { mutableStateOf("") }
+            Log.d("TAG", "Dentro filter bar")
+            TextField(
+                value = text,
+                onValueChange = {
+                    text = it
+                    //onQueryChanged(it)
+                },
+                label = { Text("Cerca luogo") },
+                modifier = Modifier
+                    .padding(0.dp)
+                    .fillMaxWidth(),
+                singleLine = true,
+                shape = RectangleShape,
+                trailingIcon = {
+                    IconButton(onClick = { actions.setShowFilter(false) }) {
+                        Icon(Icons.Outlined.Close, contentDescription = "Chiudi")
+                    }
+                }
+            )
+        }

@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.update
 
 data class TracksState(
     val username: String = "",
-    val password: String = ""
+    val password: String = "",
+    val showFilterBar: Boolean = false,
 ) {
     val canSubmitUser get() = username.isNotBlank()
     val canSubmitPassword get() = password.isNotBlank()
@@ -17,6 +18,7 @@ data class TracksState(
 interface TracksActions {
     fun setUsername(title: String)
     fun setPassword(date: String)
+    fun setShowFilter(show: Boolean)
 }
 
 class TracksViewModel : ViewModel() {
@@ -29,5 +31,14 @@ class TracksViewModel : ViewModel() {
 
         override fun setPassword(date: String) =
             _state.update { it.copy(password = date) }
+
+        override fun setShowFilter(show: Boolean) =
+            _state.update { it.copy(showFilterBar = show) }
     }
 }
+
+data class TrackItem (
+    val title: String,
+    var isFavorite: Boolean,
+    val shortDescription: String?
+)

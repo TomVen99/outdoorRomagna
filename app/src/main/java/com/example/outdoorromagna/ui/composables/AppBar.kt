@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
@@ -50,6 +51,7 @@ import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.screens.home.HomeScreenActions
+import com.example.outdoorromagna.ui.screens.tracks.TracksActions
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
@@ -78,8 +80,10 @@ fun TopAppBar(
     currentRoute: String,
     showSearch: Boolean = false,
     actions: HomeScreenActions? = null,
+    trackActions: TracksActions? = null,
     drawerState: DrawerState,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    showFilter: Boolean = false
     ) {
 
     /*ModalNavigationDrawer(
@@ -122,6 +126,17 @@ fun TopAppBar(
                     }
                 },
                 actions = {
+                    if (showFilter) {
+                        IconButton(onClick = {
+                            trackActions?.setShowFilter(true)
+                            Log.d("TAG", "cliccato filtro")}
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.FilterList,
+                                contentDescription = "Filtra"
+                            )
+                        }
+                    }
                     if (showSearch) {
                         IconButton(onClick = { actions?.setShowSearchBar(true) }
                         ) {
