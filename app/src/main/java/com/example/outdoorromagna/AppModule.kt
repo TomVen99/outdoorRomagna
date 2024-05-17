@@ -70,6 +70,8 @@ val appModule = module {
 
     viewModel { HomeScreenViewModel() }
 
+    viewModel { TracksViewModel() }
+
     viewModel { SettingsViewModel(get()) }
 
     viewModel { ThemeViewModel(get()) }
@@ -81,8 +83,6 @@ val appModule = module {
     viewModel { SigninViewModel() }
 
     viewModel { ProfileViewModel() }
-
-    viewModel { TracksViewModel() }
 
     //viewModel { PlacesViewModel(get()) }
 }

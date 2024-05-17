@@ -77,6 +77,7 @@ fun TracksScreen(
                     currentRoute = "OutdoorRomagna",
                     showSearch = false,
                     drawerState = getMyDrawerState(),
+                    trackActions = actions,
                     scope = scope,
                     showFilter = true
                 )
