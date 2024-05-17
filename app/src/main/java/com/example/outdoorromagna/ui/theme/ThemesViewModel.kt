@@ -19,7 +19,7 @@ class ThemeViewModel(
         initialValue = ThemeState(Theme.System)
     )
 
-    fun changeTheme(theme: Theme) = viewModelScope.launch {
+    fun changeTheme(theme: String) = viewModelScope.launch {
         repository.setTheme(theme)
     }
 }

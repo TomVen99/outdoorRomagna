@@ -83,8 +83,8 @@ fun ProfileScreen(
     //state: ProfileState,
     //actions: ProfileActions,
     //viewModel : UsersViewModel
-) { val scope = rememberCoroutineScope()
-
+) {
+    val scope = rememberCoroutineScope()
     val myScaffold: @Composable () -> Unit = {
 
         Scaffold(

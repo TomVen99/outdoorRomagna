@@ -23,5 +23,5 @@ class ThemeRepository(
             }
         }
 
-    suspend fun setTheme(theme: Theme) = dataStore.edit { it[THEME_KEY] = theme.toString() }
+    suspend fun setTheme(theme: String) = dataStore.edit { it[THEME_KEY] = theme }
 }

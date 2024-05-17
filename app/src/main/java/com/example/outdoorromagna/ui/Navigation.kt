@@ -154,6 +154,7 @@ fun OutdoorRomagnaNavGraph(
     val usersState by usersVm.state.collectAsStateWithLifecycle()
     var userDefault by remember{ mutableStateOf("null") }
 
+
     NavHost(
         navController = navController,
         startDestination = OutdoorRomagnaRoute.Login.route,
@@ -235,20 +236,10 @@ fun OutdoorRomagnaNavGraph(
             composable(route, arguments) {backStackEntry ->
                 val tracksVm = koinViewModel<TracksViewModel>()
                 val state by tracksVm.state.collectAsStateWithLifecycle()
-                /*var user =  backStackEntry.arguments?.getString("userUsername") ?: userDefault
-                user = if (user == "null") userDefault else user
-                userDefault = user*/
                 val user = requireNotNull(usersState.users.find {
-                    val bundle = backStackEntry.arguments
-                    val keySet = bundle?.keySet()
-                    keySet?.forEach { key ->
-                        val value = bundle.get(key)
-                        Log.d("TAG", "$key: $value")
-                    }
-                    Log.d("TAG", "it username " + it.username)
-                    //it.id == backStackEntry.arguments?.getString("userId")!!.toInt()
                     it.username == backStackEntry.arguments?.getString("userUsername")
                 })
+
                 TracksScreen(
                     navController = navController,
                     user = user,
@@ -260,12 +251,15 @@ fun OutdoorRomagnaNavGraph(
             }
         }
         with(OutdoorRomagnaRoute.Settings) {
-            composable(route) {
+            composable(route) {backStackEntry ->
+                val user = requireNotNull(usersState.users.find {
+                    it.username == backStackEntry.arguments?.getString("userUsername")
+                })
                 val settingsVm = koinViewModel<SettingsViewModel>()
                 SettingsScreen(
-                    /*settingsVm.state,
-                    settingsVm::setUsername,*/
-                    settingsVm
+                    settingsVm,
+                    navController,
+                    user = user
                 )
             }
         }
