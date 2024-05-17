@@ -24,7 +24,8 @@ import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninScreen
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
-import com.example.outdoorromagna.ui.screens.tracks.*
+import com.example.outdoorromagna.ui.screens.tracks.TracksScreen
+import com.example.outdoorromagna.ui.screens.tracks.TracksViewModel
 import org.koin.androidx.compose.koinViewModel
 
 sealed class OutdoorRomagnaRoute(
