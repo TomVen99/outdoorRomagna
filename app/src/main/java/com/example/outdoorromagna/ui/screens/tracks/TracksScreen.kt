@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
@@ -27,8 +31,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -36,11 +46,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,6 +95,7 @@ fun TracksScreen(
                     trackActions = actions,
                     scope = scope,
                     showFilter = true,
+                    filterState = state
                 )
             },
             bottomBar = { BottomAppBar(navController, user) },
@@ -91,7 +107,15 @@ fun TracksScreen(
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var isFavorite by remember { mutableStateOf(false) }
+                Log.d("TAG", "showFilterBar " + state.showFilterBar.toString())
+                if (state.showFilterBar) {
+                    Column {
+                        Row {
+                            FilterBar(actions = actions)
+
+                        }
+                    }
+                }
                 // qui si dovrà fare richiesta al database
                 val items = listOf("Pippo", "pluto", "paperino")
                 val trackItems = listOf<TrackItem>(
@@ -99,7 +123,6 @@ fun TracksScreen(
                     TrackItem("pluto", false, "prima pluto"),
                     TrackItem("paperino", true, "prima paperino"))
 
-                var expanded by remember { mutableStateOf(false) }
                 trackItems.forEach() { item ->
                     ListItem(
                         headlineContent = { Text(text= item.title) },
@@ -108,7 +131,6 @@ fun TracksScreen(
                         },
                         trailingContent = {
                             IconButton(onClick = {
-                                expanded = true
                                 item.isFavorite = !item.isFavorite
                                 Log.d("TAG", "addFavorite")
                             })
@@ -118,41 +140,6 @@ fun TracksScreen(
                             }
                         },
                     )
-                }
-                Log.d("TAG", "showFilterBar " + state.showFilterBar.toString())
-                if (state.showFilterBar) {
-                    Column {
-                        Row {
-                            FilterBar(actions = actions)
-                            /*var selectedFilter by remember { mutableStateOf("Tutti") }
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }
-                            ) {
-                                DropdownMenuItem(onClick = {
-                                    selectedFilter = "Opzione 1"
-                                    expanded = false
-                                },
-                                    text = { Text("Opzione 1") }
-                                )
-                                DropdownMenuItem(onClick = {
-                                    selectedFilter = "Opzione 2"
-                                    expanded = false
-                                },
-                                    text = { Text("Opzione 2") }
-                                )
-                                DropdownMenuItem(onClick = {
-                                    selectedFilter = "Opzione 3"
-                                    expanded = false
-                                },
-                                    text = { Text("Opzione 3") }
-                                )
-                            }
-
-                            Log.d("TAG", "Filtro selezionato: $selectedFilter")
-                             */
-                        }
-                    }
                 }
                 /*Text(
                     text = "Track screen",
@@ -170,26 +157,42 @@ fun TracksScreen(
         navController
     )
 }
-        @Composable
-        private fun FilterBar(/*onQueryChanged: (String) -> Unit, */actions: TracksActions) {
-            var text by remember { mutableStateOf("") }
-            Log.d("TAG", "Dentro filter bar")
-            TextField(
-                value = text,
-                onValueChange = {
-                    text = it
-                    //onQueryChanged(it)
-                },
-                label = { Text("Cerca luogo") },
-                modifier = Modifier
-                    .padding(0.dp)
-                    .fillMaxWidth(),
-                singleLine = true,
-                shape = RectangleShape,
-                trailingIcon = {
-                    IconButton(onClick = { actions.setShowFilter(false) }) {
-                        Icon(Icons.Outlined.Close, contentDescription = "Chiudi")
-                    }
-                }
+@Composable
+private fun FilterBar(/*onQueryChanged: (String) -> Unit, */actions: TracksActions) {
+    /*var text by remember { mutableStateOf("") }*/
+    Log.d("TAG", "Dentro filter bar")
+    /*var selectedFilter by remember { mutableStateOf("Tutti") }*/
+    val options = listOf("Tuoi percorsi", "Tutti i percorsi", "Percorsi preferiti")
+    val scrollState = rememberScrollState()
+    var selectedItemIndex by rememberSaveable {
+        mutableStateOf(0)
+    }
+    NavigationBar(
+        Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .horizontalScroll(scrollState)
+            .padding(vertical = 1.dp),
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+    ) {
+        options.forEachIndexed { index, text ->
+            NavigationBarItem(
+                modifier = Modifier.padding(horizontal = 2.dp),
+                onClick = {
+                    Log.d("TAG", "cliccato " + text)
+                    selectedItemIndex = index
+                    //actions.setShowFilter(false)
+                          },
+                icon = { /*TODO*/ },
+                selected = index == selectedItemIndex,
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    indicatorColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
+                label = {Text(text = text)}
             )
         }
+    }
+}
+

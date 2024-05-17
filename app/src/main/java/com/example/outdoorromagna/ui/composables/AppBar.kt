@@ -52,6 +52,7 @@ import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.screens.home.HomeScreenActions
 import com.example.outdoorromagna.ui.screens.tracks.TracksActions
+import com.example.outdoorromagna.ui.screens.tracks.TracksState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
@@ -81,6 +82,7 @@ fun TopAppBar(
     showSearch: Boolean = false,
     actions: HomeScreenActions? = null,
     trackActions: TracksActions? = null,
+    filterState: TracksState? = null,
     drawerState: DrawerState,
     scope: CoroutineScope,
     showFilter: Boolean = false
@@ -128,8 +130,12 @@ fun TopAppBar(
                 actions = {
                     if (showFilter) {
                         IconButton(onClick = {
-                            trackActions?.setShowFilter(true)
-                            Log.d("TAG", "cliccato filtro")}
+                            if(filterState?.isShowFilterEnabled == true){
+                                trackActions?.setShowFilter(false)
+                            } else {
+                                trackActions?.setShowFilter(true)
+                                Log.d("TAG", "cliccato filtro")}
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.FilterList,

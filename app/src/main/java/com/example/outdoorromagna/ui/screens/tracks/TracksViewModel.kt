@@ -13,12 +13,15 @@ data class TracksState(
     val canSubmitUser get() = username.isNotBlank()
     val canSubmitPassword get() = password.isNotBlank()
 
+    val isShowFilterEnabled get() = showFilterBar
+
 }
 
 interface TracksActions {
     fun setUsername(title: String)
     fun setPassword(date: String)
     fun setShowFilter(show: Boolean)
+    /*fun isShowFilterEnabled(): Boolean*/
 }
 
 class TracksViewModel : ViewModel() {
@@ -34,6 +37,11 @@ class TracksViewModel : ViewModel() {
 
         override fun setShowFilter(show: Boolean) =
             _state.update { it.copy(showFilterBar = show) }
+
+        /*override fun isShowFilterEnabled(): Boolean {
+            return isShowFilterStateEnabled()
+        }*/
+
     }
 }
 
