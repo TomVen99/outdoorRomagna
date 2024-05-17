@@ -80,7 +80,6 @@ fun TracksScreen(
                     trackActions = actions,
                     scope = scope,
                     showFilter = true,
-                    trackActions = actions
                 )
             },
             bottomBar = { BottomAppBar(navController, user) },
