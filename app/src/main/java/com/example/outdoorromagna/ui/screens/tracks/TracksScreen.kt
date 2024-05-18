@@ -3,6 +3,7 @@ package com.example.outdoorromagna.ui.screens.tracks
 import android.Manifest
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.widget.ButtonBarLayout
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -65,6 +66,7 @@ import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.rememberPermission
+import com.example.outdoorromagna.ui.screens.filterBar.FilterBar
 import com.example.outdoorromagna.ui.screens.home.HomeScreenActions
 import com.example.outdoorromagna.ui.screens.profile.ProfileActions
 import com.example.outdoorromagna.ui.screens.profile.ProfileState
@@ -141,13 +143,6 @@ fun TracksScreen(
                         },
                     )
                 }
-                /*Text(
-                    text = "Track screen",
-                    fontSize = 25.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
-                )*/
             }
 
         }
@@ -156,43 +151,5 @@ fun TracksScreen(
         myScaffold = myScaffold,
         navController
     )
-}
-@Composable
-private fun FilterBar(/*onQueryChanged: (String) -> Unit, */actions: TracksActions) {
-    /*var text by remember { mutableStateOf("") }*/
-    Log.d("TAG", "Dentro filter bar")
-    /*var selectedFilter by remember { mutableStateOf("Tutti") }*/
-    val options = listOf("Tuoi percorsi", "Tutti i percorsi", "Percorsi preferiti")
-    val scrollState = rememberScrollState()
-    var selectedItemIndex by rememberSaveable {
-        mutableStateOf(0)
-    }
-    NavigationBar(
-        Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .horizontalScroll(scrollState)
-            .padding(vertical = 1.dp),
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-    ) {
-        options.forEachIndexed { index, text ->
-            NavigationBarItem(
-                modifier = Modifier.padding(horizontal = 2.dp),
-                onClick = {
-                    Log.d("TAG", "cliccato " + text)
-                    selectedItemIndex = index
-                    //actions.setShowFilter(false)
-                          },
-                icon = { /*TODO*/ },
-                selected = index == selectedItemIndex,
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    indicatorColor = MaterialTheme.colorScheme.onPrimaryContainer
-                ),
-                label = {Text(text = text)}
-            )
-        }
-    }
 }
 
