@@ -8,7 +8,9 @@ import com.example.outdoorromagna.data.remote.OSMDataSource
 import com.example.outdoorromagna.data.repositories.PlacesRepository
 import com.example.outdoorromagna.data.repositories.SettingsRepository
 import com.example.outdoorromagna.data.repositories.ThemeRepository
+import com.example.outdoorromagna.data.repositories.TracksRepository
 import com.example.outdoorromagna.data.repositories.UsersRepository
+import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
@@ -59,11 +61,18 @@ val appModule = module {
 
     single { ThemeRepository(get()) }
 
-    single { UsersRepository(get<OutdoorRomagnaDatabase>().placesDAO()) }
+    single { UsersRepository(get<OutdoorRomagnaDatabase>().usersDAO()) }
+
+    single {
+        TracksRepository(
+            get<OutdoorRomagnaDatabase>().tracksDAO(),
+            get<Context>().applicationContext.contentResolver
+        )
+    }
 
     single {
         PlacesRepository(
-            get<OutdoorRomagnaDatabase>().placesDAO(),
+            get<OutdoorRomagnaDatabase>().usersDAO(),
             get<Context>().applicationContext.contentResolver
         )
     }
@@ -77,6 +86,8 @@ val appModule = module {
     viewModel { ThemeViewModel(get()) }
 
     viewModel { UsersViewModel(get()) }
+
+    viewModel { TracksDbViewModel(get()) }
 
     viewModel { LoginViewModel() }
 

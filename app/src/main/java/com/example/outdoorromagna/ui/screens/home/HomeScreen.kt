@@ -2,7 +2,6 @@ package com.example.outdoorromagna.ui.screens.home
 
 import android.Manifest
 import android.content.Context
-import android.content.res.Resources.Theme
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.GpsFixed
@@ -36,12 +33,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -57,12 +51,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
-import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
-import com.example.outdoorromagna.ui.UsersViewModel
-import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
-import com.example.outdoorromagna.ui.composables.Size
 import com.example.camera.utils.PermissionHandler
 import com.example.camera.utils.PermissionStatus
+import com.example.outdoorromagna.data.repositories.generateTestTracks
+import com.example.outdoorromagna.ui.TracksDbViewModel
+import com.example.outdoorromagna.ui.TracksState
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.screens.sideBarMenu.SideBarMenu
@@ -73,7 +66,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
@@ -82,9 +74,9 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import org.koin.compose.koinInject
 
@@ -104,11 +96,19 @@ fun HomeScreen(
     navController: NavHostController,
     state: HomeScreenState,
     actions: HomeScreenActions,
-    user : User
+    user : User,
+    tracksDbVm: TracksDbViewModel,
+    tracksState: TracksState
 ) {
-    //val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    //Log.d("TAG", "Home" + drawerState.toString())
+
+    /**PER INSERIRE I TRACK DI TEST*/
+    if (tracksState.tracks.isEmpty()) {
+        val testTracks = generateTestTracks()
+        testTracks.forEach { testTrack ->
+            tracksDbVm.addTrack(testTrack)
+        }
+    }
     val myScaffold: @Composable () -> Unit = {
         Scaffold(
             topBar = {
@@ -137,7 +137,7 @@ fun HomeScreen(
                         )
                     )
                 }
-                var placeLocations by remember { mutableStateOf(listOf<PlaceDetails>()) }
+                var placeSearch by remember { mutableStateOf(listOf<PlaceDetails>()) }
                 val cameraPositionState = rememberCameraPositionState {
                     position = CameraPosition(center, 10f, 0f, 0f)
                 }
@@ -171,12 +171,13 @@ fun HomeScreen(
                             .padding(innerPadding)
                     ) {
                         MapView(
-                            placeLocations.map { x -> x.latLng },
+                            placeSearch.map { x -> x.latLng },
                             cameraPositionState,
                             { showButton = true },
                             updateMarkerPosition = { markerPosition = it },
                             navController,
-                            state.mapView
+                            state.mapView,
+                            tracksState
                         )
 
                         FloatingActionButton( //bottone del gps
@@ -226,31 +227,37 @@ fun HomeScreen(
                                     }
                                 }
                             }
-                        Log.d("TAG", state.showSearchBar.toString())
                         if (state.showSearchBar) {
                             Column {
                                 Row {
                                     SearchBar(actions = actions, onQueryChanged =  { query ->
                                             performSearch(query = query, context = context) { results ->
                                                 if (results.isNotEmpty()) {
-                                                    placeLocations = results
+                                                    placeSearch = results
                                                     Log.d("tag", results.toString())
-
                                                 }
                                             }
                                         }
                                     )
                                 }
-                                if(placeLocations.isNotEmpty()) {
-                                    placeLocations.forEach { place ->
+                                if(placeSearch.isNotEmpty()) {
+                                    placeSearch.forEach { place ->
                                         Row(
                                             modifier = Modifier
                                                 .padding(vertical = 0.dp)
                                                 .fillMaxWidth()
                                                 .background(MaterialTheme.colorScheme.background)
                                                 .border(
-                                                    BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
-                                                    shape = RoundedCornerShape(0.dp,0.dp,4.dp,4.dp)
+                                                    BorderStroke(
+                                                        1.dp,
+                                                        MaterialTheme.colorScheme.onBackground
+                                                    ),
+                                                    shape = RoundedCornerShape(
+                                                        0.dp,
+                                                        0.dp,
+                                                        4.dp,
+                                                        4.dp
+                                                    )
                                                 )
                                         ) {
                                             TextButton(
@@ -259,7 +266,7 @@ fun HomeScreen(
                                                     cameraPositionState
                                                         .move(CameraUpdateFactory.newLatLngZoom(center,12f))
                                                     actions.setShowSearchBar(false)
-                                                    placeLocations = listOf()
+                                                    placeSearch = listOf()
                                                 },
                                                 colors = ButtonDefaults.textButtonColors(
                                                     containerColor = MaterialTheme.colorScheme.background,
@@ -328,7 +335,8 @@ fun MapView(
     onMarkerClick: () -> Unit,
     updateMarkerPosition: (LatLng?) -> Unit,
     navController: NavHostController,
-    mapView: MapType
+    mapView: MapType,
+    tracksState: TracksState
 ) {
     var markerPosition by remember { mutableStateOf<LatLng?>(null) }
     GoogleMap(
@@ -340,6 +348,7 @@ fun MapView(
         },
         properties = MapProperties(mapType = mapView)
     ) {
+
         // Visualizza il marker nella posizione memorizzata
         markerPosition?.let {
             Marker(
@@ -349,11 +358,33 @@ fun MapView(
             onMarkerClick()
         }
 
-        // Visualizza tutti i markers delle posizioni di ricerca
-        placeLocations.forEach { location ->
-            Marker(state = MarkerState(position = location))
+        /**PROVA DELL'ONCLICK DI UN PERCORSO*/
+        var showPoly by remember {mutableStateOf(false)}
+        Marker(state = MarkerState(position = LatLng(37.772, -122.23)),
+            onClick = {
+                showPoly = true
+                true
+            }
+        )
+
+        /**DA TOGLIERE*/
+        tracksState.tracks.forEach { location ->
+            Marker(state = MarkerState(position = LatLng(location.startLat, location.startLng)))
         }
 
+        /**ESEMPIO DI UNA POLYLINE, LA LISTA DI PUNTI SARA POI RELATIVA LA MARKER CLICCATO  */
+        if(showPoly) {
+            val flightPlanCoordinates = listOf(
+                LatLng(37.772, -122.214),
+                LatLng( 21.291, -157.821),
+                LatLng( -18.142, 178.431),
+                LatLng( -27.467, 153.027),
+            )
+            val poly = Polyline(
+                points = flightPlanCoordinates,
+                color = Color.Red
+            )
+        }
         /*state.markers.forEach{marker ->
             Marker(
                 state = MarkerState(LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())),
@@ -373,6 +404,9 @@ fun MapView(
             )
         }*/
     }
+
+
+
 }
 
 

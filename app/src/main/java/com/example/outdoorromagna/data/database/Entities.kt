@@ -3,6 +3,7 @@ package com.example.outdoorromagna.data.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.android.gms.maps.model.LatLng
 
 @Entity
 data class User (
@@ -45,7 +46,7 @@ data class User (
 }
 
 @Entity
-data class Marker (
+data class Track (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
@@ -59,13 +60,16 @@ data class Marker (
     var city: String,
 
     @ColumnInfo
-    var province: String,
+    var startLat: Double,
 
     @ColumnInfo
-    var latitude: Float,
+    var startLng: Double,
 
     @ColumnInfo
-    var longitude: Float
+    var trackPositions: List<LatLng>,
+
+    @ColumnInfo
+    val imageUri: String?
 )
 
 @Entity(primaryKeys = ["userId", "markerId"])

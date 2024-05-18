@@ -4,11 +4,10 @@ import android.content.ContentResolver
 import android.net.Uri
 import com.example.camera.utils.saveImageToStorage
 import com.example.outdoorromagna.data.database.Place
-import com.example.outdoorromagna.data.database.PlacesDAO
-import kotlinx.coroutines.flow.Flow
+import com.example.outdoorromagna.data.database.UsersDAO
 
 class PlacesRepository(
-    private val placesDAO: PlacesDAO,
+    private val usersDAO: UsersDAO,
     private val contentResolver: ContentResolver
 ) {
     //val places: Flow<List<Place>> = placesDAO.getAllPlaces()
@@ -20,7 +19,6 @@ class PlacesRepository(
                 contentResolver,
                 "TravelDiary_Place${place.name}"
             )
-            //placesDAO.upsert(place.copy(imageUri = imageUri.toString()))
         } else {
             //placesDAO.upsert(place)
         }

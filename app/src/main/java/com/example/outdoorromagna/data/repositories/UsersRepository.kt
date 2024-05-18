@@ -1,16 +1,15 @@
 package com.example.outdoorromagna.data.repositories
 
-import com.example.outdoorromagna.data.database.PlacesDAO
+import com.example.outdoorromagna.data.database.UsersDAO
 import com.example.outdoorromagna.data.database.User
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
-class UsersRepository(private val placesDAO: PlacesDAO) {
-    val users: Flow<List<User>> = placesDAO.getAllUser()
+class UsersRepository(private val usersDAO: UsersDAO) {
+    val users: Flow<List<User>> = usersDAO.getAllUser()
 
-    suspend fun upsert(user: User) = placesDAO.upsertUser(user)
+    suspend fun upsert(user: User) = usersDAO.upsertUser(user)
 
-    suspend fun delete(user: User) = placesDAO.deleteUser(user)
+    suspend fun delete(user: User) = usersDAO.deleteUser(user)
 
-    fun getUser(user: String) = placesDAO.getUser(user)
+    fun getUser(user: String) = usersDAO.getUser(user)
 }

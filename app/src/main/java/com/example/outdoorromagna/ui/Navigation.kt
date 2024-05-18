@@ -155,6 +155,8 @@ fun OutdoorRomagnaNavGraph(
     val usersState by usersVm.state.collectAsStateWithLifecycle()
     var userDefault by remember{ mutableStateOf("null") }
 
+    val tracksDbVm = koinViewModel<TracksDbViewModel>()
+    val tracksDbState by tracksDbVm.state.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
@@ -208,7 +210,9 @@ fun OutdoorRomagnaNavGraph(
                     navController,
                     state,
                     homeScreenVm.actions,
-                    user
+                    user,
+                    tracksDbVm,
+                    tracksDbState
                 )
             }
         }

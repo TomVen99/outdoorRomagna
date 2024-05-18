@@ -2,8 +2,12 @@ package com.example.outdoorromagna.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
-@Database(entities = [User::class, Marker::class, Favorite::class], version = 1)
+@Database(entities = [User::class, Track::class, Favorite::class], version = 3)
+@TypeConverters(LatLngListConverter::class)
 abstract class OutdoorRomagnaDatabase : RoomDatabase() {
-    abstract fun placesDAO(): PlacesDAO
+    abstract fun usersDAO(): UsersDAO
+
+    abstract fun tracksDAO(): TracksDAO
 }

@@ -2,6 +2,7 @@ package com.example.outdoorromagna.ui.screens.home
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.example.outdoorromagna.data.repositories.TracksRepository
 import com.google.maps.android.compose.MapType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,6 @@ data class HomeScreenState(
     val imageUri: Uri = Uri.EMPTY,
     val mapView: MapType = MapType.NORMAL,
     val showSearchBar: Boolean = false,
-
 
     val showLocationDisabledAlert: Boolean = false,
     val showLocationPermissionDeniedAlert: Boolean = false,
@@ -46,7 +46,7 @@ interface HomeScreenActions {
 
 }
 
-class HomeScreenViewModel : ViewModel() {
+class HomeScreenViewModel() : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state = _state.asStateFlow()
 
