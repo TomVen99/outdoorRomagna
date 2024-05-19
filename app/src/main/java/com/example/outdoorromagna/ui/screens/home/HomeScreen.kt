@@ -54,18 +54,16 @@ import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.camera.utils.PermissionHandler
 import com.example.camera.utils.PermissionStatus
-import com.example.outdoorromagna.data.repositories.generateTestTracks
 import com.example.outdoorromagna.ui.GroupedTracksState
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbViewModel
-import com.example.outdoorromagna.ui.TracksState
+import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
 import com.example.outdoorromagna.utils.LocationService
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
@@ -102,19 +100,13 @@ fun HomeScreen(
     actions: HomeScreenActions,
     user : User,
     tracksDbVm: TracksDbViewModel,
-    tracksState: TracksState,
+    tracksDbState: TracksDbState,
     groupedTracksState: GroupedTracksState
 ) {
     val scope = rememberCoroutineScope()
     Log.d("grouped", groupedTracksState.toString())
-    Log.d("Tutti i track", tracksState.tracks.map { track -> track.id }.toString())
-    /**PER INSERIRE I TRACK DI TEST*/
-    /*if (tracksState.tracks.isEmpty()) {
-        val testTracks = generateTestTracks()
-        testTracks.forEach { testTrack ->
-            tracksDbVm.addTrack(testTrack)
-        }
-    }*/
+    Log.d("Tutti i track", tracksDbState.tracks.map { track -> track.id }.toString())
+
     /**PER ELIMINARE TUTTI I TRACK*/
     /*tracksState.tracks.forEach { track ->
         tracksDbVm.deleteTrack(track)
@@ -185,7 +177,7 @@ fun HomeScreen(
                             navController,
                             user,
                             state.mapView,
-                            tracksState,
+                            tracksDbState,
                             groupedTracksState,
                             tracksDbVm
                         )
@@ -209,6 +201,13 @@ fun HomeScreen(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             onClick = {
+                                /**PER INSERIRE I TRACK DI TEST*/
+                                /*if (tracksState.tracks.isEmpty()) {
+                                    val testTracks = generateTestTracks()
+                                    testTracks.forEach { testTrack ->
+                                        tracksDbVm.addTrack(testTrack)
+                                    }
+                                }*/
                                 showPopUp = true
                             },
                             modifier = Modifier
@@ -346,7 +345,7 @@ fun MapView(
     navController: NavHostController,
     user : User,
     mapView: MapType,
-    tracksState: TracksState,
+    tracksDbState: TracksDbState,
     groupedTracksState: GroupedTracksState,
     tracksDbVm: TracksDbViewModel
 ) {

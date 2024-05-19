@@ -258,6 +258,8 @@ fun OutdoorRomagnaNavGraph(
                     it.username == backStackEntry.arguments?.getString("userUsername")
                 })
                 val isSpecificTrack = backStackEntry.arguments?.getBoolean("specificTrack") ?: false
+                if (!isSpecificTrack)
+                    tracksDbVm.resetSpecificTrackInRange()
                 TracksScreen(
                     navController = navController,
                     user = user,
@@ -265,7 +267,7 @@ fun OutdoorRomagnaNavGraph(
                     actions = tracksVm.actions,
                     usersViewModel = usersVm,
                     tracksDbVm = tracksDbVm,
-                    isSpecificTrack = isSpecificTrack
+                    tracksDbState = tracksDbState
                 )
             }
         }

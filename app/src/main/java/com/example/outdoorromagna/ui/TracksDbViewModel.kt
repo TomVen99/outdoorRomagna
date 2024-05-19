@@ -15,20 +15,20 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-data class TracksState(val tracks: List<Track>)
+data class TracksDbState(val tracks: List<Track>)
 
 data class GroupedTracksState(val tracks: List<GroupedTrack>)
 
 class TracksDbViewModel(
     private val repository: TracksRepository
 ) : ViewModel() {
-    val state = repository.tracks.map { TracksState(tracks = it) }.stateIn(
+    val state = repository.tracks.map { TracksDbState(tracks = it) }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = TracksState(emptyList())
+        initialValue = TracksDbState(emptyList())
     )
-    private val _tracksList = MutableLiveData<List<Track>>()
-    val tracksList: LiveData<List<Track>> = _tracksList
+    private val _specificTracksList = MutableLiveData<List<Track>?>()
+    val specificTracksList: LiveData<List<Track>?> = _specificTracksList
 
     val groupedTracksState = repository.groupedTracks.map { GroupedTracksState(tracks = it) }.stateIn(
         scope = viewModelScope,
@@ -55,8 +55,12 @@ class TracksDbViewModel(
     fun getTracksInRange(startLat: Double, startLng: Double) {
         viewModelScope.launch {
             val tracks = repository.getTracksInRange(startLat, startLng)
-            _tracksList.value = tracks
+            _specificTracksList.value = tracks
         }
+    }
+
+    fun resetSpecificTrackInRange() {
+        _specificTracksList.value = null
     }
 
 
