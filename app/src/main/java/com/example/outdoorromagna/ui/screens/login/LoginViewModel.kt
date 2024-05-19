@@ -36,7 +36,10 @@ data class LoginState(
     fun toUser() = User(
         username = username,
         password = password,
-        urlProfilePicture = "default.png",
+        urlProfilePicture = "",
+        name = "",
+        surname = "",
+        mail = "",
         salt = salt
     )
 

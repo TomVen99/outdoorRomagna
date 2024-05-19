@@ -59,11 +59,11 @@ class UsersViewModel(
         }
     }
 
-    fun login(user:User) {
+    fun login(username: String, password: String/*user:User*/) {
         viewModelScope.launch {
-            val userMatch = repository.getUser(user.username).firstOrNull()
+            val userMatch = repository.getUser(/*user.*/username).firstOrNull()
             if (userMatch != null ) {
-                _loginResult.value = userMatch.password == hashPassword(user.password, userMatch.salt)
+                _loginResult.value = userMatch.password == hashPassword(/*user.*/password, userMatch.salt)
                 _loginLog.value = if (_loginResult.value!!) "" else "errore: Password sbagliata"
             } else {
                 _loginResult.value = false
@@ -71,12 +71,6 @@ class UsersViewModel(
             }
         }
     }
-
-    fun logout() {
-        Log.d("TAG", "Logout")
-
-    }
-
     fun resetValues() {
         _signinResult.value = null
         _loginResult.value = null

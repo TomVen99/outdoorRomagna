@@ -8,9 +8,18 @@ import kotlinx.coroutines.flow.update
 data class SigninState(
     val username: String = "",
     val password: String = "",
+    val name: String = "",
+    val surname: String = "",
+    val mail: String = "",
     val salt: ByteArray = ByteArray(800)
 ) {
-    val canSubmit get() = username.isNotBlank() && password.isNotBlank()
+    val canSubmit get() =
+        username.isNotBlank() &&
+            password.isNotBlank() &&
+                name.isNotBlank() &&
+                surname.isNotBlank() &&
+                mail.isNotBlank()
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -20,6 +29,9 @@ data class SigninState(
 
         if (username != other.username) return false
         if (password != other.password) return false
+        if (name != other.name) return false
+        if (surname != other.surname) return false
+        if (mail != other.mail) return false
         return salt.contentEquals(other.salt)
     }
 
@@ -34,6 +46,9 @@ data class SigninState(
 interface SigninActions {
     fun setUsername(username: String)
     fun setPassword(password: String)
+    fun setFirstName(firstName: String)
+    fun setSurname(surname: String)
+    fun setMail(mail: String)
     fun setSalt(byteArray: ByteArray)
 }
 
@@ -47,6 +62,18 @@ class SigninViewModel : ViewModel() {
 
         override fun setPassword(password: String) =
             _state.update { it.copy(password = password) }
+
+        override fun setFirstName(firstName: String) =
+            _state.update { it.copy(name = firstName) }
+
+
+        override fun setSurname(surname: String) =
+            _state.update { it.copy(surname = surname) }
+
+
+        override fun setMail(mail: String) =
+            _state.update { it.copy(mail = mail) }
+
 
         override fun setSalt(byteArray: ByteArray) {
             _state.update { it.copy(salt = byteArray) }

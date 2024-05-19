@@ -171,7 +171,7 @@ fun OutdoorRomagnaNavGraph(
                 Login(
                     state,
                     actions = loginVm.actions,
-                    onSubmit = {usersVm.login(state.toUser())},
+                    onSubmit = {usersVm.login(/*state.toUser()*/state.username, state.password)},
                     navController,
                     usersVm
                 )

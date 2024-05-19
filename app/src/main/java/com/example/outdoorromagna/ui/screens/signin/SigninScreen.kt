@@ -5,17 +5,13 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.DoneOutline
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.runtime.getValue
@@ -24,14 +20,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,8 +46,6 @@ import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
 import com.example.outdoorromagna.ui.composables.Size
-import com.example.outdoorromagna.ui.screens.login.LoginActions
-import com.example.outdoorromagna.ui.screens.login.PasswordTextField
 
 @Composable
 fun SigninScreen(
@@ -89,15 +81,7 @@ fun SigninScreen(
                     label = { Text("Username") },
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                /*OutlinedTextField(
-                    value = state.password,
-                    onValueChange = actions::setPassword,
-                    label = { Text("Password") },
-                    modifier = Modifier.fillMaxWidth()
-                )*/
                 var pwd by remember { mutableStateOf(state.password) }
-
                 PasswordTextField(
                     password = pwd,
                     onPasswordChange = { newPassword -> pwd = newPassword},
@@ -105,6 +89,25 @@ fun SigninScreen(
                     label = "Password",
                     actions)
 
+                OutlinedTextField(
+                    value = state.name,
+                    onValueChange = actions::setFirstName,
+                    label = { Text("Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = state.surname,
+                    onValueChange = actions::setSurname,
+                    label = { Text("Surname") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = state.mail,
+                    onValueChange = actions::setMail,
+                    label = { Text("Mail") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                )
                 Spacer(Modifier.size(24.dp))
                 Button(
                     onClick = {
@@ -113,7 +116,16 @@ fun SigninScreen(
                         Log.d("TAG", "bottone signin cliccato 2")
                         val salt = viewModel.generateSalt()
                         val password = viewModel.hashPassword(state.password, salt)
-                        onSubmit(User(username = state.username, password = password, salt = salt, urlProfilePicture = ""))
+                        onSubmit(
+                            User(
+                            username = state.username,
+                            password = password,
+                                salt = salt,
+                                urlProfilePicture = "",
+                                name = state.name,
+                                surname = state.surname,
+                                mail = state.mail
+                            ))
                         Log.d("TAG", "bottone signin cliccato 3")
                     },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding,

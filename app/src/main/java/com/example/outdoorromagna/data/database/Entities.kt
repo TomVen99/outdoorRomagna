@@ -17,6 +17,15 @@ data class User (
     var password: String,
 
     @ColumnInfo
+    var name: String,
+
+    @ColumnInfo
+    var surname: String,
+
+    @ColumnInfo
+    var mail: String,
+
+    @ColumnInfo
     var urlProfilePicture : String?,
 
     @ColumnInfo
