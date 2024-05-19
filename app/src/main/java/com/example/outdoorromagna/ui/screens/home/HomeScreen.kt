@@ -1,6 +1,7 @@
 package com.example.outdoorromagna.ui.screens.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -53,16 +54,16 @@ import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.camera.utils.PermissionHandler
 import com.example.camera.utils.PermissionStatus
-import com.example.outdoorromagna.data.repositories.generateTestTracks
+import com.example.outdoorromagna.ui.GroupedTracksState
+import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbViewModel
-import com.example.outdoorromagna.ui.TracksState
+import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
 import com.example.outdoorromagna.utils.LocationService
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
@@ -78,6 +79,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.DelicateCoroutinesApi
 import org.koin.compose.koinInject
 
 data class MapTypes(val mapTypeId: MapType, val title: String, val url: String)
@@ -98,17 +100,17 @@ fun HomeScreen(
     actions: HomeScreenActions,
     user : User,
     tracksDbVm: TracksDbViewModel,
-    tracksState: TracksState
+    tracksDbState: TracksDbState,
+    groupedTracksState: GroupedTracksState
 ) {
     val scope = rememberCoroutineScope()
+    Log.d("grouped", groupedTracksState.toString())
+    Log.d("Tutti i track", tracksDbState.tracks.map { track -> track.id }.toString())
 
-    /**PER INSERIRE I TRACK DI TEST*/
-    if (tracksState.tracks.isEmpty()) {
-        val testTracks = generateTestTracks()
-        testTracks.forEach { testTrack ->
-            tracksDbVm.addTrack(testTrack)
-        }
-    }
+    /**PER ELIMINARE TUTTI I TRACK*/
+    /*tracksState.tracks.forEach { track ->
+        tracksDbVm.deleteTrack(track)
+    }*/
     val myScaffold: @Composable () -> Unit = {
         Scaffold(
             topBar = {
@@ -171,13 +173,13 @@ fun HomeScreen(
                             .padding(innerPadding)
                     ) {
                         MapView(
-                            placeSearch.map { x -> x.latLng },
                             cameraPositionState,
-                            { showButton = true },
-                            updateMarkerPosition = { markerPosition = it },
                             navController,
+                            user,
                             state.mapView,
-                            tracksState
+                            tracksDbState,
+                            groupedTracksState,
+                            tracksDbVm
                         )
 
                         FloatingActionButton( //bottone del gps
@@ -199,6 +201,13 @@ fun HomeScreen(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             onClick = {
+                                /**PER INSERIRE I TRACK DI TEST*/
+                                /*if (tracksState.tracks.isEmpty()) {
+                                    val testTracks = generateTestTracks()
+                                    testTracks.forEach { testTrack ->
+                                        tracksDbVm.addTrack(testTrack)
+                                    }
+                                }*/
                                 showPopUp = true
                             },
                             modifier = Modifier
@@ -328,34 +337,47 @@ fun requestLocation(locationPermission: PermissionHandler, locationService: Loca
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun MapView(
-    placeLocations: List<LatLng>,
     cameraPositionState: CameraPositionState,
-    onMarkerClick: () -> Unit,
-    updateMarkerPosition: (LatLng?) -> Unit,
     navController: NavHostController,
+    user : User,
     mapView: MapType,
-    tracksState: TracksState
+    tracksDbState: TracksDbState,
+    groupedTracksState: GroupedTracksState,
+    tracksDbVm: TracksDbViewModel
 ) {
     var markerPosition by remember { mutableStateOf<LatLng?>(null) }
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
-        onMapClick = { latLng ->
-            markerPosition = latLng
-            updateMarkerPosition(markerPosition)  // Aggiorna la posizione ogni volta che viene cliccato un nuovo punto
-        },
+        onMapClick = {  },
         properties = MapProperties(mapType = mapView)
     ) {
 
-        // Visualizza il marker nella posizione memorizzata
-        markerPosition?.let {
+        // Visualizza il marker
+        /*markerPosition?.let {
             Marker(
                 state = MarkerState(position = it),
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)  // Imposta il marker di colore giallo
             )
             onMarkerClick()
+        }*/
+
+        groupedTracksState.tracks.forEach { location ->
+            Marker(
+                state = MarkerState(position = LatLng(location.groupedLat, location.groupedLng)),
+                onClick = {
+
+                    tracksDbVm.getTracksInRange(location.groupedLat, location.groupedLng)
+                    navController.navigate(
+                        OutdoorRomagnaRoute.Tracks.buildRoute(user.username, true)
+                    )
+                    true
+                }
+            )
         }
 
         /**PROVA DELL'ONCLICK DI UN PERCORSO*/
@@ -366,11 +388,6 @@ fun MapView(
                 true
             }
         )
-
-        /**DA TOGLIERE*/
-        tracksState.tracks.forEach { location ->
-            Marker(state = MarkerState(position = LatLng(location.startLat, location.startLng)))
-        }
 
         /**ESEMPIO DI UNA POLYLINE, LA LISTA DI PUNTI SARA POI RELATIVA LA MARKER CLICCATO  */
         if(showPoly) {

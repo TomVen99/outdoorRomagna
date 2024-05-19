@@ -14,6 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.ui.screens.home.HomeScreen
 import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.login.Login
@@ -67,6 +68,31 @@ sealed class OutdoorRomagnaRoute(
         }
     }
 
+    data object TrackDetails : OutdoorRomagnaRoute(
+        "trackdetails/{userUsername}/{latitude}/{longitude}",
+        "trackDetails",
+        "",
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType },
+            navArgument("latitude") { type = NavType.FloatType },
+            navArgument("longitude") { type = NavType.FloatType }
+        )
+    ) {
+        fun buildRoute(userUsername: String, latitude: Float?, longitude: Float?): String{
+            setMyCurrentRoute("home/$userUsername/$latitude/$longitude")
+            return currentRoute
+        }
+
+        fun buildWithoutPosition (userUsername: String) : String {
+            setMyCurrentRoute("home/$userUsername/0/0")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
+    }
+
     data object Profile : OutdoorRomagnaRoute(
         "profile/{userUsername}",
         "Profile",
@@ -86,43 +112,30 @@ sealed class OutdoorRomagnaRoute(
     }
 
     data object Tracks : OutdoorRomagnaRoute(
-        "tracks/{userUsername}",
+        "tracks/{userUsername}/{specificTrack}",
         "tracks",
         "",
         listOf(
-            navArgument("userUsername") { type = NavType.StringType }
-        )
-    /*,
-        listOf(
             navArgument("userUsername") { type = NavType.StringType },
-            navArgument("latitude") { type = NavType.FloatType },
-            navArgument("longitude") { type = NavType.FloatType }
-        )*/
+            navArgument("specificTrack") { type = NavType.BoolType }
+        )
     ) {
-        fun buildRoute(userUsername: String) : String {
-            setMyCurrentRoute("tracks/$userUsername")
+        fun buildRoute(userUsername: String, specificTrack: Boolean) : String {
+            setMyCurrentRoute("tracks/$userUsername/$specificTrack")
             return currentRoute
         }
 
         private fun setMyCurrentRoute (route : String) {
             currentRoute = route
         }
-        /*
-        fun buildRoute(userUsername: String, latitude: Float?, longitude: Float?)
-                = "home/$userUsername/$latitude/$longitude"
-        fun buildWithoutPosition (userUsername: String) = "home/$userUsername/0/0"
-        */
+
+        /*fun buildRouteLatLng (userUsername: String,  latitude: String, longitude: String) : String {
+            setMyCurrentRoute("tracks/$userUsername/$latitude/$longitude")
+            return currentRoute
+        }*/
+
     }
-    data object TravelDetails : OutdoorRomagnaRoute(
-        "travels/{travelId}",
-        "Travel Details",
-        "",
-        listOf(navArgument("travelId") { type = NavType.StringType })
-    ) {
-        fun buildRoute(travelId: String) = "home/$travelId"
-    }
-    data object AddTravel : OutdoorRomagnaRoute("travels/add", "Add Travel", "")
-    //data object Settings : OutdoorRomagnaRoute("settings", "Settings", "")
+
     data object Settings : OutdoorRomagnaRoute(
         "settings/{userUsername}",
         "Settings",
@@ -142,7 +155,7 @@ sealed class OutdoorRomagnaRoute(
     }
 
     companion object {
-        val routes = setOf(Login, Signin, Home, TravelDetails, AddTravel, Settings, Profile)
+        val routes = setOf(Login, Signin, Home, Settings, Profile)
     }
 }
 
@@ -157,6 +170,7 @@ fun OutdoorRomagnaNavGraph(
 
     val tracksDbVm = koinViewModel<TracksDbViewModel>()
     val tracksDbState by tracksDbVm.state.collectAsStateWithLifecycle()
+    val groupedTracksState by tracksDbVm.groupedTracksState.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
@@ -195,8 +209,6 @@ fun OutdoorRomagnaNavGraph(
                 usersVm.resetValues()
                 val homeScreenVm = koinViewModel<HomeScreenViewModel>()
                 val state by homeScreenVm.state.collectAsStateWithLifecycle()
-                Log.d("TAG", backStackEntry.arguments.toString())
-                Log.d("TAG", backStackEntry.arguments?.getString("userUsername").toString())
                 var userName =  backStackEntry.arguments?.getString("userUsername") ?: userDefault
                 userName = if (userName == "null") userDefault else userName
                 userDefault = userName
@@ -212,7 +224,8 @@ fun OutdoorRomagnaNavGraph(
                     homeScreenVm.actions,
                     user,
                     tracksDbVm,
-                    tracksDbState
+                    tracksDbState,
+                    groupedTracksState
                 )
             }
         }
@@ -244,14 +257,17 @@ fun OutdoorRomagnaNavGraph(
                 val user = requireNotNull(usersState.users.find {
                     it.username == backStackEntry.arguments?.getString("userUsername")
                 })
-
+                val isSpecificTrack = backStackEntry.arguments?.getBoolean("specificTrack") ?: false
+                if (!isSpecificTrack)
+                    tracksDbVm.resetSpecificTrackInRange()
                 TracksScreen(
                     navController = navController,
                     user = user,
-                    //onModify = usersVm::addUserWithoutControl,
                     state = state,
                     actions = tracksVm.actions,
-                    viewModel = usersVm
+                    usersViewModel = usersVm,
+                    tracksDbVm = tracksDbVm,
+                    tracksDbState = tracksDbState
                 )
             }
         }

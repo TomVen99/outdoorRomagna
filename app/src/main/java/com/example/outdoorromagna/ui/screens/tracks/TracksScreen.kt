@@ -1,24 +1,45 @@
 package com.example.outdoorromagna.ui.screens.tracks
 
+import android.content.res.Resources.Theme
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.database.User
+import com.example.outdoorromagna.ui.TracksDbState
+import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
@@ -27,6 +48,7 @@ import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TracksScreen(
     navController: NavHostController,
@@ -34,9 +56,13 @@ fun TracksScreen(
     //onModify: (User) -> Unit,
     state: TracksState,
     actions: TracksActions,
-    viewModel : UsersViewModel
+    usersViewModel : UsersViewModel,
+    tracksDbVm: TracksDbViewModel,
+    tracksDbState: TracksDbState
 ) {
-    /*val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)*/
+    val specificTracksList by tracksDbVm.specificTracksList.observeAsState()
+
+    Log.d("trackList", specificTracksList.toString())
     val scope = rememberCoroutineScope()
     val myScaffold: @Composable () -> Unit = {
         Scaffold(
@@ -54,49 +80,55 @@ fun TracksScreen(
             },
             bottomBar = { BottomAppBar(navController, user) },
         ) { contentPadding ->
-            Column(
-
+            /*Column(
                 modifier = Modifier
                     .padding(contentPadding)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Log.d("TAG", "showFilterBar " + state.showFilterBar.toString())
                 if (state.showFilterBar) {
                     Column {
                         Row {
                             FilterBar(actions = actions)
-
                         }
                     }
                 }
-                // qui si dovrà fare richiesta al database
-                val items = listOf("Pippo", "pluto", "paperino")
-                val trackItems = listOf<TrackItem>(
-                    TrackItem("Pippo", true, "prima pippo"),
-                    TrackItem("pluto", false, "prima pluto"),
-                    TrackItem("paperino", true, "prima paperino"))
+                specificTracksList?.let { PrintListItems(trackItems = it) }
+                if (specificTracksList == null)
+                    PrintListItems(trackItems = tracksDbState.tracks)
+            }*/
 
-                trackItems.forEach() { item ->
-                    ListItem(
-                        headlineContent = { Text(text= item.title) },
-                        supportingContent = {
-                            item.shortDescription?.let { Text(text = it) }
-                        },
-                        trailingContent = {
-                            IconButton(onClick = {
-                                item.isFavorite = !item.isFavorite
-                                Log.d("TAG", "addFavorite")
-                            })
-                            {
-                                Icon(imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                    contentDescription = "Add to favorites")
+            LazyColumn (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (state.showFilterBar) {
+                    stickyHeader {
+                        Box (
+                            modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(top = 5.dp)
+                                    .border(1.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+                                verticalArrangement = Arrangement.Top
+                            ) {
+                                Row(
+                                ) {
+                                    FilterBar(actions = actions)
+                                }
                             }
-                        },
-                    )
+                        }
+
+                    }
+                }
+                items(getTrackListToPrint(specificTracksList, tracksDbState.tracks)) { item ->
+                    PrintListItems(item)
                 }
             }
-
         }
     }
     SideBarMenu(
@@ -104,4 +136,31 @@ fun TracksScreen(
         navController
     )
 }
+
+fun getTrackListToPrint(specificTracksList: List<Track>?, tracksState: List<Track>) : List<Track> {
+    if (specificTracksList != null)
+        return specificTracksList
+    return tracksState
+}
+
+@Composable
+fun PrintListItems(track: Track) {
+    ListItem(
+        headlineContent = { Text(text= track.name) },
+        supportingContent = {
+            track.description.let { Text(text = it) }
+        },
+        trailingContent = {
+            /*IconButton(onClick = {
+                item.isFavorite = !item.isFavorite
+                Log.d("TAG", "addFavorite")
+            })
+            {
+                Icon(imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Add to favorites")
+            }*/
+        },
+    )
+}
+
 

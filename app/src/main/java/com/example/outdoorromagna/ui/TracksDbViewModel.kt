@@ -1,23 +1,39 @@
 package com.example.outdoorromagna.ui
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.outdoorromagna.data.database.GroupedTrack
 import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.repositories.TracksRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-data class TracksState(val tracks: List<Track>)
+data class TracksDbState(val tracks: List<Track>)
+
+data class GroupedTracksState(val tracks: List<GroupedTrack>)
 
 class TracksDbViewModel(
     private val repository: TracksRepository
 ) : ViewModel() {
-    val state = repository.tracks.map { TracksState(tracks = it) }.stateIn(
+    val state = repository.tracks.map { TracksDbState(tracks = it) }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = TracksState(emptyList())
+        initialValue = TracksDbState(emptyList())
+    )
+    private val _specificTracksList = MutableLiveData<List<Track>?>()
+    val specificTracksList: LiveData<List<Track>?> = _specificTracksList
+
+    val groupedTracksState = repository.groupedTracks.map { GroupedTracksState(tracks = it) }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = GroupedTracksState(emptyList())
     )
 
     fun addTrack(track: Track) = viewModelScope.launch {
@@ -31,4 +47,21 @@ class TracksDbViewModel(
     fun getAllTracks() = viewModelScope.launch {
         repository.getAllTracks()
     }
+
+    /*fun getGroupedTracks() = viewModelScope.launch {
+            repository.getGroupedTracks()
+    }*/
+
+    fun getTracksInRange(startLat: Double, startLng: Double) {
+        viewModelScope.launch {
+            val tracks = repository.getTracksInRange(startLat, startLng)
+            _specificTracksList.value = tracks
+        }
+    }
+
+    fun resetSpecificTrackInRange() {
+        _specificTracksList.value = null
+    }
+
+
 }

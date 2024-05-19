@@ -1,6 +1,7 @@
 package com.example.outdoorromagna.ui.composables
 
 import android.util.Log
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -178,7 +180,7 @@ fun BottomAppBar(
                     }
                 }
 
-                OutdoorRomagnaRoute.Tracks.buildRoute(user.username)
+                OutdoorRomagnaRoute.Tracks.buildRoute(user.username, false)
                 OutdoorRomagnaRoute.Settings.buildRoute(user.username)
                 Button(
                     onClick = {

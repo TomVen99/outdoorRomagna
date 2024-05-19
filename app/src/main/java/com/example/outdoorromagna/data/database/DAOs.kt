@@ -55,7 +55,33 @@ interface TracksDAO {
     @Query("SELECT * FROM Track ")
     fun getAllTracks(): Flow<List<Track>>
 
+    @Query("""
+    SELECT 
+        MIN(startLat) + (MAX(startLat) - MIN(startLat)) / 2 AS groupedLat, 
+        MIN(startLng) + (MAX(startLng) - MIN(startLng)) / 2 AS groupedLng
+    FROM 
+        track
+    GROUP BY 
+        CAST(startLat * 100 AS INTEGER), CAST(startLng * 100 AS INTEGER)
+    """)
+    fun getGroupedTracks(): Flow<List<GroupedTrack>>
+
+    @Query("""
+    SELECT 
+        *
+    FROM 
+        track
+    WHERE 
+        CAST(startLat * 100 AS INTEGER) = CAST(:startLat * 100 AS INTEGER)
+        AND CAST(startLng * 100 AS INTEGER) = CAST(:startLng * 100 AS INTEGER)
+    """)
+    suspend fun getTracksInRange(startLat: Double, startLng: Double): List<Track>
+
     @Delete
     suspend fun deleteTrack(track: Track)
 }
 
+data class GroupedTrack(
+    val groupedLat: Double,
+    val groupedLng: Double
+)
