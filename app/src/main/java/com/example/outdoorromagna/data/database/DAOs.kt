@@ -26,6 +26,9 @@ interface PlacesDAO {
     @Query("SELECT * FROM favorite WHERE userId = :userID AND markerId = :markerId")
     fun getFavorite(userID : Int, markerId : Int) : Flow<Favorite?>
 
+    @Query("UPDATE user SET urlProfilePicture = :profileImg WHERE username = :username")
+    suspend fun updateProfileImg(username: String, profileImg: String)
+
     /*@Query("SELECT * FROM place ORDER BY name ASC")
     fun getAllPlaces(): Flow<List<Place>>*/
     @Upsert

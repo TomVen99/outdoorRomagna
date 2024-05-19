@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
@@ -50,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreenActions
 import com.example.outdoorromagna.ui.screens.tracks.TracksActions
 import com.example.outdoorromagna.ui.screens.tracks.TracksState
@@ -58,21 +62,6 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopAppBarWithNavigationDrawerButton(
-    onClickNavigationDrawer: () -> Unit,
-) {
-    TopAppBar(
-        title = { Text("Your App Title") },
-        navigationIcon = {
-            IconButton(onClick = onClickNavigationDrawer) {
-                Icon(Icons.Default.Menu, contentDescription = "Open Navigation Drawer")
-            }
-        }
-    )
-}*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,107 +74,73 @@ fun TopAppBar(
     filterState: TracksState? = null,
     drawerState: DrawerState,
     scope: CoroutineScope,
-    showFilter: Boolean = false
-    ) {
-
-    /*ModalNavigationDrawer(
-        drawerState = drawerState,
-        content = {*/
-            Log.d("TAG", drawerState.toString())
-            TopAppBar(
-                title = {
-                    Text(
-                        currentRoute,
-                        fontWeight = FontWeight.Medium,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        Log.d("TAG", "cliccato menu")
-                        scope.launch {
-                            drawerState.open()
-                        }
-                        /*scope.launch {
-                            Log.d("TAG", "cliccato menu dentro launch")
-                            drawerState.apply {
-                                Log.d("TAG", "cliccato menu dentro apply")
-                                Log.d("TAG", drawerState.isClosed.toString())
-                                if (drawerState.isClosed) {
-                                    Log.d("TAG", "open")
-                                    drawerState.open()
-                                    Log.d("TAG", "open")
-                                } else {
-                                    drawerState.close()
-                                    Log.d("TAG", "close")
-                                }
-                            }
-                        }*/
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Menu",
-                        )
-                    }
-                },
-                actions = {
-                    if (showFilter) {
-                        IconButton(onClick = {
-                            if(filterState?.isShowFilterEnabled == true){
-                                trackActions?.setShowFilter(false)
-                            } else {
-                                trackActions?.setShowFilter(true)
-                                Log.d("TAG", "cliccato filtro")}
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.FilterList,
-                                contentDescription = "Filtra"
-                            )
-                        }
-                    }
-                    if (showSearch) {
-                        IconButton(onClick = { actions?.setShowSearchBar(true) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = "Cerca"
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )/*
+    showFilter: Boolean = false,
+    showLogout: Boolean = false
+) {
+    Log.d("TAG", drawerState.toString())
+    TopAppBar(
+        title = {
+            Text(
+                currentRoute,
+                fontWeight = FontWeight.Medium,
+            )
         },
-        drawerContent = {
-            Column {
-                // Aggiungi qui il contenuto del drawer
-                Text("Navigation Item 1")
-                Text("Navigation Item 2")
-                Text("Navigation Item 3")
-                // Aggiungi ulteriori elementi se necessario
+        navigationIcon = {
+            IconButton(onClick = {
+                Log.d("TAG", "cliccato menu")
+                scope.launch {
+                    drawerState.open()
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menu",
+                )
             }
-        }
-    )*/
-}
-    /*
-@Composable
-fun showSearchBar {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column {
-            SearchBar { query ->
-                performSearch(query = query, context = context) { results ->
-                    if (results.isNotEmpty()) {
-                        placeLocations = results
-                        center = results.first()
-                        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(center, 12f))
-                    }
+        },
+        actions = {
+            if (showLogout) {
+                IconButton(onClick = {
+                    navController.navigate(OutdoorRomagnaRoute.Login.route)
+                })
+                {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
+                        contentDescription = "Logout"
+                    )
                 }
             }
-        }
-    }
-}*/
+            if (showFilter) {
+                IconButton(onClick = {
+                    if (filterState?.isShowFilterEnabled == true) {
+                        trackActions?.setShowFilter(false)
+                    } else {
+                        trackActions?.setShowFilter(true)
+                        Log.d("TAG", "cliccato filtro")
+                    }
+                }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.FilterList,
+                        contentDescription = "Filtra"
+                    )
+                }
+            }
+            if (showSearch) {
+                IconButton(onClick = { actions?.setShowSearchBar(true) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = "Cerca"
+                    )
+                }
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    )
+}
 
 @Composable
 fun BottomAppBar(
@@ -248,7 +203,6 @@ fun BottomAppBar(
                 Button(
                     modifier = Modifier.padding(end = 10.dp),
                     onClick = {
-                        //navController.navigate(OutdoorRomagnaRoute.Profile.route)
                         navController.navigate(OutdoorRomagnaRoute.Profile.currentRoute)
                     },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding

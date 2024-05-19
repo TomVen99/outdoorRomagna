@@ -13,4 +13,8 @@ class UsersRepository(private val placesDAO: PlacesDAO) {
     suspend fun delete(user: User) = placesDAO.deleteUser(user)
 
     fun getUser(user: String) = placesDAO.getUser(user)
+
+    suspend fun updateProfileImg(username: String, profileImg: String) {
+        placesDAO.updateProfileImg(username, profileImg)
+    }
 }

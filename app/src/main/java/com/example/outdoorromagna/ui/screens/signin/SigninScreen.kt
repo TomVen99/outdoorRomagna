@@ -113,7 +113,7 @@ fun SigninScreen(
                         Log.d("TAG", "bottone signin cliccato 2")
                         val salt = viewModel.generateSalt()
                         val password = viewModel.hashPassword(state.password, salt)
-                        onSubmit(User(username = state.username, password = password, salt = salt, urlProfilePicture = "outdoorromagna.png"))
+                        onSubmit(User(username = state.username, password = password, salt = salt, urlProfilePicture = ""))
                         Log.d("TAG", "bottone signin cliccato 3")
                     },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding,

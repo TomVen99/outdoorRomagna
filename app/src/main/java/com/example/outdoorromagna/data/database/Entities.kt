@@ -16,7 +16,7 @@ data class User (
     var password: String,
 
     @ColumnInfo
-    var urlProfilePicture : String,
+    var urlProfilePicture : String?,
 
     @ColumnInfo
     var salt : ByteArray
