@@ -36,11 +36,10 @@ val appModule = module {
         Room.databaseBuilder(
             get(),
             OutdoorRomagnaDatabase::class.java,
-            "travel-diary"
+            "outdoorRomagna"
         )
             // Sconsigliato per progetti seri! Lo usiamo solo qui per semplicità
             .fallbackToDestructiveMigration()
-            .allowMainThreadQueries()
             .build()
     }
 

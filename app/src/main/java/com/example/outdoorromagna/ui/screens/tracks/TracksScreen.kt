@@ -14,12 +14,16 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.database.User
+import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
@@ -35,11 +39,14 @@ fun TracksScreen(
     //onModify: (User) -> Unit,
     state: TracksState,
     actions: TracksActions,
-    viewModel : UsersViewModel,
-    trackList: List<Track>
+    usersViewModel : UsersViewModel,
+    tracksDbVm: TracksDbViewModel,
+    isSpecificTrack: Boolean
 ) {
+    val tracksList by tracksDbVm.tracksList.observeAsState()
+
     /*val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)*/
-    Log.d("trackList", trackList.toString())
+    Log.d("trackList", tracksList.toString())
     val scope = rememberCoroutineScope()
     val myScaffold: @Composable () -> Unit = {
         Scaffold(

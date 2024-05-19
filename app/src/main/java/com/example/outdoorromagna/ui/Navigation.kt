@@ -112,23 +112,16 @@ sealed class OutdoorRomagnaRoute(
     }
 
     data object Tracks : OutdoorRomagnaRoute(
-        "tracks/{userUsername}/{latitude}/{longitude}",
+        "tracks/{userUsername}/{specificTrack}",
         "tracks",
         "",
         listOf(
             navArgument("userUsername") { type = NavType.StringType },
-            navArgument("latitude") { type = NavType.StringType },
-            navArgument("longitude") { type = NavType.StringType }
+            navArgument("specificTrack") { type = NavType.BoolType }
         )
-    /*,
-        listOf(
-            navArgument("userUsername") { type = NavType.StringType },
-            navArgument("latitude") { type = NavType.FloatType },
-            navArgument("longitude") { type = NavType.FloatType }
-        )*/
     ) {
-        fun buildRoute(userUsername: String) : String {
-            setMyCurrentRoute("tracks/$userUsername/i/i")
+        fun buildRoute(userUsername: String, specificTrack: Boolean) : String {
+            setMyCurrentRoute("tracks/$userUsername/$specificTrack")
             return currentRoute
         }
 
@@ -136,10 +129,10 @@ sealed class OutdoorRomagnaRoute(
             currentRoute = route
         }
 
-        fun buildRouteLatLng (userUsername: String,  latitude: String, longitude: String) : String {
+        /*fun buildRouteLatLng (userUsername: String,  latitude: String, longitude: String) : String {
             setMyCurrentRoute("tracks/$userUsername/$latitude/$longitude")
             return currentRoute
-        }
+        }*/
 
     }
 
@@ -264,21 +257,15 @@ fun OutdoorRomagnaNavGraph(
                 val user = requireNotNull(usersState.users.find {
                     it.username == backStackEntry.arguments?.getString("userUsername")
                 })
-                val lat = backStackEntry.arguments?.getString("latitude")
-                val lgn = backStackEntry.arguments?.getString("longitude")
-                var track = listOf<Track>()
-                if (lat != "i" && lgn != "i" && lat != null && lgn != null) {
-                    track = tracksDbVm.getTracksInRange(lat.toDouble(), lgn.toDouble())
-                }
-
+                val isSpecificTrack = backStackEntry.arguments?.getBoolean("specificTrack") ?: false
                 TracksScreen(
                     navController = navController,
                     user = user,
-                    //onModify = usersVm::addUserWithoutControl,
                     state = state,
                     actions = tracksVm.actions,
-                    viewModel = usersVm,
-                    trackList = track
+                    usersViewModel = usersVm,
+                    tracksDbVm = tracksDbVm,
+                    isSpecificTrack = isSpecificTrack
                 )
             }
         }

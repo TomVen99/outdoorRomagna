@@ -107,13 +107,18 @@ fun HomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     Log.d("grouped", groupedTracksState.toString())
+    Log.d("Tutti i track", tracksState.tracks.map { track -> track.id }.toString())
     /**PER INSERIRE I TRACK DI TEST*/
-    if (tracksState.tracks.isEmpty()) {
+    /*if (tracksState.tracks.isEmpty()) {
         val testTracks = generateTestTracks()
         testTracks.forEach { testTrack ->
             tracksDbVm.addTrack(testTrack)
         }
-    }
+    }*/
+    /**PER ELIMINARE TUTTI I TRACK*/
+    /*tracksState.tracks.forEach { track ->
+        tracksDbVm.deleteTrack(track)
+    }*/
     val myScaffold: @Composable () -> Unit = {
         Scaffold(
             topBar = {
@@ -176,14 +181,13 @@ fun HomeScreen(
                             .padding(innerPadding)
                     ) {
                         MapView(
-                            placeSearch.map { x -> x.latLng },
                             cameraPositionState,
-                            { showButton = true },
                             navController,
                             user,
                             state.mapView,
                             tracksState,
-                            groupedTracksState
+                            groupedTracksState,
+                            tracksDbVm
                         )
 
                         FloatingActionButton( //bottone del gps
@@ -338,14 +342,13 @@ fun requestLocation(locationPermission: PermissionHandler, locationService: Loca
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun MapView(
-    placeLocations: List<LatLng>,
     cameraPositionState: CameraPositionState,
-    onMarkerClick: () -> Unit,
     navController: NavHostController,
     user : User,
     mapView: MapType,
     tracksState: TracksState,
-    groupedTracksState: GroupedTracksState
+    groupedTracksState: GroupedTracksState,
+    tracksDbVm: TracksDbViewModel
 ) {
     var markerPosition by remember { mutableStateOf<LatLng?>(null) }
     GoogleMap(
@@ -368,10 +371,10 @@ fun MapView(
             Marker(
                 state = MarkerState(position = LatLng(location.groupedLat, location.groupedLng)),
                 onClick = {
+
+                    tracksDbVm.getTracksInRange(location.groupedLat, location.groupedLng)
                     navController.navigate(
-                        OutdoorRomagnaRoute.Tracks.buildRouteLatLng(
-                            user.username, location.groupedLat.toString(), location.groupedLng.toString()
-                        )
+                        OutdoorRomagnaRoute.Tracks.buildRoute(user.username, true)
                     )
                     true
                 }

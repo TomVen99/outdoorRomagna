@@ -1,5 +1,7 @@
 package com.example.outdoorromagna.ui
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.outdoorromagna.data.database.GroupedTrack
@@ -7,6 +9,7 @@ import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.repositories.TracksRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -24,6 +27,8 @@ class TracksDbViewModel(
         started = SharingStarted.WhileSubscribed(),
         initialValue = TracksState(emptyList())
     )
+    private val _tracksList = MutableLiveData<List<Track>>()
+    val tracksList: LiveData<List<Track>> = _tracksList
 
     val groupedTracksState = repository.groupedTracks.map { GroupedTracksState(tracks = it) }.stateIn(
         scope = viewModelScope,
@@ -47,7 +52,12 @@ class TracksDbViewModel(
             repository.getGroupedTracks()
     }*/
 
-    fun getTracksInRange(startLat: Double, startLng: Double) =
-        repository.getTracksInRange(startLat, startLng)
+    fun getTracksInRange(startLat: Double, startLng: Double) {
+        viewModelScope.launch {
+            val tracks = repository.getTracksInRange(startLat, startLng)
+            _tracksList.value = tracks
+        }
+    }
+
 
 }

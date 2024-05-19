@@ -178,7 +178,7 @@ fun BottomAppBar(
                     }
                 }
 
-                OutdoorRomagnaRoute.Tracks.buildRoute(user.username)
+                OutdoorRomagnaRoute.Tracks.buildRoute(user.username, false)
                 OutdoorRomagnaRoute.Settings.buildRoute(user.username)
                 Button(
                     onClick = {
