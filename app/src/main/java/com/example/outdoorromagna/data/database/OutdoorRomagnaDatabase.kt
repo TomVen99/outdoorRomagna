@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [User::class, Track::class, Favorite::class], version = 3)
+@Database(entities = [User::class, Track::class, Favorite::class], version = 4)
 @TypeConverters(LatLngListConverter::class)
 abstract class OutdoorRomagnaDatabase : RoomDatabase() {
     abstract fun usersDAO(): UsersDAO

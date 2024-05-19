@@ -12,4 +12,8 @@ class UsersRepository(private val usersDAO: UsersDAO) {
     suspend fun delete(user: User) = usersDAO.deleteUser(user)
 
     fun getUser(user: String) = usersDAO.getUser(user)
+
+    suspend fun updateProfileImg(username: String, profileImg: String) {
+        usersDAO.updateProfileImg(username, profileImg)
+    }
 }

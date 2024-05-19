@@ -58,8 +58,8 @@ import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.TracksState
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
-import com.example.outdoorromagna.ui.screens.sideBarMenu.SideBarMenu
-import com.example.outdoorromagna.ui.screens.sideBarMenu.getMyDrawerState
+import com.example.outdoorromagna.ui.composables.SideBarMenu
+import com.example.outdoorromagna.ui.composables.getMyDrawerState
 import com.example.outdoorromagna.utils.LocationService
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory

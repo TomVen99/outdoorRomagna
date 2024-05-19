@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -32,11 +30,9 @@ import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
-import com.example.outdoorromagna.ui.screens.sideBarMenu.SideBarMenu
-import com.example.outdoorromagna.ui.screens.sideBarMenu.getMyDrawerState
+import com.example.outdoorromagna.ui.composables.SideBarMenu
+import com.example.outdoorromagna.ui.composables.getMyDrawerState
 import com.example.outdoorromagna.ui.theme.OutdoorRomagnaTheme
-import com.example.outdoorromagna.ui.theme.ThemeViewModel
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreen(

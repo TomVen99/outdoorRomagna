@@ -72,6 +72,11 @@ class UsersViewModel(
         }
     }
 
+    fun logout() {
+        Log.d("TAG", "Logout")
+
+    }
+
     fun resetValues() {
         _signinResult.value = null
         _loginResult.value = null
@@ -91,6 +96,10 @@ class UsersViewModel(
         val random = SecureRandom()
         random.nextBytes(salt)
         return salt
+    }
+
+    fun updateProfileImg(username: String, profileImg: String) = viewModelScope.launch {
+        repository.updateProfileImg(username, profileImg)
     }
 
 }
