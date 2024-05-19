@@ -1,4 +1,4 @@
-package com.example.outdoorromagna.ui.screens.filterBar
+package com.example.outdoorromagna.ui.composables
 
 import android.util.Log
 import androidx.compose.foundation.horizontalScroll
