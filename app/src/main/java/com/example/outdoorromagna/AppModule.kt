@@ -40,6 +40,7 @@ val appModule = module {
         )
             // Sconsigliato per progetti seri! Lo usiamo solo qui per semplicità
             .fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
             .build()
     }
 

@@ -69,7 +69,10 @@ data class Track (
     var trackPositions: List<LatLng>,
 
     @ColumnInfo
-    val imageUri: String?
+    val imageUri: String?,
+
+    @ColumnInfo
+    var duration: Double,
 )
 
 @Entity(primaryKeys = ["userId", "markerId"])

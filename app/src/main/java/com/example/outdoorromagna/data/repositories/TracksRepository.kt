@@ -3,6 +3,7 @@ package com.example.outdoorromagna.data.repositories
 import android.content.ContentResolver
 import android.net.Uri
 import com.example.camera.utils.saveImageToStorage
+import com.example.outdoorromagna.data.database.GroupedTrack
 import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.database.TracksDAO
 import com.google.android.gms.maps.model.LatLng
@@ -13,6 +14,8 @@ class TracksRepository(
     private val contentResolver: ContentResolver
 ) {
     val tracks: Flow<List<Track>> = tracksDAO.getAllTracks()
+
+    val groupedTracks: Flow<List<GroupedTrack>> = tracksDAO.getGroupedTracks()
 
     suspend fun upsert(track: Track) {
         if (track.imageUri?.isNotEmpty() == true) {
@@ -30,6 +33,10 @@ class TracksRepository(
     suspend fun delete(track: Track) = tracksDAO.deleteTrack(track)
 
     fun getAllTracks() = tracksDAO.getAllTracks()
+
+    //fun getGroupedTracks() = tracksDAO.getGroupedTracks()
+
+    fun getTracksInRange(startLat: Double, startLng: Double) = tracksDAO.getTracksInRange(startLat, startLng)
 }
 
 /**FUN PER INSERIRE TRACK DI TEST*/
@@ -53,7 +60,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.0680, 12.5730),
                 LatLng(44.0690, 12.5740)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
             name = "Trekking Cesena 1",
@@ -73,7 +81,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.1450, 12.2500),
                 LatLng(44.1460, 12.2510)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
             name = "Trekking Ravenna 1",
@@ -93,7 +102,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.4230, 12.2040),
                 LatLng(44.4240, 12.2050)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
             name = "Trekking Rimini 2",
@@ -113,7 +123,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.0480, 12.5530),
                 LatLng(44.0490, 12.5540)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
             name = "Trekking Cesena 2",
@@ -133,7 +144,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.1350, 12.2400),
                 LatLng(44.1360, 12.2410)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
             name = "Trekking Ravenna 2",
@@ -153,7 +165,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.4130, 12.1940),
                 LatLng(44.4140, 12.1950)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
             name = "Trekking Rimini 3",
@@ -173,7 +186,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.0880, 12.6030),
                 LatLng(44.0890, 12.6040)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
             name = "Trekking Cesena 3",
@@ -193,7 +207,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.1550, 12.2600),
                 LatLng(44.1560, 12.2610)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
             name = "Trekking Ravenna 3",
@@ -213,27 +228,29 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.4330, 12.2140),
                 LatLng(44.4340, 12.2150)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         ),
         Track(
-            name = "Trekking Rimini 4",
-            description = "Percorso trekking vicino al mare di Rimini.",
+            name = "Trekking Rimini 3",
+            description = "Percorso trekking tra i monti di Rimini 2.",
             city = "Rimini",
-            startLat = 44.0700,
-            startLng = 12.5753,
+            startLat = 44.0808,
+            startLng = 12.5953,
             trackPositions = listOf(
-                LatLng(44.0700, 12.5753),
-                LatLng(44.0710, 12.5760),
-                LatLng(44.0720, 12.5770),
-                LatLng(44.0730, 12.5780),
-                LatLng(44.0740, 12.5790),
-                LatLng(44.0750, 12.5800),
-                LatLng(44.0760, 12.5810),
-                LatLng(44.0770, 12.5820),
-                LatLng(44.0780, 12.5830),
-                LatLng(44.0790, 12.5840)
+                LatLng(44.0808, 12.5953),
+                LatLng(44.0810, 12.5960),
+                LatLng(44.0820, 12.5970),
+                LatLng(44.0830, 12.5980),
+                LatLng(44.0840, 12.5990),
+                LatLng(44.0850, 12.6000),
+                LatLng(44.0860, 12.6010),
+                LatLng(44.0870, 12.6020),
+                LatLng(44.0880, 12.6030),
+                LatLng(44.0890, 12.6040)
             ),
-            imageUri = null
+            imageUri = null,
+            duration = 1.0
         )
     )
 }

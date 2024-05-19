@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
@@ -34,9 +35,11 @@ fun TracksScreen(
     //onModify: (User) -> Unit,
     state: TracksState,
     actions: TracksActions,
-    viewModel : UsersViewModel
+    viewModel : UsersViewModel,
+    trackList: List<Track>
 ) {
     /*val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)*/
+    Log.d("trackList", trackList.toString())
     val scope = rememberCoroutineScope()
     val myScaffold: @Composable () -> Unit = {
         Scaffold(
