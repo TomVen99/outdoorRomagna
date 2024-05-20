@@ -29,6 +29,8 @@ import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninScreen
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
+import com.example.outdoorromagna.ui.screens.tracking.TrackingScreen
+import com.example.outdoorromagna.ui.screens.tracking.TrackingViewModel
 import com.example.outdoorromagna.ui.screens.tracks.TracksScreen
 import com.example.outdoorromagna.ui.screens.tracks.TracksViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -136,6 +138,26 @@ sealed class OutdoorRomagnaRoute(
 
     }
 
+    data object Tracking : OutdoorRomagnaRoute(
+        "tracking/{userUsername}",
+        "tracking",
+        "",
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType },
+        )
+    ) {
+        fun buildRoute(userUsername: String) : String {
+            setMyCurrentRoute("tracking/$userUsername")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
+
+
+    }
+
     data object Settings : OutdoorRomagnaRoute(
         "settings/{userUsername}",
         "Settings",
@@ -173,7 +195,7 @@ sealed class OutdoorRomagnaRoute(
     }
 
     companion object {
-        val routes = setOf(Login, Signin, Home, Settings, Profile, AddTrack)
+        val routes = setOf(Login, Signin, Home, Settings, Profile, AddTrack, Tracking)
     }
 }
 
@@ -197,7 +219,7 @@ fun OutdoorRomagnaNavGraph(
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("userLogged", Context.MODE_PRIVATE)
 
-    //var startDestination = ""
+    /*//var startDestination = ""
     if(intentRoute?.isNotEmpty() == true) {
         sharedPreferences.getString("username", "")?.let { usersVm.login(it,
             sharedPreferences.getString("password", "")!!
@@ -209,7 +231,7 @@ fun OutdoorRomagnaNavGraph(
     } else {
         //startDestination = OutdoorRomagnaRoute.Login.route
     }
-    //Log.d("TAG", "start destiantion: " + startDestination)
+    //Log.d("TAG", "start destiantion: " + startDestination)*/
 
     NavHost(
         navController = navController,
@@ -341,6 +363,23 @@ fun OutdoorRomagnaNavGraph(
                     navController = navController,
                     user = user,
                     activity = activity
+                )
+            }
+        }
+        with(OutdoorRomagnaRoute.Tracking) {
+            composable(route) {backStackEntry ->
+                val user = requireNotNull(usersState.users.find {
+                    it.username == backStackEntry.arguments?.getString("userUsername")
+                })
+                val trackingVm = koinViewModel<TrackingViewModel>()
+                val trackingState by trackingVm.state.collectAsStateWithLifecycle()
+                TrackingScreen(
+                    navController = navController,
+                    state = trackingState,
+                    actions = trackingVm.actions,
+                    user = user,
+                    /*tracksDbVm: TracksDbViewModel,
+                    tracksDbState: TracksDbState,*/
                 )
             }
         }

@@ -20,6 +20,7 @@ import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.profile.ProfileViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
+import com.example.outdoorromagna.ui.screens.tracking.TrackingViewModel
 import com.example.outdoorromagna.ui.screens.tracks.TracksViewModel
 import com.example.outdoorromagna.ui.theme.ThemeViewModel
 import com.example.outdoorromagna.utils.LocationService
@@ -103,6 +104,8 @@ val appModule = module {
     viewModel { AddTrackViewModel() }
 
     viewModel { ActivitiesViewModel(get()) }
+
+    viewModel { TrackingViewModel() }
 
     //viewModel { PlacesViewModel(get()) }
 }

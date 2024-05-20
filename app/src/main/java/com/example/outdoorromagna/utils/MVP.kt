@@ -69,10 +69,6 @@ class MapPresenter(private val activity: AppCompatActivity, private val isStarte
         stepCounter.unloadStepCounter()
 
         val result = insertNewActivity(context, username,/*sharedPreferences,*/ activitiesViewModel, elapsedTime)
-        val homeIntent = Intent(context, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra("route", OutdoorRomagnaRoute.Home.currentRoute/*OutdoorRomagnaRoute.Login.route*/)
-        }
         if (!result) {
             Toast.makeText(context, "Errore nell'inserimento dell'attività", Toast.LENGTH_LONG).show()
         }
