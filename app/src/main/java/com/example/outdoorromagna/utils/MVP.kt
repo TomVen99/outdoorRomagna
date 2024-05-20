@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.PendingIntentCompat.getActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
 import com.example.outdoorromagna.MainActivity
@@ -75,7 +76,7 @@ class MapPresenter(private val activity: AppCompatActivity, private val isStarte
         if (!result) {
             Toast.makeText(context, "Errore nell'inserimento dell'attività", Toast.LENGTH_LONG).show()
         }
-        //startActivity(context, homeIntent, null)
+
         activity.finish()
     }
 
