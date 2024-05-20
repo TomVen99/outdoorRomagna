@@ -274,7 +274,7 @@ fun AddTrackScreen(
                             putExtra(TrackingActivity.EXTRA_PARAMETER, user.username)
                         }
                         ContextCompat.startActivity(context, trackingIntent, null)
-                        activity.finish()
+                        //activity.finish()
                     },
                     enabled = gpsChecker && internetConnChecker,
                     shape = CircleShape,

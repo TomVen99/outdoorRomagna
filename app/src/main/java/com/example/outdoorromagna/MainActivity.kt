@@ -26,6 +26,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -33,6 +35,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : ComponentActivity() {
     private lateinit var locationService: LocationService
     private val settingsViewModel: SettingsViewModel by viewModel()
+    /*private val usersVm: UsersViewModel by viewModel()*/
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settingsViewModel.resetTheme()
@@ -107,7 +111,6 @@ class MainActivity : ComponentActivity() {
                                 } ?: OutdoorRomagnaRoute.Login
                             }
                         }
-
                         Scaffold(
                             /*topBar = { TopAppBar(navController, currentRoute) },
                         bottomBar = { BottomAppBar(navController, currentRoute) },*/
@@ -117,7 +120,8 @@ class MainActivity : ComponentActivity() {
                                 navController,
                                 modifier = Modifier.padding(contentPadding),
                                 activity = this,
-                                intentRoute
+                                intentRoute,
+                                //usersVm = usersVm
                             )
                         }
                         /* { contentPadding ->

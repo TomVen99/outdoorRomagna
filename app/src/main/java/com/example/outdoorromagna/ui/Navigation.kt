@@ -183,10 +183,11 @@ fun OutdoorRomagnaNavGraph(
     modifier: Modifier = Modifier,
     activity : Activity,
     intentRoute: String?,
+    //usersVm: UsersViewModel,
 ) {
 
-    val usersVm:UsersViewModel// = koinViewModel<UsersViewModel>()
-    val usersState: Thread.State<UsersState>// by usersVm.state.collectAsStateWithLifecycle()
+    val usersVm = koinViewModel<UsersViewModel>()
+    val usersState by usersVm.state.collectAsStateWithLifecycle()
     var userDefault by remember{ mutableStateOf("null") }
 
     val tracksDbVm = koinViewModel<TracksDbViewModel>()
@@ -196,19 +197,23 @@ fun OutdoorRomagnaNavGraph(
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("userLogged", Context.MODE_PRIVATE)
 
-    var startDestination = ""
+    //var startDestination = ""
     if(intentRoute?.isNotEmpty() == true) {
-        startDestination = OutdoorRomagnaRoute.Home.currentRoute
-        sharedPreferences.getString("username", "")
-            ?.let { OutdoorRomagnaRoute.Home.buildWithoutPosition(it) }
+        sharedPreferences.getString("username", "")?.let { usersVm.login(it,
+            sharedPreferences.getString("password", "")!!
+        ) }
+        Log.d("TAG", "Login eseguito")
+        //startDestination = OutdoorRomagnaRoute.Home.currentRoute
+        /*sharedPreferences.getString("username", "")
+            ?.let { OutdoorRomagnaRoute.Home.buildWithoutPosition(it) }*/
     } else {
-        startDestination = OutdoorRomagnaRoute.Login.route
+        //startDestination = OutdoorRomagnaRoute.Login.route
     }
-    Log.d("TAG", "start destiantion: " + startDestination)
+    //Log.d("TAG", "start destiantion: " + startDestination)
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = OutdoorRomagnaRoute.Login.route,
         modifier = modifier
     ) {
         with(OutdoorRomagnaRoute.Login) {

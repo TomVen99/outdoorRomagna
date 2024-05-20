@@ -229,6 +229,7 @@ fun Login(
                     Log.d("TAG", "login2")
                     val edit = sharedPreferences.edit()
                     edit.putString("username",state.username)
+                    edit.putString("password",state.password)
                     edit.apply()
                     sharedPreferences.getString("username", "")?.let { Log.d("TAG", "dentro Login " + it) }
                 },
@@ -268,8 +269,12 @@ fun Login(
             if (signinResult == false) {
                 Text(signinLog.toString(), color = Color.Red)
             } else if (signinResult == true) {
-                navController.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition(state.username))
-                //Text("Vado alla Home", color = Color.Red)
+                val username = sharedPreferences.getString("username", "")
+                if (username?.isNotEmpty() == true){
+                    navController.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition(username/*state.username*/))
+                }else {
+                    Text("Errore utente", color = Color.Red)
+                }
             }
         }
     }
