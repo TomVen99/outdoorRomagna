@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -38,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.database.User
+import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.UsersViewModel
@@ -126,7 +131,14 @@ fun TracksScreen(
                     }
                 }
                 items(getTrackListToPrint(specificTracksList, tracksDbState.tracks)) { item ->
-                    PrintListItems(item)
+                    PrintListItems(item) {
+                        navController.navigate(
+                            OutdoorRomagnaRoute.TrackDetails.buildRoute(
+                                user.username,
+                                item.id
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -143,12 +155,39 @@ fun getTrackListToPrint(specificTracksList: List<Track>?, tracksState: List<Trac
     return tracksState
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrintListItems(track: Track) {
-    ListItem(
+fun PrintListItems(track: Track, onClick: () -> Unit) {
+    Card(
+        onClick = { onClick() },
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
+    ) {
+        ListItem(
+            headlineContent = { Text(text= track.name) },
+            supportingContent = {
+                Text(text = track.description)
+            },
+            trailingContent = {
+                /*IconButton(onClick = {
+                    item.isFavorite = !item.isFavorite
+                    Log.d("TAG", "addFavorite")
+                })
+                {
+                    Icon(imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Add to favorites")
+                }*/
+            },
+        )
+    }
+
+    /*ListItem(
         headlineContent = { Text(text= track.name) },
         supportingContent = {
-            track.description.let { Text(text = it) }
+            Text(text = track.description)
         },
         trailingContent = {
             /*IconButton(onClick = {
@@ -160,7 +199,7 @@ fun PrintListItems(track: Track) {
                     contentDescription = "Add to favorites")
             }*/
         },
-    )
+    )*/
 }
 
 

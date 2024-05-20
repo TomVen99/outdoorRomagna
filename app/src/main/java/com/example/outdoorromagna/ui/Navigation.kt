@@ -29,6 +29,7 @@ import com.example.outdoorromagna.ui.screens.settings.SettingsScreen
 import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninScreen
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
+import com.example.outdoorromagna.ui.screens.trackdetails.TrackDetails
 import com.example.outdoorromagna.ui.screens.tracks.TracksScreen
 import com.example.outdoorromagna.ui.screens.tracks.TracksViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -69,22 +70,16 @@ sealed class OutdoorRomagnaRoute(
     }
 
     data object TrackDetails : OutdoorRomagnaRoute(
-        "trackdetails/{userUsername}/{latitude}/{longitude}",
+        "trackdetails/{userUsername}/{trackId}",
         "trackDetails",
         "",
         listOf(
             navArgument("userUsername") { type = NavType.StringType },
-            navArgument("latitude") { type = NavType.FloatType },
-            navArgument("longitude") { type = NavType.FloatType }
+            navArgument("trackId") { type = NavType.IntType }
         )
     ) {
-        fun buildRoute(userUsername: String, latitude: Float?, longitude: Float?): String{
-            setMyCurrentRoute("home/$userUsername/$latitude/$longitude")
-            return currentRoute
-        }
-
-        fun buildWithoutPosition (userUsername: String) : String {
-            setMyCurrentRoute("home/$userUsername/0/0")
+        fun buildRoute(userUsername: String, trackId: Int): String{
+            setMyCurrentRoute("trackdetails/$userUsername/$trackId")
             return currentRoute
         }
 
@@ -339,15 +334,22 @@ fun OutdoorRomagnaNavGraph(
                 )
             }
         }
-        /*
-        with(OutdoorRomagnaRoute.TravelDetails) {
+
+        with(OutdoorRomagnaRoute.TrackDetails) {
             composable(route, arguments) { backStackEntry ->
-                val place = requireNotNull(placesState.places.find {
-                    it.id == backStackEntry.arguments?.getString("travelId")?.toInt()
+                val user = requireNotNull(usersState.users.find {
+                    it.username == backStackEntry.arguments?.getString("userUsername")
                 })
-                TravelDetailsScreen(place)
+                Log.d("io porco", tracksDbState.tracks.toString())
+                val track = requireNotNull(tracksDbState.tracks.find {
+                    it.id == backStackEntry.arguments?.getInt("trackId")
+                })
+                TrackDetails(
+                    navController = navController,
+                    user = user,
+                    track = track)
             }
-        }*/
+        }
     }
 }
 
