@@ -185,8 +185,8 @@ fun OutdoorRomagnaNavGraph(
     intentRoute: String?,
 ) {
 
-    val usersVm:UsersViewModel// = koinViewModel<UsersViewModel>()
-    val usersState: Thread.State<UsersState>// by usersVm.state.collectAsStateWithLifecycle()
+    val usersVm = koinViewModel<UsersViewModel>()
+    val usersState by usersVm.state.collectAsStateWithLifecycle()
     var userDefault by remember{ mutableStateOf("null") }
 
     val tracksDbVm = koinViewModel<TracksDbViewModel>()

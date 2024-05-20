@@ -130,11 +130,11 @@ fun BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         content = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(0.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
-                    modifier = Modifier.padding(start = 10.dp),
+                    modifier = Modifier.padding(0.dp),
                     onClick = {
                         navController.navigate(
                             OutdoorRomagnaRoute.Home.buildWithoutPosition(
@@ -198,7 +198,7 @@ fun BottomAppBar(
 
                 OutdoorRomagnaRoute.Profile.buildRoute(user.username)
                 Button(
-                    modifier = Modifier.padding(end = 10.dp),
+                    modifier = Modifier.padding(0.dp),
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.Profile.currentRoute)
                     },
