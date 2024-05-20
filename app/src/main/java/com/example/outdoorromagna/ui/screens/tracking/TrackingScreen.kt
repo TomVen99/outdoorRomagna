@@ -75,7 +75,7 @@ fun TrackingScreen(
             onClick = { isTracking = !isTracking },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(5.dp)
         ) {
             Text(text = buttonText, color = Color.Black)
         }
@@ -89,26 +89,26 @@ fun Indicators() {
             .fillMaxWidth()
             .wrapContentHeight()
             .background(colorResource(id = R.color.background_color))
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         IndicatorRow(
             iconResId = R.drawable.ic_pace,
             description = stringResource(id = R.string.steps),
             label = stringResource(id = R.string.steps),
-            value = "3.4 m/s"
+            value = "0 m/s"
         )
         IndicatorRow(
             iconResId = R.drawable.ic_time,
             description = stringResource(id = R.string.elapsed_time_label),
             label = stringResource(id = R.string.elapsed_time_label),
-            value = "45 minutes"
+            value = "0 s"
         )
         IndicatorRow(
             iconResId = R.drawable.ic_distance,
             description = stringResource(id = R.string.distance_label),
             label = stringResource(id = R.string.distance_label),
-            value = "12 km"
+            value = "0 m"
         )
     }
 }
@@ -128,17 +128,15 @@ fun IndicatorRow(
         Image(
             painter = painterResource(id = iconResId),
             contentDescription = description,
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(30.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = label,
-            //style = MaterialTheme.typography.body2,
             modifier = Modifier.weight(1f)
         )
         Text(
             text = value,
-            //style = MaterialTheme.typography.body1
         )
     }
 }
