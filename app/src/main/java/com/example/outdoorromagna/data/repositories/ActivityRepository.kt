@@ -1,6 +1,8 @@
-package com.project.mobile_project.data
+package com.example.outdoorromagna.data.repositories
 
 import androidx.annotation.WorkerThread
+import com.example.outdoorromagna.data.database.Activity
+import com.example.outdoorromagna.data.database.ActivityDAO
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

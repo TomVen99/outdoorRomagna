@@ -1,7 +1,6 @@
 package com.example.outdoorromagna.ui.composables
 
 import android.util.Log
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,9 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.outlined.ExitToApp
+import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.FilterList
-import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
@@ -26,43 +24,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
-import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreenActions
 import com.example.outdoorromagna.ui.screens.tracks.TracksActions
 import com.example.outdoorromagna.ui.screens.tracks.TracksState
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,7 +156,25 @@ fun BottomAppBar(
                         Text("Mappa")
                     }
                 }
-
+                OutdoorRomagnaRoute.AddTrack.buildRoute(user.username)
+                Button(
+                    onClick = {
+                        navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute)
+                    },
+                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.AddCircle,
+                            contentDescription = "Registra"
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text("Registra")
+                    }
+                }
                 OutdoorRomagnaRoute.Tracks.buildRoute(user.username, false)
                 OutdoorRomagnaRoute.Settings.buildRoute(user.username)
                 Button(

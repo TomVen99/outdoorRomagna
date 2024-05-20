@@ -4,8 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @Entity
+@Serializable
 data class User (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -109,4 +112,20 @@ data class Place (
 
     @ColumnInfo
     val imageUri: String?
+)
+
+@Entity(tableName = "activity")
+data class Activity(
+    @PrimaryKey val activityId: String = UUID.randomUUID().toString(),
+    @ColumnInfo var userCreatorUsername: String,
+    @ColumnInfo var name: String?,
+    @ColumnInfo var description: String?,
+    @ColumnInfo var totalTime: Long,
+    @ColumnInfo var distance: Int,
+    @ColumnInfo var speed: Double,
+    @ColumnInfo var pace: Double,
+    @ColumnInfo var steps: Int?,
+    @ColumnInfo var onFoot: Boolean?,
+    @ColumnInfo var favourite: Boolean,
+    @ColumnInfo var date: String
 )

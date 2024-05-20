@@ -1,18 +1,19 @@
-package com.project.mobile_project.utilities
+package com.example.outdoorromagna.utils
 
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
+import com.example.outdoorromagna.MainActivity
+import com.example.outdoorromagna.R
+import com.example.outdoorromagna.data.database.Activity
+import com.example.outdoorromagna.data.database.User
+import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.google.android.gms.maps.model.LatLng
-import com.project.mobile_project.MainActivity
-import com.project.mobile_project.R
-import com.project.mobile_project.data.Activity
-import com.project.mobile_project.viewModel.ActivitiesViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.round
@@ -58,15 +59,19 @@ class MapPresenter(private val activity: AppCompatActivity, private val isStarte
 
     fun stopTracking(
         context: Context,
-        sharedPreferences: SharedPreferences,
+        //sharedPreferences: SharedPreferences,
+        username: String,
         activitiesViewModel: ActivitiesViewModel,
         elapsedTime: Long
     ) {
         locationProvider.stopTracking()
         stepCounter.unloadStepCounter()
 
-        val result = insertNewActivity(context, sharedPreferences, activitiesViewModel, elapsedTime)
-        val homeIntent = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        val result = insertNewActivity(context, username,/*sharedPreferences,*/ activitiesViewModel, elapsedTime)
+        val homeIntent = Intent(context, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra("route", OutdoorRomagnaRoute.Home.currentRoute)
+        }
         if (!result) {
             Toast.makeText(context, "Errore nell'inserimento dell'attività", Toast.LENGTH_LONG).show()
         }
@@ -80,7 +85,8 @@ class MapPresenter(private val activity: AppCompatActivity, private val isStarte
      */
     private fun insertNewActivity(
         context: Context,
-        sharedPreferences: SharedPreferences,
+        //sharedPreferences: SharedPreferences,
+        username: String,
         activitiesViewModel: ActivitiesViewModel,
         elapsedTime: Long
     ): Boolean {
@@ -92,23 +98,23 @@ class MapPresenter(private val activity: AppCompatActivity, private val isStarte
             val pace = (round(time / distance * 166.667) / 10)
             val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-            sharedPreferences.getString(context.getString(R.string.username_shared_pref), "")?.let {
+            //sharedPreferences.getString(context.getString(R.string.username_shared_pref), "")?.let {
                 activitiesViewModel.insertActivity(
                     Activity(
-                        userCreatorUsername = it,
+                        userCreatorUsername = username,//it,
                         name = "Nuova attività",
                         description = "Inserisci una descrizione",
                         totalTime = elapsedTime,
                         distance = distance,
                         speed = speed,
                         pace = pace,
-                        steps = ui.value?.formattedSteps?.toInt(),
+                        steps = 10,//ui.value?.formattedSteps?.toInt(),
                         onFoot = null,
                         favourite = false,
                         date = LocalDateTime.now().format(dateFormatter)
                     )
                 )
-            }
+            //}
             return true
         }
         return false

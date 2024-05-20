@@ -1,4 +1,4 @@
-package com.example.outdoorromagna.ui.screens.addtravel
+package com.example.outdoorromagna.ui.screens.addtrack
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class ActivitiesViewModel @Inject constructor(
+class ActivitiesViewModel (
     private val repository: ActivityRepository
 ): ViewModel() {
 

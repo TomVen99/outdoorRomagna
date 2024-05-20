@@ -1,5 +1,6 @@
 package com.example.outdoorromagna.ui.screens.login
 
+import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -179,7 +180,8 @@ fun Login(
     actions: LoginActions,
     onSubmit: () -> Unit,
     navController: NavHostController,
-    viewModel: UsersViewModel
+    viewModel: UsersViewModel,
+    sharedPreferences: SharedPreferences,
 ) {
     val signinResult by viewModel.loginResult.observeAsState()
     val signinLog by viewModel.loginLog.observeAsState()
@@ -225,6 +227,10 @@ fun Login(
                     if (!state.canSubmit) return@Button
                     onSubmit()
                     Log.d("TAG", "login2")
+                    val edit = sharedPreferences.edit()
+                    edit.putString("username",state.username)
+                    edit.apply()
+                    sharedPreferences.getString("username", "")?.let { Log.d("TAG", "dentro Login " + it) }
                 },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                 colors = ButtonDefaults.buttonColors(

@@ -54,6 +54,7 @@ import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.camera.utils.PermissionHandler
 import com.example.camera.utils.PermissionStatus
+import com.example.outdoorromagna.data.repositories.generateTestTracks
 import com.example.outdoorromagna.ui.GroupedTracksState
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbViewModel
@@ -62,6 +63,7 @@ import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
+import com.example.outdoorromagna.ui.screens.tracks.TracksState
 import com.example.outdoorromagna.utils.LocationService
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -101,7 +103,8 @@ fun HomeScreen(
     user : User,
     tracksDbVm: TracksDbViewModel,
     tracksDbState: TracksDbState,
-    groupedTracksState: GroupedTracksState
+    groupedTracksState: GroupedTracksState,
+    tracksState: TracksDbState
 ) {
     val scope = rememberCoroutineScope()
     Log.d("grouped", groupedTracksState.toString())
@@ -202,12 +205,12 @@ fun HomeScreen(
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             onClick = {
                                 /**PER INSERIRE I TRACK DI TEST*/
-                                /*if (tracksState.tracks.isEmpty()) {
+                                if (tracksState.tracks.isEmpty()) {
                                     val testTracks = generateTestTracks()
                                     testTracks.forEach { testTrack ->
                                         tracksDbVm.addTrack(testTrack)
                                     }
-                                }*/
+                                }
                                 showPopUp = true
                             },
                             modifier = Modifier

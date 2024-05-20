@@ -1,4 +1,4 @@
-package com.project.mobile_project.utilities
+package com.example.outdoorromagna.utils
 
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity

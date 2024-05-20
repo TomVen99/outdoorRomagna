@@ -55,6 +55,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.outdoorromagna.ui.TrackingActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.OutdoorRomagna" >
+        </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB6IrzeS3vCCiPHToNAG5u0tZkIyJx1IbM"/>

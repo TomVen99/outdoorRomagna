@@ -4,7 +4,7 @@ import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ActivityDAO {
+interface ActivityDAO_old {
     @Query("SELECT * FROM activity")
     fun getActivities(): Flow<List<Activity>>
 

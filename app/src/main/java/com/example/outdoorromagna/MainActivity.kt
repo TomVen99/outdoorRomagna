@@ -1,5 +1,6 @@
 package com.example.outdoorromagna
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,7 +39,11 @@ class MainActivity : ComponentActivity() {
         locationService = get<LocationService>()
 
         setContent {
-            /*val themeViewModel = koinViewModel<ThemeViewModel>()
+            val intentRoute = intent.getStringExtra("route")
+
+
+
+                /*val themeViewModel = koinViewModel<ThemeViewModel>()
             val themeState by themeViewModel.state.collectAsStateWithLifecycle()
 
             OutdoorRomagnaTheme(
@@ -48,19 +53,23 @@ class MainActivity : ComponentActivity() {
                     Theme.System -> isSystemInDarkTheme()
                 }
             ) {*/
-            //val settingsViewModel = koinViewModel<SettingsViewModel>()
-            val theme by settingsViewModel.theme.collectAsState(initial = "")
-            OutdoorRomagnaTheme(darkTheme = theme == "Dark") {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val snackbarHostState = remember { SnackbarHostState() }
-                    var showLocationDisabledAlert by remember { mutableStateOf(false) }
-                    var showPermissionDeniedAlert by remember { mutableStateOf(false) }
-                    var showPermissionPermanentlyDeniedSnackbar by remember { mutableStateOf(false) }
+                //val settingsViewModel = koinViewModel<SettingsViewModel>()
+                val theme by settingsViewModel.theme.collectAsState(initial = "")
+                OutdoorRomagnaTheme(darkTheme = theme == "Dark") {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        val snackbarHostState = remember { SnackbarHostState() }
+                        var showLocationDisabledAlert by remember { mutableStateOf(false) }
+                        var showPermissionDeniedAlert by remember { mutableStateOf(false) }
+                        var showPermissionPermanentlyDeniedSnackbar by remember {
+                            mutableStateOf(
+                                false
+                            )
+                        }
 
-                    /*val locationPermission = rememberPermission(
+                        /*val locationPermission = rememberPermission(
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) { status ->
                         when (status) {
@@ -89,28 +98,29 @@ class MainActivity : ComponentActivity() {
                         }
                     }*/
 
-                    val navController = rememberNavController()
-                    val backStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute by remember {
-                        derivedStateOf {
-                            OutdoorRomagnaRoute.routes.find {
-                                it.route == backStackEntry?.destination?.route
-                            } ?: OutdoorRomagnaRoute.Login
+                        val navController = rememberNavController()
+                        val backStackEntry by navController.currentBackStackEntryAsState()
+                        val currentRoute by remember {
+                            derivedStateOf {
+                                OutdoorRomagnaRoute.routes.find {
+                                    it.route == backStackEntry?.destination?.route
+                                } ?: OutdoorRomagnaRoute.Login
+                            }
                         }
-                    }
-                    val ctx = LocalContext.current
 
-                    Scaffold(
-                        /*topBar = { TopAppBar(navController, currentRoute) },
+                        Scaffold(
+                            /*topBar = { TopAppBar(navController, currentRoute) },
                         bottomBar = { BottomAppBar(navController, currentRoute) },*/
-                        //snackbarHost = { SnackbarHost(snackbarHostState) }
-                    ) { contentPadding ->
-                        OutdoorRomagnaNavGraph(
-                            navController,
-                            modifier = Modifier.padding(contentPadding)
-                        )
-                    }
-                    /* { contentPadding ->
+                            //snackbarHost = { SnackbarHost(snackbarHostState) }
+                        ) { contentPadding ->
+                            OutdoorRomagnaNavGraph(
+                                navController,
+                                modifier = Modifier.padding(contentPadding),
+                                activity = this,
+                                intentRoute
+                            )
+                        }
+                        /* { contentPadding ->
                         position.setLatitude(locationService.coordinates?.latitude?.toFloat() ?: position.latitude.value!!)
                         position.setLongitude(locationService.coordinates?.longitude?.toFloat() ?: position.longitude.value!!)
                         TravelDiaryNavGraph(
@@ -122,7 +132,7 @@ class MainActivity : ComponentActivity() {
                             onThemeSelected = themeViewModel::changeTheme,
                         )
                     }*/
-                    /*
+                        /*
                     if (showLocationDisabledAlert) {
                         AlertDialog(
                             title = { Text("Location disabled") },
@@ -184,9 +194,9 @@ class MainActivity : ComponentActivity() {
                             showPermissionPermanentlyDeniedSnackbar = false
                         }
                     }*/
+                    }
                 }
             }
-        }
     }
 
             /*OutdoorRomagnaTheme {

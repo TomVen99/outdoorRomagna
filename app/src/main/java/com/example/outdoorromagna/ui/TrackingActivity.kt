@@ -1,4 +1,4 @@
-package com.example.outdoorromagna
+package com.example.outdoorromagna.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,33 +6,39 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.MutableLiveData
+import com.example.outdoorromagna.R
+import com.example.outdoorromagna.data.database.User
+import com.example.outdoorromagna.databinding.ActivityMapsBinding
+import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
+import com.example.outdoorromagna.utils.MapPresenter
+import com.example.outdoorromagna.utils.Ui
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
-import com.project.mobile_project.databinding.ActivityMapsBinding
-import com.project.mobile_project.R
-import com.project.mobile_project.utilities.MapPresenter
-import com.project.mobile_project.utilities.Ui
-import com.project.mobile_project.viewModel.ActivitiesViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    companion object {
+        const val EXTRA_PARAMETER = "extra_parameter"
+    }
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private val isStarted: MutableLiveData<Boolean> = MutableLiveData(false)
     private val presenter = MapPresenter(this, isStarted)
-    private val activitiesViewModel: ActivitiesViewModel by viewModels()
+    private val activitiesViewModel: ActivitiesViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_Mobile_project)
+        /*setTheme(R.style.Theme_Mobile_project)*/
         super.onCreate(savedInstanceState)
+        val username = intent.getStringExtra(EXTRA_PARAMETER)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,7 +59,11 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
                     context.getSharedPreferences("usernameLoggedPref", Context.MODE_PRIVATE)
 
                 isStarted.value = false
-                stopTracking(context, activitiesViewModel, sharedPreferences)
+                Log.d("TAG", "prima stopTracking")
+                if(username?.isNotEmpty() == true) {
+                    stopTracking(context, activitiesViewModel, username/*sharedPreferences*/)
+                }
+                Log.d("TAG", "dopo stopTracking")
                 binding.btnStartStop.setText(R.string.start_label)
             }
         }
@@ -85,11 +95,12 @@ class TrackingActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun stopTracking(
         context: Context,
         activitiesViewModel: ActivitiesViewModel,
-        sharedPreferences: SharedPreferences
+        //sharedPreferences: SharedPreferences
+        username: String
     ) {
         binding.container.txtTime.stop()
         val elapsedTime = (SystemClock.elapsedRealtime() - binding.container.txtTime.base) / 1000
-        presenter.stopTracking(context, sharedPreferences, activitiesViewModel, elapsedTime)
+        presenter.stopTracking(context, username,/*sharedPreferences,*/ activitiesViewModel, elapsedTime)
     }
 
     @SuppressLint("MissingPermission")

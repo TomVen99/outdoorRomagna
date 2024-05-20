@@ -74,7 +74,11 @@ dependencies {
     implementation ("com.google.android.gms:play-services-maps:18.2.0")
     implementation ("com.google.maps.android:maps-compose:4.3.3")
     implementation ("com.google.android.libraries.places:places:3.4.0")
-//    implementation("androidx.compose.foundation:foundation:1.0.5")
+    //layout
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    //tracking
+    implementation("com.google.maps.android:android-maps-utils:2.3.0")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")

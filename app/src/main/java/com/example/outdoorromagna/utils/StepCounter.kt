@@ -1,4 +1,4 @@
-package com.project.mobile_project.utilities
+package com.example.outdoorromagna.utils
 
 import android.content.Context.SENSOR_SERVICE
 import android.hardware.Sensor
