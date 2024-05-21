@@ -1,10 +1,13 @@
 package com.example.outdoorromagna.ui.screens.login
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,8 +16,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -32,6 +37,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -43,7 +49,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -54,126 +63,8 @@ import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.Place
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.UsersViewModel
-import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
-import com.example.outdoorromagna.ui.composables.Size
-import com.example.outdoorromagna.ui.screens.signin.SigninActions
 
-/*@Composable
-fun Login(/*state: LoginState, */navController: NavHostController) {
-    
-    Log.d("TAG", "Login")
-    OutlinedTextField(
-        value = state.username,
-        onValueChange = actions::setUsername,
-        label = { Text("Username") },
-        modifier = Modifier.fillMaxWidth()
-    )
-    OutlinedTextField(
-        value = state.password,
-        onValueChange = actions::setPassword,
-        label = { Text("Password") },
-        modifier = Modifier.fillMaxWidth()
-    )
-    Spacer(Modifier.size(24.dp))
-    Button(
-        onClick = {
-            if (!state.canSubmit) return@Button
-            onSubmit()
-        },
-        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-    ) {
-        Icon(
-            Icons.Outlined.DoneOutline,
-            contentDescription = "done icon",
-            modifier = Modifier.size(ButtonDefaults.IconSize)
-        )
-        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text("log-in")
-    }
-    Spacer(Modifier.size(40.dp))
-    Button(
-        onClick = {
-            navController.navigate(TravelDiaryRoute.SignIn.route)
-        },
-        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-        modifier = Modifier.align(Alignment.End),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-    ) {
-        Text("sign-in")
-    }
-    /*if (signinResult == false) {
-        Text(signinLog.toString(), color = Color.Red)
-    } else if (signinResult == true) {
-        navController.navigate(OutdoorRomagnaRoute.HomeMap.buildWithoutPosition(state.username))
-    }*/
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TravelItem(item: Place, onClick: () -> Unit) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier
-            .size(150.dp)
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val imageUri = Uri.parse(item.imageUri)
-            ImageWithPlaceholder(imageUri, Size.Sm)
-            Spacer(Modifier.size(8.dp))
-            Text(
-                item.name,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-fun NoItemsPlaceholder(modifier: Modifier = Modifier) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Icon(
-            Icons.Outlined.LocationOn, "Location icon",
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .size(48.dp),
-            tint = MaterialTheme.colorScheme.secondary
-        )
-        Text(
-            "No items",
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Text(
-            "Tap the + button to add a new place.",
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
-*/
 @Composable
 fun Login(
     state: LoginState,
@@ -186,51 +77,68 @@ fun Login(
     val signinResult by viewModel.loginResult.observeAsState()
     val signinLog by viewModel.loginLog.observeAsState()
 
-    Column(
-        //verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(12.dp)
-            .fillMaxSize()
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.outdoorromagna),
-            contentDescription = null,
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .wrapContentHeight(Alignment.CenterVertically))
+    {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .size(150.dp)
-                .padding(bottom = 16.dp)
-        )
-        OutlinedTextField(
-            value = state.username,
-            onValueChange = actions::setUsername,
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        var pwd by remember { mutableStateOf(state.password) }
-
-        PasswordTextField(
-            password = pwd,
-            onPasswordChange = { newPassword -> pwd = newPassword },
-            modifier = Modifier.fillMaxWidth(),
-            label = "Password",
-            actions)
-
-        Spacer(Modifier.size(24.dp))
-        Row (
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+                .padding(10.dp)
+                .border(1.dp, MaterialTheme.colorScheme.onBackground, RectangleShape)
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.logooudoorromagnarectangle),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            )
+            OutlinedTextField(
+                value = state.username,
+                onValueChange = actions::setUsername,
+                label = { Text("Username") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            )
+
+            var pwd by remember { mutableStateOf(state.password) }
+
+            PasswordTextField(
+                password = pwd,
+                onPasswordChange = { newPassword -> pwd = newPassword },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                label = "Password",
+                actions
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                if (signinResult == false) {
+                    Text(signinLog.toString(), color = Color.Red)
+                } else if (signinResult == true) {
+                    navController.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition(state.username))
+                } else if (signinResult == null) {
+                    Spacer(Modifier.size(15.dp))
+                }
+            }
             Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp),
                 onClick = {
-                    Log.d("TAG", "login1")
                     if (!state.canSubmit) return@Button
                     onSubmit()
-                    Log.d("TAG", "login2")
                     val edit = sharedPreferences.edit()
-                    edit.putString("username",state.username)
+                    edit.putBoolean("isUserLogged", true)
+                    edit.putString("username", state.username)
                     edit.apply()
-                    sharedPreferences.getString("username", "")?.let { Log.d("TAG", "dentro Login " + it) }
+                    //sharedPreferences.getString("username", "")?.let { Log.d("TAG", "dentro Login " + it) }
                 },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                 colors = ButtonDefaults.buttonColors(
@@ -238,38 +146,25 @@ fun Login(
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             ) {
-                Icon(
-                    Icons.Outlined.DoneOutline,
-                    contentDescription = "done icon",
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Login")
+                Text("Accedi")
             }
-            Spacer(Modifier.size(40.dp))
-            Button(
+            Text(text = "Oppure")
+            TextButton(
                 onClick = {
                     navController.navigate(OutdoorRomagnaRoute.Signin.route)
                 },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                //modifier = Modifier.align(Alignment.CenterHorizontally)  ,//.align(Alignment.End),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth()
+                    .padding(15.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             ) {
-                Text("Signin")
-            }
-        }
-        Row (
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            if (signinResult == false) {
-                Text(signinLog.toString(), color = Color.Red)
-            } else if (signinResult == true) {
-                navController.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition(state.username))
-                //Text("Vado alla Home", color = Color.Red)
+                Text("Registrati ora")
             }
         }
     }
@@ -293,4 +188,12 @@ fun PasswordTextField(
             keyboardType = KeyboardType.Password
         )
     )
+}
+
+fun saveLoggedUser(username: String, sharedPreferences: SharedPreferences, context: Context) {
+    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+
+    editor.putBoolean(context.getString(R.string.username_shared_pref), true)
+    editor.putString(context.getString(R.string.username_shared_pref), username)
+    editor.apply()
 }

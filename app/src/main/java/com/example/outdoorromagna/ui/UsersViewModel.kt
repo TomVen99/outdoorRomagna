@@ -38,6 +38,8 @@ class UsersViewModel(
         initialValue = UsersState(emptyList())
     )
 
+    val prova = repository
+
     fun addUser(user: User) {
         Log.d("TAG", "addUser")
         viewModelScope.launch {

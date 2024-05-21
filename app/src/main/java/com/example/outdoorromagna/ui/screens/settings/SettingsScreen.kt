@@ -89,7 +89,7 @@ fun SettingsScreen(
                     Text(
                         text = "Tema dell'app",
                         fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(3.dp)
                     )

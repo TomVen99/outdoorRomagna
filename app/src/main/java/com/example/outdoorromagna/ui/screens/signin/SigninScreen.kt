@@ -3,13 +3,16 @@ package com.example.outdoorromagna.ui.screens.signin
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DoneOutline
@@ -33,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -58,34 +62,36 @@ fun SigninScreen(
         val signinResult by viewModel.signinResult.observeAsState()
         val signinLog by viewModel.signinLog.observeAsState()
 
-        Scaffold { contentPadding ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .wrapContentHeight(Alignment.CenterVertically))
+        {
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(contentPadding)
-                    .padding(12.dp)
-                    .fillMaxSize()
+                    .padding(10.dp)
+                    .border(1.dp, MaterialTheme.colorScheme.onBackground, RectangleShape)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.outdoorromagna), // Sostituisci "R.drawable.your_image_resource" con il tuo ID di risorsa immagine
+                    painter = painterResource(id = R.drawable.logooudoorromagnarectangle),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(150.dp)
-                        .padding(bottom = 16.dp) // Spazio inferiore tra l'immagine e il modulo di accesso
+                        .fillMaxWidth()
+                        .padding(20.dp)
                 )
 
                 OutlinedTextField(
                     value = state.username,
                     onValueChange = actions::setUsername,
                     label = { Text("Username") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp)
                 )
                 var pwd by remember { mutableStateOf(state.password) }
                 PasswordTextField(
                     password = pwd,
                     onPasswordChange = { newPassword -> pwd = newPassword},
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp),
                     label = "Password",
                     actions)
 
@@ -93,27 +99,25 @@ fun SigninScreen(
                     value = state.name,
                     onValueChange = actions::setFirstName,
                     label = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp)
                 )
                 OutlinedTextField(
                     value = state.surname,
                     onValueChange = actions::setSurname,
                     label = { Text("Surname") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp)
                 )
                 OutlinedTextField(
                     value = state.mail,
                     onValueChange = actions::setMail,
                     label = { Text("Mail") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
-                Spacer(Modifier.size(24.dp))
+                Spacer(Modifier.size(10.dp))
                 Button(
                     onClick = {
-                        Log.d("TAG", "bottone signin cliccato")
                         if (!state.canSubmit) return@Button
-                        Log.d("TAG", "bottone signin cliccato 2")
                         val salt = viewModel.generateSalt()
                         val password = viewModel.hashPassword(state.password, salt)
                         onSubmit(
@@ -126,13 +130,13 @@ fun SigninScreen(
                                 surname = state.surname,
                                 mail = state.mail
                             ))
-                        Log.d("TAG", "bottone signin cliccato 3")
                     },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    ),
+                    modifier = Modifier.align(Alignment.End).padding(end = 15.dp, bottom = 15.dp)
                 ) {
                     Icon(
                         Icons.Outlined.DoneOutline,
@@ -140,7 +144,7 @@ fun SigninScreen(
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text("sign-in")
+                    Text("Registrati")
                 }
                 if (signinResult == false) {
                     Text(signinLog.toString(), color = Color.Red)
@@ -149,42 +153,6 @@ fun SigninScreen(
                 }
             }
         }
-
-
-
-
-    /*
-    Scaffold( //icona del +
-        floatingActionButton = {
-            FloatingActionButton(
-                containerColor = MaterialTheme.colorScheme.primary,
-                onClick = { navController.navigate(OutdoorRomagnaRoute.AddTravel.route) }
-            ) {
-                Icon(Icons.Outlined.Add, "Add Travel")
-            }
-        },
-    ) { contentPadding ->
-        if (state.places.isNotEmpty()) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 80.dp),
-                modifier = Modifier.padding(contentPadding)
-            ) {
-                items(state.places) { item ->
-                    TravelItem(
-                        item,
-                        onClick = {
-                            navController.navigate(OutdoorRomagnaRoute.TravelDetails.buildRoute(item.id.toString()))
-                        }
-                    )
-                }
-            }
-        } else {
-            NoItemsPlaceholder(Modifier.padding(contentPadding))
-        }
-    }*/
 }
 
 @Composable

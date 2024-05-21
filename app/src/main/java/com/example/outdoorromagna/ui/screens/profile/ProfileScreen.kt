@@ -1,6 +1,7 @@
 package com.example.outdoorromagna.ui.screens.profile
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -62,7 +63,8 @@ fun ProfileScreen(
     onModify: (User) -> Unit,
     //state: ProfileState,
     //actions: ProfileActions,
-    usersViewModel : UsersViewModel
+    usersViewModel : UsersViewModel,
+    sharedPreferences: SharedPreferences
 ) {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
@@ -112,7 +114,7 @@ fun ProfileScreen(
             Image(
                 painter = painterResource(id = R.drawable.baseline_android_24),
                 contentDescription = "image placeholder",
-                modifier = imageModifier.background(Color.LightGray),
+                modifier = imageModifier.background(MaterialTheme.colorScheme.background),
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onSecondaryContainer)
             )
@@ -142,7 +144,8 @@ fun ProfileScreen(
                     currentRoute = OutdoorRomagnaRoute.Profile.title,
                     drawerState = getMyDrawerState(),
                     scope = scope,
-                    showLogout = true
+                    showLogout = true,
+                    sharedPreferences = sharedPreferences
                 )
             },
             bottomBar = {
@@ -162,7 +165,7 @@ fun ProfileScreen(
                 Text(
                     text = "Nome e Cognome",
                     fontSize = 25.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                 )
@@ -206,7 +209,7 @@ fun ProfileScreen(
                 } else "Nome Cognome",*/
                         text = user.username,
                         fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -225,7 +228,7 @@ fun ProfileScreen(
                     Text(
                         text = "email",
                         fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                     )

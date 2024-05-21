@@ -1,5 +1,6 @@
 package com.example.outdoorromagna.ui.composables
 
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,7 +55,8 @@ fun TopAppBar(
     drawerState: DrawerState,
     scope: CoroutineScope,
     showFilter: Boolean = false,
-    showLogout: Boolean = false
+    showLogout: Boolean = false,
+    sharedPreferences: SharedPreferences? = null
 ) {
     Log.d("TAG", drawerState.toString())
     TopAppBar(
@@ -79,13 +81,22 @@ fun TopAppBar(
         },
         actions = {
             if (showLogout) {
-                IconButton(onClick = {
-                    navController.navigate(OutdoorRomagnaRoute.Login.route)
-                })
+                IconButton(
+                    onClick = {
+                        if(sharedPreferences != null) {
+                            val edit = sharedPreferences.edit()
+                            edit.putBoolean("isUserLogged", true)
+                            edit.putString("username", "")
+                            edit.apply()
+                        }
+                        navController.navigate(OutdoorRomagnaRoute.Login.route)
+                        }
+                )
                 {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
-                        contentDescription = "Logout"
+                        contentDescription = "Logout",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -110,7 +121,8 @@ fun TopAppBar(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Search,
-                        contentDescription = "Cerca"
+                        contentDescription = "Cerca",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -130,10 +142,15 @@ fun BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         content = {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(0.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
                     modifier = Modifier.padding(0.dp),
                     onClick = {
                         navController.navigate(
@@ -158,6 +175,9 @@ fun BottomAppBar(
                 }
                 OutdoorRomagnaRoute.AddTrack.buildRoute(user.username)
                 Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute)
                     },
@@ -178,6 +198,9 @@ fun BottomAppBar(
                 OutdoorRomagnaRoute.Tracks.buildRoute(user.username, false)
                 OutdoorRomagnaRoute.Settings.buildRoute(user.username)
                 Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
                     modifier = Modifier.padding(0.dp),
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.Tracks.currentRoute)
@@ -199,6 +222,9 @@ fun BottomAppBar(
 
                 OutdoorRomagnaRoute.Profile.buildRoute(user.username)
                 Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
                     modifier = Modifier.padding(0.dp),
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.Profile.currentRoute)

@@ -1,5 +1,6 @@
 package com.example.outdoorromagna.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.util.Log
@@ -17,6 +18,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.outdoorromagna.data.repositories.UsersRepository
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackScreen
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreen
@@ -32,6 +34,9 @@ import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
 import com.example.outdoorromagna.ui.screens.trackdetails.TrackDetails
 import com.example.outdoorromagna.ui.screens.tracks.TracksScreen
 import com.example.outdoorromagna.ui.screens.tracks.TracksViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 sealed class OutdoorRomagnaRoute(
@@ -172,6 +177,8 @@ sealed class OutdoorRomagnaRoute(
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun OutdoorRomagnaNavGraph(
     navController: NavHostController,
@@ -183,19 +190,33 @@ fun OutdoorRomagnaNavGraph(
     val usersVm = koinViewModel<UsersViewModel>()
     val usersState by usersVm.state.collectAsStateWithLifecycle()
     var userDefault by remember{ mutableStateOf("null") }
-
     val tracksDbVm = koinViewModel<TracksDbViewModel>()
     val tracksDbState by tracksDbVm.state.collectAsStateWithLifecycle()
     val groupedTracksState by tracksDbVm.groupedTracksState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
-    val sharedPreferences = context.getSharedPreferences("userLogged", Context.MODE_PRIVATE)
 
+    val sharedPreferences = context.getSharedPreferences("isUserLogged", Context.MODE_PRIVATE)
+    /*val edit = sharedPreferences.edit()
+    edit.putBoolean("isUserLogged", false)
+    edit.putString("username", "")
+    edit.apply()*/
     var startDestination = ""
-    if(intentRoute?.isNotEmpty() == true) {
+    /*if(intentRoute?.isNotEmpty() == true) {
         startDestination = OutdoorRomagnaRoute.Home.currentRoute
         sharedPreferences.getString("username", "")
             ?.let { OutdoorRomagnaRoute.Home.buildWithoutPosition(it) }
+    } else {
+        startDestination = OutdoorRomagnaRoute.Login.route
+    }*/
+    if (sharedPreferences.getBoolean("isUserLogged", false)) {
+        val username = sharedPreferences.getString("username", "")
+        Log.d("username", "username: " + username)
+        if(username != null && username != "") {
+            startDestination = OutdoorRomagnaRoute.Home.buildWithoutPosition(username)
+        } else {
+            startDestination = OutdoorRomagnaRoute.Login.route
+        }
     } else {
         startDestination = OutdoorRomagnaRoute.Login.route
     }
@@ -214,7 +235,7 @@ fun OutdoorRomagnaNavGraph(
                 Login(
                     state,
                     actions = loginVm.actions,
-                    onSubmit = {usersVm.login(/*state.toUser()*/state.username, state.password)},
+                    onSubmit = {usersVm.login(state.username, state.password)},
                     navController,
                     usersVm,
                     sharedPreferences
@@ -244,22 +265,22 @@ fun OutdoorRomagnaNavGraph(
                 userDefault = userName
                 Log.d("TAG", "username sharedPreferences " + sharedPreferences.getString("username", ""))
                 Log.d("TAG", "lista username " + usersState.users)
-                Log.d("TAG", "userstate " + usersState.toString())
-                val user = requireNotNull(usersState.users.find {
-                    Log.d("TAG", "lista user " + it.username)
-                    it.username == sharedPreferences.getString("username", "")//userName
-                })
-                Log.d("tag", "user.username " + user.username)
-                HomeScreen(
-                    navController,
-                    state,
-                    homeScreenVm.actions,
-                    user,
-                    tracksDbVm,
-                    tracksDbState,
-                    groupedTracksState,
-                    tracksDbState
-                )
+                if(usersState.users.isNotEmpty()) {
+                    val user = requireNotNull(usersState.users.find {
+                        it.username == sharedPreferences.getString("username", "")//userName
+                    })
+                    Log.d("tag", "user.username " + user.username)
+                    HomeScreen(
+                        navController,
+                        state,
+                        homeScreenVm.actions,
+                        user,
+                        tracksDbVm,
+                        tracksDbState,
+                        groupedTracksState,
+                        tracksDbState
+                    )
+                }
             }
         }
         with(OutdoorRomagnaRoute.Profile) {
@@ -279,7 +300,8 @@ fun OutdoorRomagnaNavGraph(
                     onModify = usersVm::addUserWithoutControl,
                     /*state = state,
                     actions = profileVm.actions,*/
-                    usersViewModel = usersVm
+                    usersViewModel = usersVm,
+                    sharedPreferences = sharedPreferences
                 )
             }
         }

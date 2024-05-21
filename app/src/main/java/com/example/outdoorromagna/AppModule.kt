@@ -41,7 +41,6 @@ val appModule = module {
             OutdoorRomagnaDatabase::class.java,
             "outdoorRomagna"
         )
-            // Sconsigliato per progetti seri! Lo usiamo solo qui per semplicità
             .fallbackToDestructiveMigration()
             .build()
     }

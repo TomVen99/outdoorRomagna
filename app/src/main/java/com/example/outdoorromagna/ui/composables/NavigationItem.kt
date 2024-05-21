@@ -29,13 +29,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -47,10 +50,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
-import com.example.outdoorromagna.ui.theme.DarkBrown
-import com.example.outdoorromagna.ui.theme.LightBrown
 import kotlinx.coroutines.launch
 
 data class NavigationItem(
@@ -94,7 +96,7 @@ val items = listOf(
         route = OutdoorRomagnaRoute.Settings
     ),
 )
-
+var currentRoute by mutableStateOf("")
 @Composable
 fun SideBarMenu (
     myScaffold: @Composable () -> Unit,
@@ -109,14 +111,16 @@ fun SideBarMenu (
         var selectedItemIndex by rememberSaveable {
             mutableStateOf(0)
         }
+
         ModalNavigationDrawer(
             gesturesEnabled = false,
             drawerContent = {
                 ModalDrawerSheet (
                     drawerShape = RectangleShape,
-                    drawerContainerColor = LightBrown
+                    drawerContainerColor = MaterialTheme.colorScheme.primaryContainer
                 ){
                     FloatingActionButton(
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp),
                         onClick = {
                             scope.launch {
@@ -125,7 +129,8 @@ fun SideBarMenu (
                                 }
                             }
                         },
-                        modifier = Modifier.align(Alignment.End)
+                        modifier = Modifier
+                            .align(Alignment.End)
                             .padding(all = 5.dp)
                             .size(48.dp)
                     ) {
@@ -133,33 +138,38 @@ fun SideBarMenu (
                     }
 
                     Image(
-                        painter = painterResource(id = R.drawable.outdoorromagna),
-                        contentDescription = null,
+                        painter = painterResource(id = R.drawable.logooudoorromagnarectangle),
+                        contentDescription = "logo",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         alignment = Alignment.Center
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "Utente")
-                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Log.d("curentRoute", currentRoute.toString())
+                    Spacer(modifier = Modifier.height(30.dp))
                     items.forEachIndexed { index, item ->
                         NavigationDrawerItem(
+                            colors = NavigationDrawerItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
                             modifier = Modifier
-                                .alpha(0.5.toFloat())
                                 .padding(horizontal = 5.dp, vertical = 5.dp)
                                 .border(
                                     shape = RoundedCornerShape(25.dp),
                                     width = 1.dp,
-                                    color = DarkBrown
-                                ), // Imposta lo spessore e il colore del bordo
+                                    color = MaterialTheme.colorScheme.primaryContainer
+                                ),
 
                             label = {
                                 Text(text = item.title)
                             },
-                            selected = index == selectedItemIndex,
+                            selected = true,
                             onClick = {
-                                navController.navigate(item.route.currentRoute)//.navigate(OutdoorRomagnaRoute.Home.buildWithoutPosition("a"))
+                                navController.navigate(item.route.currentRoute)
                                 selectedItemIndex = index
                                 scope.launch {
                                     drawerState.close()
@@ -167,9 +177,7 @@ fun SideBarMenu (
                             },
                             icon = {
                                 Icon(
-                                    imageVector = if (index == selectedItemIndex) {
-                                        item.selectedIcon
-                                    } else item.unselectedIcon,
+                                    imageVector = item.unselectedIcon,
                                     contentDescription = item.title
                                 )
                             },
@@ -185,7 +193,6 @@ fun SideBarMenu (
             },
             drawerState = drawerState
         ) {
-            Log.d("TAG", "prima di myscaffold")
             myScaffold()
         }
     }
