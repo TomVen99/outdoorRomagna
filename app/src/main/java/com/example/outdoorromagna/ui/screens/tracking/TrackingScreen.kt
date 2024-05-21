@@ -1,5 +1,11 @@
 package com.example.outdoorromagna.ui.screens.tracking
 
+import android.content.Context
+import android.os.Bundle
+import android.os.SystemClock
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,81 +20,179 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.navigation.NavHostController
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
-import com.example.outdoorromagna.ui.TracksDbState
-import com.example.outdoorromagna.ui.TracksDbViewModel
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
+import com.example.outdoorromagna.utils.MapPresenter
+import com.example.outdoorromagna.utils.observeAsState
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.LatLng
 
+/*@Composable
+fun TrackingScreen(presenter: MapPresenter) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val uiState by presenter.ui.observeAsState(Ui.EMPTY)
 
+    val mapView = rememberMapViewWithLifecycle()
+
+    LaunchedEffect(key1 = Unit) {
+        presenter.onMapLoaded(context)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            AndroidView({ mapView }) { mapView ->
+                mapView.getMapAsync { googleMap ->
+                    presenter.setGoogleMap(googleMap)
+                    googleMap.uiSettings.isZoomControlsEnabled = true
+                }
+            }
+        }
+
+        Button(
+            onClick = {
+                presenter.toggleTracking()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(text = if (uiState.isTracking) "Stop" else "Start")
+        }
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                mapView.onResume()
+            } else if (event == Lifecycle.Event.ON_PAUSE) {
+                mapView.onPause()
+            } else if (event == Lifecycle.Event.ON_DESTROY) {
+                mapView.onDestroy()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+}
+
+*/
 @Composable
 fun TrackingScreen(
-    navController: NavHostController,
-    state: TrackingState,
-    actions: TrackingActions,
-    user : User,
-    /*tracksDbVm: TracksDbViewModel,
-    tracksDbState: TracksDbState,*/
-)
-{
-    var isTracking by remember { mutableStateOf(false) }
-    val buttonText = if (isTracking) stringResource(id = R.string.stop_label) else stringResource(id = R.string.start_label)
+    //isTracking: MutableState<Boolean>,
+    trackingState: TrackingState,
+    user: User,
+    activitiesViewModel: ActivitiesViewModel,
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val registry = rememberLauncherForActivityResultRegistry()
+    val presenter: MapPresenter = remember { MapPresenter(context, registry, MutableLiveData()) }
+    var isTrackingStarted by remember { mutableStateOf(false) }
+
+    val uiState = remember { MutableLiveData(Ui.EMPTY)}
+    val elapsedTimeState = presenter.elapsedTime.observeAsState(0L)
+    val mapView = rememberMapViewWithLifecycle()
+    LaunchedEffect(key1 = Unit) {
+        presenter.onMapLoaded(context)
+        presenter.mySetUi(uiState)
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.background_color))
     ) {
-        // Include layout for indicators
-        // Assuming you have a separate composable for this
-        Indicators()
-
-        val cameraPositionState = rememberCameraPositionState()
-
+        IndicatorsLayout(uiState, elapsedTimeState.value)
         Box(modifier = Modifier.weight(1f)) {
-            GoogleMap(
+            //MapViewComposable(presenter)
+            AndroidView({ mapView }) { mapView ->
+                mapView.getMapAsync { googleMap ->
+                    Log.d("TAG", "prima setGoogleMap")
+                    presenter.setGoogleMap(googleMap)
+                    presenter.onViewCreated(lifecycleOwner)
+                    Log.d("TAG", "dopo setGoogleMap")
+                    googleMap.uiSettings.isZoomControlsEnabled = true
+                }
+            }
+            /*GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState
-            )
+            )*/
         }
 
         Button(
-            onClick = { isTracking = !isTracking },
+            onClick = {
+                isTrackingStarted = !isTrackingStarted
+                trackingState.isTracking = isTrackingStarted
+                if (isTrackingStarted) {
+                    startTracking(presenter)
+                } else {
+                    stopTracking(context, presenter, user.username, activitiesViewModel)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
         ) {
-            Text(text = buttonText, color = Color.Black)
+            Text(text = if (isTrackingStarted) stringResource(R.string.stop_label) else stringResource(R.string.start_label))
+        }
+    }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                mapView.onResume()
+            } else if (event == Lifecycle.Event.ON_PAUSE) {
+                mapView.onPause()
+            } else if (event == Lifecycle.Event.ON_DESTROY) {
+                mapView.onDestroy()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 }
 
 @Composable
-fun Indicators() {
+fun IndicatorsLayout(uiState: MutableLiveData<Ui>, elapsedTimeState: Long) {
+    val uiStateValue by uiState.observeAsState(Ui.EMPTY)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(colorResource(id = R.color.background_color))
             .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -96,19 +200,19 @@ fun Indicators() {
             iconResId = R.drawable.ic_pace,
             description = stringResource(id = R.string.steps),
             label = stringResource(id = R.string.steps),
-            value = "0 m/s"
+            value = uiStateValue.formattedSteps
         )
         IndicatorRow(
             iconResId = R.drawable.ic_time,
             description = stringResource(id = R.string.elapsed_time_label),
             label = stringResource(id = R.string.elapsed_time_label),
-            value = "0 s"
+            value = uiStateValue.formattedTime(elapsedTimeState)
         )
         IndicatorRow(
             iconResId = R.drawable.ic_distance,
             description = stringResource(id = R.string.distance_label),
             label = stringResource(id = R.string.distance_label),
-            value = "0 m"
+            value = uiStateValue.formattedDistance
         )
     }
 }
@@ -123,7 +227,7 @@ fun IndicatorRow(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(id = iconResId),
@@ -137,6 +241,81 @@ fun IndicatorRow(
         )
         Text(
             text = value,
+        )
+    }
+}
+
+private fun startTracking(presenter: MapPresenter) {
+    presenter.startTracking()
+}
+
+private fun stopTracking(
+    context: Context,
+    presenter: MapPresenter,
+    username: String,
+    activitiesViewModel: ActivitiesViewModel
+) {
+    val elapsedTime = (SystemClock.elapsedRealtime() - /*presenter.startTime*/10) / 1000
+    presenter.stopTracking(context, username, activitiesViewModel, elapsedTime)
+}
+
+@Composable
+fun rememberLauncherForActivityResultRegistry(): ActivityResultRegistry {
+    val context = LocalContext.current as ComponentActivity
+    return remember { context.activityResultRegistry }
+}
+
+@Composable
+fun rememberMapViewWithLifecycle(): MapView {
+    val context = LocalContext.current
+    val mapView = remember { MapView(context) }
+
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
+        val lifecycleObserver = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
+                Lifecycle.Event.ON_START -> mapView.onStart()
+                Lifecycle.Event.ON_RESUME -> mapView.onResume()
+                Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+                Lifecycle.Event.ON_STOP -> mapView.onStop()
+                Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
+                else -> {}
+            }
+        }
+
+        lifecycle.addObserver(lifecycleObserver)
+        onDispose {
+            lifecycle.removeObserver(lifecycleObserver)
+        }
+    }
+
+    return mapView
+}
+
+data class Ui(
+    val formattedSteps: String,
+    val distance: Int,
+    val steps: Int,
+    val formattedDistance: String,
+    val currentLocation: LatLng?,
+    val userPath: List<LatLng>
+) {
+    fun formattedTime(elapsedTime: Long): String {
+        val minutes = elapsedTime / 60
+        val seconds = elapsedTime % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    companion object {
+
+        val EMPTY = Ui(
+            formattedSteps = "",
+            distance = 0,
+            formattedDistance = "",
+            currentLocation = null,
+            userPath = emptyList(),
+            steps = 0,
         )
     }
 }

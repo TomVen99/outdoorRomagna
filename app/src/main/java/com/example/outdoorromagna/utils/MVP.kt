@@ -1,12 +1,24 @@
 package com.example.outdoorromagna.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultRegistry
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.PendingIntentCompat.getActivity
+import androidx.core.content.ContextCompat.getString
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import com.example.outdoorromagna.MainActivity
 import com.example.outdoorromagna.R
@@ -14,48 +26,90 @@ import com.example.outdoorromagna.data.database.Activity
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
+import com.example.outdoorromagna.ui.screens.tracking.Ui
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.round
 
-class MapPresenter(private val activity: AppCompatActivity, private val isStarted: MutableLiveData<Boolean>) {
+class MapPresenter(private val context: Context,
+                   private val registry: ActivityResultRegistry,
+                   private val isStarted: MutableLiveData<Boolean>) {
 
-    val ui = MutableLiveData(Ui.EMPTY)
-    private val locationProvider = LocationProvider(activity, isStarted)
-    private val stepCounter = StepCounter(activity)
-    private val permissionsManager = PermissionsManager(activity, locationProvider, stepCounter)
+    lateinit var ui: MutableLiveData<Ui>
+    private lateinit var googleMap: GoogleMap
+    private lateinit var locationProvider: LocationProvider
+    private lateinit var stepCounter: StepCounter
+    private lateinit var permissionsManager: PermissionsManager
 
-    fun onViewCreated() {
-        locationProvider.liveLocations.observe(activity) { locations ->
+    val elapsedTime = MutableLiveData<Long>()
+
+    private var startTime = 0L
+
+    fun setGoogleMap(googleMap: GoogleMap) {
+        this.googleMap = googleMap
+    }
+
+    fun mySetUi(ui: MutableLiveData<Ui>) {
+        this.ui = ui
+    }
+    fun onMapLoaded(context: Context) {
+        locationProvider = LocationProvider(context, isStarted)
+        stepCounter = StepCounter(context)
+        permissionsManager = PermissionsManager(registry, locationProvider, stepCounter)
+        permissionsManager.requestUserLocation()
+    }
+
+    private fun stopTracking() {
+        isStarted.value = false
+        locationProvider.stopTracking()
+        stepCounter.unloadStepCounter()
+    }
+
+    fun onViewCreated(lifecycleOwner: LifecycleOwner) {
+        locationProvider.liveLocations.observe(lifecycleOwner) { locations ->
             val current = ui.value
             ui.value = current?.copy(userPath = locations)
         }
 
-        locationProvider.liveLocation.observe(activity) { currentLocation ->
+        locationProvider.liveLocation.observe(lifecycleOwner) { currentLocation ->
             val current = ui.value
             ui.value = current?.copy(currentLocation = currentLocation)
         }
 
-        locationProvider.liveDistance.observe(activity) { distance ->
+        locationProvider.liveDistance.observe(lifecycleOwner) { distance ->
             val current = ui.value
-            val formattedDistance = activity.getString(R.string.distance_value, distance)
+            val formattedDistance = context.getString(R.string.distance_value, distance)
             ui.value = current?.copy(formattedDistance = formattedDistance, distance = distance)
         }
 
-        stepCounter.liveSteps.observe(activity) { steps ->
+        stepCounter.liveSteps.observe(lifecycleOwner) { steps ->
             val current = ui.value
-            ui.value = current?.copy(formattedSteps = "$steps")
+            val formattedSteps = context.getString(R.string.steps_value, steps)
+            Log.d("TAG", "steps " + steps)
+            ui.value = current?.copy(formattedSteps = formattedSteps, steps = steps)
         }
-    }
 
-    fun onMapLoaded() {
-        permissionsManager.requestUserLocation()
     }
 
     fun startTracking() {
+        startTime = SystemClock.elapsedRealtime()
+        isStarted.value = true
         locationProvider.trackUser()
         permissionsManager.requestActivityRecognition()
+        updateElapsedTime()
+    }
+
+    private fun updateElapsedTime() {
+        if (isStarted.value == true) {
+            val currentTime = SystemClock.elapsedRealtime()
+            val elapsed = currentTime - startTime
+            elapsedTime.value = elapsed / 1000 // Convert to seconds
+            Handler(Looper.getMainLooper()).postDelayed({ updateElapsedTime() }, 1000)
+        }
     }
 
     fun stopTracking(
@@ -70,10 +124,9 @@ class MapPresenter(private val activity: AppCompatActivity, private val isStarte
 
         val result = insertNewActivity(context, username,/*sharedPreferences,*/ activitiesViewModel, elapsedTime)
         if (!result) {
-            Toast.makeText(context, "Errore nell'inserimento dell'attività", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Errore nell'inserimento del tracking", Toast.LENGTH_LONG).show()
         }
 
-        activity.finish()
     }
 
     /**
@@ -89,28 +142,29 @@ class MapPresenter(private val activity: AppCompatActivity, private val isStarte
     ): Boolean {
         val time = elapsedTime.toDouble()
         val distance = ui.value?.distance
+        val steps = ui.value?.steps
 
-        if (distance != null && distance != 0) {
+        if (distance != 0) {
             val speed = (round(distance!! / time * 36) / 10)
             val pace = (round(time / distance * 166.667) / 10)
             val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
             //sharedPreferences.getString(context.getString(R.string.username_shared_pref), "")?.let {
-                activitiesViewModel.insertActivity(
-                    Activity(
-                        userCreatorUsername = username,//it,
-                        name = "Nuova attività",
-                        description = "Inserisci una descrizione",
-                        totalTime = elapsedTime,
-                        distance = distance,
-                        speed = speed,
-                        pace = pace,
-                        steps = 10,//ui.value?.formattedSteps?.toInt(),
-                        onFoot = null,
-                        favourite = false,
-                        date = LocalDateTime.now().format(dateFormatter)
-                    )
+            activitiesViewModel.insertActivity(
+                Activity(
+                    userCreatorUsername = username,//it,
+                    name = "Nuova attività",
+                    description = "Inserisci una descrizione",
+                    totalTime = elapsedTime,
+                    distance = distance,
+                    speed = speed,
+                    pace = pace,
+                    steps = steps,
+                    onFoot = null,
+                    favourite = false,
+                    date = LocalDateTime.now().format(dateFormatter)
                 )
+            )
             //}
             return true
         }
@@ -118,23 +172,5 @@ class MapPresenter(private val activity: AppCompatActivity, private val isStarte
     }
 }
 
-data class Ui(
-    val formattedSteps: String,
-    val distance: Int,
-    val formattedDistance: String,
-    val currentLocation: LatLng?,
-    val userPath: List<LatLng>
-) {
 
-    companion object {
-
-        val EMPTY = Ui(
-            formattedSteps = "",
-            distance = 0,
-            formattedDistance = "",
-            currentLocation = null,
-            userPath = emptyList()
-        )
-    }
-}
 

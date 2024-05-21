@@ -17,6 +17,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackScreen
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreen
@@ -373,13 +374,14 @@ fun OutdoorRomagnaNavGraph(
                 })
                 val trackingVm = koinViewModel<TrackingViewModel>()
                 val trackingState by trackingVm.state.collectAsStateWithLifecycle()
+                val activitiesViewModel = koinViewModel<ActivitiesViewModel>()
                 TrackingScreen(
-                    navController = navController,
-                    state = trackingState,
-                    actions = trackingVm.actions,
+                    /*navController = navController,*/
+                    trackingState = trackingState,
                     user = user,
-                    /*tracksDbVm: TracksDbViewModel,
-                    tracksDbState: TracksDbState,*/
+                    /*trackingViewModel = trackingVm,
+                    trackingActions = trackingVm.actions,*/
+                    activitiesViewModel = activitiesViewModel,
                 )
             }
         }

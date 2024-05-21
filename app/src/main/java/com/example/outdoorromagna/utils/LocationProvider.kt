@@ -1,7 +1,9 @@
 package com.example.outdoorromagna.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Looper
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
@@ -10,10 +12,10 @@ import com.google.maps.android.SphericalUtil
 import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
-class LocationProvider(private val activity: AppCompatActivity, private val isStarted: MutableLiveData<Boolean>) {
+class LocationProvider(context: Context,/*private val activity: ComponentActivity,*/ private val isStarted: MutableLiveData<Boolean>) {
 
     private val client
-            by lazy { LocationServices.getFusedLocationProviderClient(activity) }
+            by lazy { LocationServices.getFusedLocationProviderClient(context) }
 
     private val locations = mutableListOf<LatLng>()
     private var distance = 0

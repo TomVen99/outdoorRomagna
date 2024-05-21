@@ -1,20 +1,23 @@
 package com.example.outdoorromagna.utils
 
+import android.content.Context
 import android.content.Context.SENSOR_SERVICE
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.SensorManager.SENSOR_DELAY_FASTEST
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 
-class StepCounter(private val activity: AppCompatActivity) : SensorEventListener {
+class StepCounter(private val context: Context) : SensorEventListener {
 
     val liveSteps = MutableLiveData<Int>()
 
     private val sensorManager by lazy {
-        activity.getSystemService(SENSOR_SERVICE) as SensorManager
+        context.getSystemService(SENSOR_SERVICE) as SensorManager
     }
 
     private val stepCounterSensor: Sensor? by lazy {
@@ -38,6 +41,7 @@ class StepCounter(private val activity: AppCompatActivity) : SensorEventListener
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit
 
     fun setupStepCounter() {
+        Log.d("TAG", "start step counter")
         if (stepCounterSensor != null) {
             sensorManager.registerListener(this, stepCounterSensor, SENSOR_DELAY_FASTEST)
         }
