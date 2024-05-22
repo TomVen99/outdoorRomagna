@@ -288,9 +288,9 @@ data class Ui(
     companion object {
 
         val EMPTY = Ui(
-            formattedSteps = "",
+            formattedSteps = "0 passi",
             distance = 0,
-            formattedDistance = "",
+            formattedDistance = "0 metri",
             currentLocation = null,
             userPath = emptyList(),
             steps = 0,

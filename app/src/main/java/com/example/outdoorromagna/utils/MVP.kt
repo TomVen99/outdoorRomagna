@@ -49,15 +49,13 @@ import kotlin.math.round
 class MapPresenter(private val context: Context,
                    private val registry: ActivityResultRegistry,
                    private val isStarted: MutableLiveData<Boolean>,
-                   tracksDbVm: TracksDbViewModel) {
+                   private val tracksDbVm: TracksDbViewModel) {
 
     lateinit var ui: MutableLiveData<Ui>
     private lateinit var googleMap: GoogleMap
     private lateinit var locationProvider: LocationProvider
     private lateinit var stepCounter: StepCounter
     private lateinit var permissionsManager: PermissionsManager
-    val tracksDbVm = tracksDbVm
-
 
     val elapsedTime = MutableLiveData<Long>()
 
