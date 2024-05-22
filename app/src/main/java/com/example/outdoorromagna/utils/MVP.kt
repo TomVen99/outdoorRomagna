@@ -1,9 +1,12 @@
 package com.example.outdoorromagna.utils
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -11,11 +14,14 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultRegistry
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
 import androidx.core.app.PendingIntentCompat.getActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
@@ -23,32 +29,40 @@ import androidx.lifecycle.MutableLiveData
 import com.example.outdoorromagna.MainActivity
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.Activity
+import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.tracking.Ui
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Collections
 import kotlin.math.round
 
 class MapPresenter(private val context: Context,
                    private val registry: ActivityResultRegistry,
-                   private val isStarted: MutableLiveData<Boolean>) {
+                   private val isStarted: MutableLiveData<Boolean>,
+                   tracksDbVm: TracksDbViewModel) {
 
     lateinit var ui: MutableLiveData<Ui>
     private lateinit var googleMap: GoogleMap
     private lateinit var locationProvider: LocationProvider
     private lateinit var stepCounter: StepCounter
     private lateinit var permissionsManager: PermissionsManager
+    val tracksDbVm = tracksDbVm
+
 
     val elapsedTime = MutableLiveData<Long>()
 
     private var startTime = 0L
-
+    private var locations = mutableListOf<LatLng>()//mutableListOf<LatLng>()
     fun setGoogleMap(googleMap: GoogleMap) {
         this.googleMap = googleMap
     }
@@ -73,11 +87,13 @@ class MapPresenter(private val context: Context,
         locationProvider.liveLocations.observe(lifecycleOwner) { locations ->
             val current = ui.value
             ui.value = current?.copy(userPath = locations)
+            drawRoute(locations)
         }
 
         locationProvider.liveLocation.observe(lifecycleOwner) { currentLocation ->
             val current = ui.value
             ui.value = current?.copy(currentLocation = currentLocation)
+            updateMapLocation(currentLocation)
         }
 
         locationProvider.liveDistance.observe(lifecycleOwner) { distance ->
@@ -93,6 +109,33 @@ class MapPresenter(private val context: Context,
             ui.value = current?.copy(formattedSteps = formattedSteps, steps = steps)
         }
 
+    }
+
+    private fun updateMapLocation(location: LatLng?) {
+        location?.let {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 15f))
+        }
+    }
+
+    private fun drawRoute(locations: List<LatLng>) {
+        val polylineOptions = PolylineOptions()
+
+        googleMap.clear()
+
+        val points = polylineOptions.points
+        points.addAll(locations)
+
+        googleMap.addPolyline(polylineOptions)
+        /*Log.d("TAG", locations.toString())*/
+    }
+
+    fun enableUserLocation() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.isMyLocationEnabled = true
+            googleMap.uiSettings.isMyLocationButtonEnabled = true
+            Log.d("TAG", "abilitato")
+        }
     }
 
     fun startTracking() {
@@ -117,16 +160,38 @@ class MapPresenter(private val context: Context,
         //sharedPreferences: SharedPreferences,
         username: String,
         activitiesViewModel: ActivitiesViewModel,
-        elapsedTime: Long
     ) {
         locationProvider.stopTracking()
         stepCounter.unloadStepCounter()
 
-        val result = insertNewActivity(context, username,/*sharedPreferences,*/ activitiesViewModel, elapsedTime)
-        if (!result) {
-            Toast.makeText(context, "Errore nell'inserimento del tracking", Toast.LENGTH_LONG).show()
+        /*val result = elapsedTime.value?.let {
+            insertNewActivity(context, username,/*sharedPreferences,*/ activitiesViewModel, it)
         }
+        if (result == false) {
+            Toast.makeText(context, "Errore nell'inserimento del tracking", Toast.LENGTH_LONG).show()
+        }*/
+        addTrack()
 
+    }
+
+    private fun addTrack(
+        /*username: String,
+        activitiesViewModel: ActivitiesViewModel,
+        elapsedTime: Long*/
+    ) {
+        val locationList = Collections.unmodifiableList(locations)
+        tracksDbVm.addTrack(
+            Track(
+                city = "Cesena",
+                name = "Default name",
+                description = "descrizione",
+                duration = /*elapsedTime*/ 10.5,
+                trackPositions = locationList,
+                startLat = 12.6,
+                startLng = 33.6,
+                imageUri = null
+            )
+        )
     }
 
     /**

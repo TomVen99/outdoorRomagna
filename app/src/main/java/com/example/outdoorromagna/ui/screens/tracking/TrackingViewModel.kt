@@ -13,6 +13,8 @@ data class TrackingState(
     val distance: Int = 0,
     var isTracking: Boolean = false,
     val steps: Int = 0,
+    val showLocationPermissionDeniedAlert: Boolean = false,
+    val showLocationPermissionPermanentlyDeniedSnackbar: Boolean = false,
 
     ) {
 
@@ -25,6 +27,10 @@ interface TrackingActions {
     fun setTracking(isTracking: Boolean)
 
     fun isTracking(): MutableLiveData<Boolean?>
+
+    fun setShowLocationPermissionDeniedAlert(show: Boolean)
+
+    fun setShowLocationPermissionPermanentlyDeniedSnackbar(show: Boolean)
 
     fun setDuration(duration: Int)
 
@@ -62,6 +68,12 @@ class TrackingViewModel : ViewModel() {
         override fun isTracking(): MutableLiveData<Boolean?> {
             return _isTracking
         }
+
+        override fun setShowLocationPermissionDeniedAlert(show: Boolean) =
+            _state.update { it.copy(showLocationPermissionDeniedAlert = show) }
+
+        override fun setShowLocationPermissionPermanentlyDeniedSnackbar(show: Boolean) =
+            _state.update { it.copy(showLocationPermissionPermanentlyDeniedSnackbar = show) }
 
         override fun setDuration(duration: Int) {
             _state.update { it.copy(duration = duration) }

@@ -148,7 +148,7 @@ fun PrintListItems(track: Track) {
     ListItem(
         headlineContent = { Text(text= track.name) },
         supportingContent = {
-            track.description.let { Text(text = it) }
+            Text(text = track.description)
         },
         trailingContent = {
             /*IconButton(onClick = {

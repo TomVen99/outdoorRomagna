@@ -1,8 +1,8 @@
 package com.example.outdoorromagna.ui.screens.tracking
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultRegistry
@@ -24,9 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,83 +39,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.NavController
+import com.example.camera.utils.PermissionStatus
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
+import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
+import com.example.outdoorromagna.ui.screens.home.rememberPermission
+import com.example.outdoorromagna.ui.screens.home.requestLocation
+import com.example.outdoorromagna.utils.LocationService
 import com.example.outdoorromagna.utils.MapPresenter
 import com.example.outdoorromagna.utils.observeAsState
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
+import org.koin.compose.koinInject
 
-/*@Composable
-fun TrackingScreen(presenter: MapPresenter) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val uiState by presenter.ui.observeAsState(Ui.EMPTY)
-
-    val mapView = rememberMapViewWithLifecycle()
-
-    LaunchedEffect(key1 = Unit) {
-        presenter.onMapLoaded(context)
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
-    ) {
-        Box(modifier = Modifier.weight(1f)) {
-            AndroidView({ mapView }) { mapView ->
-                mapView.getMapAsync { googleMap ->
-                    presenter.setGoogleMap(googleMap)
-                    googleMap.uiSettings.isZoomControlsEnabled = true
-                }
-            }
-        }
-
-        Button(
-            onClick = {
-                presenter.toggleTracking()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(text = if (uiState.isTracking) "Stop" else "Start")
-        }
-    }
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                mapView.onResume()
-            } else if (event == Lifecycle.Event.ON_PAUSE) {
-                mapView.onPause()
-            } else if (event == Lifecycle.Event.ON_DESTROY) {
-                mapView.onDestroy()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-}
-
-*/
 @Composable
 fun TrackingScreen(
     //isTracking: MutableState<Boolean>,
+    navController: NavController,
+    trackingActions: TrackingActions,
     trackingState: TrackingState,
     user: User,
     activitiesViewModel: ActivitiesViewModel,
+    tracksDbVm: TracksDbViewModel
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val registry = rememberLauncherForActivityResultRegistry()
-    val presenter: MapPresenter = remember { MapPresenter(context, registry, MutableLiveData()) }
+    val presenter: MapPresenter = remember { MapPresenter(context, registry, MutableLiveData(), tracksDbVm) }
     var isTrackingStarted by remember { mutableStateOf(false) }
 
     val uiState = remember { MutableLiveData(Ui.EMPTY)}
@@ -126,6 +78,24 @@ fun TrackingScreen(
     LaunchedEffect(key1 = Unit) {
         presenter.onMapLoaded(context)
         presenter.mySetUi(uiState)
+    }
+
+    val locationService = koinInject<LocationService>()
+    val locationPermission = rememberPermission(
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) { status ->
+        when (status) {
+            PermissionStatus.Granted ->
+                locationService.requestCurrentLocation()
+
+            PermissionStatus.Denied ->
+                trackingActions.setShowLocationPermissionDeniedAlert(true)
+
+            PermissionStatus.PermanentlyDenied ->
+                trackingActions.setShowLocationPermissionPermanentlyDeniedSnackbar(true)
+
+            PermissionStatus.Unknown -> {}
+        }
     }
 
     Column(
@@ -143,6 +113,8 @@ fun TrackingScreen(
                     presenter.onViewCreated(lifecycleOwner)
                     Log.d("TAG", "dopo setGoogleMap")
                     googleMap.uiSettings.isZoomControlsEnabled = true
+                    presenter.enableUserLocation()
+                    requestLocation(locationPermission, locationService)
                 }
             }
             /*GoogleMap(
@@ -159,6 +131,7 @@ fun TrackingScreen(
                     startTracking(presenter)
                 } else {
                     stopTracking(context, presenter, user.username, activitiesViewModel)
+                    navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute)
                 }
             },
             modifier = Modifier
@@ -170,12 +143,18 @@ fun TrackingScreen(
     }
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                mapView.onResume()
-            } else if (event == Lifecycle.Event.ON_PAUSE) {
-                mapView.onPause()
-            } else if (event == Lifecycle.Event.ON_DESTROY) {
-                mapView.onDestroy()
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    mapView.onResume()
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    mapView.onPause()
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    mapView.onDestroy()
+                }
+
+                else -> {}
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -255,8 +234,8 @@ private fun stopTracking(
     username: String,
     activitiesViewModel: ActivitiesViewModel
 ) {
-    val elapsedTime = (SystemClock.elapsedRealtime() - /*presenter.startTime*/10) / 1000
-    presenter.stopTracking(context, username, activitiesViewModel, elapsedTime)
+    //val elapsedTime = (SystemClock.elapsedRealtime() - /*presenter.startTime*/10) / 1000
+    presenter.stopTracking(context, username, activitiesViewModel)//, elapsedTime)
 }
 
 @Composable
@@ -283,7 +262,6 @@ fun rememberMapViewWithLifecycle(): MapView {
                 else -> {}
             }
         }
-
         lifecycle.addObserver(lifecycleObserver)
         onDispose {
             lifecycle.removeObserver(lifecycleObserver)

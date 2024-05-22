@@ -376,12 +376,13 @@ fun OutdoorRomagnaNavGraph(
                 val trackingState by trackingVm.state.collectAsStateWithLifecycle()
                 val activitiesViewModel = koinViewModel<ActivitiesViewModel>()
                 TrackingScreen(
-                    /*navController = navController,*/
+                    navController = navController,
                     trackingState = trackingState,
                     user = user,
-                    /*trackingViewModel = trackingVm,
-                    trackingActions = trackingVm.actions,*/
+                    /*trackingViewModel = trackingVm,*/
+                    trackingActions = trackingVm.actions,
                     activitiesViewModel = activitiesViewModel,
+                    tracksDbVm = tracksDbVm,
                 )
             }
         }

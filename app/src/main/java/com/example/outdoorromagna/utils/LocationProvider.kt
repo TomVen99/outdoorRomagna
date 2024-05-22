@@ -3,6 +3,7 @@ package com.example.outdoorromagna.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +13,7 @@ import com.google.maps.android.SphericalUtil
 import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
-class LocationProvider(context: Context,/*private val activity: ComponentActivity,*/ private val isStarted: MutableLiveData<Boolean>) {
+class LocationProvider(context: Context, private val isStarted: MutableLiveData<Boolean>) {
 
     private val client
             by lazy { LocationServices.getFusedLocationProviderClient(context) }
@@ -38,6 +39,7 @@ class LocationProvider(context: Context,/*private val activity: ComponentActivit
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             val currentLocation = result.lastLocation
+            Log.d("Tag", "current location " + currentLocation)
             val latLng = currentLocation?.let { LatLng(it.latitude, currentLocation.longitude) }
 
             val lastLocation = locations.lastOrNull()
@@ -50,6 +52,7 @@ class LocationProvider(context: Context,/*private val activity: ComponentActivit
 
             if (latLng != null) {
                 locations.add(latLng)
+                Log.d("TAG", "latLng " + latLng)
             }
             liveLocations.value = locations
         }
