@@ -1,49 +1,34 @@
 package com.example.outdoorromagna.utils
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.os.Build
+import android.location.Address
+import android.location.Geocoder
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultRegistry
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.ActivityCompat
-import androidx.core.app.PendingIntentCompat.getActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getString
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import com.example.outdoorromagna.MainActivity
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.Activity
 import com.example.outdoorromagna.data.database.Track
-import com.example.outdoorromagna.data.database.User
-import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
+import com.example.outdoorromagna.ui.screens.addtrack.AddTrackState
 import com.example.outdoorromagna.ui.screens.tracking.Ui
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Collections
+import java.util.Locale
 import kotlin.math.round
 
 class MapPresenter(private val context: Context,
@@ -57,10 +42,11 @@ class MapPresenter(private val context: Context,
     private lateinit var stepCounter: StepCounter
     private lateinit var permissionsManager: PermissionsManager
 
+
     val elapsedTime = MutableLiveData<Long>()
 
     private var startTime = 0L
-    private var locations = mutableListOf<LatLng>()//mutableListOf<LatLng>()
+    private var myLocations = mutableListOf<LatLng>()
     fun setGoogleMap(googleMap: GoogleMap) {
         this.googleMap = googleMap
     }
@@ -85,6 +71,8 @@ class MapPresenter(private val context: Context,
         locationProvider.liveLocations.observe(lifecycleOwner) { locations ->
             val current = ui.value
             ui.value = current?.copy(userPath = locations)
+            Log.d("TAG", "drawRoute locations "+ locations)
+            myLocations = Collections.unmodifiableList(locations)
             drawRoute(locations)
         }
 
@@ -158,38 +146,68 @@ class MapPresenter(private val context: Context,
         //sharedPreferences: SharedPreferences,
         username: String,
         activitiesViewModel: ActivitiesViewModel,
-    ) {
+        addTrackState: AddTrackState,
+    ): Boolean {
+
+        Log.d("TAG", "myLocations stopTracking " + myLocations.toString())
+        val result = updateTrackState(myLocations, addTrackState)
         locationProvider.stopTracking()
         stepCounter.unloadStepCounter()
-
-        /*val result = elapsedTime.value?.let {
-            insertNewActivity(context, username,/*sharedPreferences,*/ activitiesViewModel, it)
-        }
-        if (result == false) {
-            Toast.makeText(context, "Errore nell'inserimento del tracking", Toast.LENGTH_LONG).show()
-        }*/
-        addTrack()
-
+        return result
     }
 
-    private fun addTrack(
+    private fun updateTrackState(
         /*username: String,
         activitiesViewModel: ActivitiesViewModel,
         elapsedTime: Long*/
-    ) {
-        val locationList = Collections.unmodifiableList(locations)
-        tracksDbVm.addTrack(
-            Track(
-                city = "Cesena",
-                name = "Default name",
-                description = "descrizione",
-                duration = /*elapsedTime*/ 10.5,
-                trackPositions = locationList,
-                startLat = 12.6,
-                startLng = 33.6,
-                imageUri = null
-            )
-        )
+        myLocations: List<LatLng>,
+        addTrackState: AddTrackState,
+    ): Boolean {
+
+        Log.d("TAG", "myLocations addTrack " + myLocations.toString())
+        val city = getCityFromLatLng(context, myLocations[0])
+        if(!city.isNullOrEmpty()) {
+            Log.d("CITY", city)
+            addTrackState.city = city
+            addTrackState.duration = /*elapsedTime*/ 10.5
+            addTrackState.trackPositions = myLocations
+            addTrackState.startLat = myLocations[0].latitude
+            addTrackState.startLng = myLocations[0].longitude
+            /*addTrackState.imageUri = "URI"*/
+            /*tracksDbVm.addTrack(
+                Track(
+                    city = city,
+                    name = title,
+                    description = description,
+                    duration = /*elapsedTime*/ 10.5,
+                    trackPositions = myLocations,
+                    startLat = myLocations[0].latitude,
+                    startLng = myLocations[0].longitude,
+                    imageUri = null
+                )
+            )*/
+            return true
+        } else {
+            Log.d("TAG","Errore CITTA")
+            return false
+        }
+    }
+
+    private fun getCityFromLatLng(context: Context, latLng: LatLng): String? {
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val addresses: List<Address>?
+        var city: String? = null
+
+        try {
+            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+            if (!addresses.isNullOrEmpty()) {
+                city = addresses[0].locality
+            }
+        } catch (e: IOException) {
+            Log.e("Geocoder", "Error getting city from LatLng", e)
+        }
+
+        return city
     }
 
     /**

@@ -46,6 +46,7 @@ import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
+import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsViewModel
 
 @Composable
 fun AddTrackScreen(

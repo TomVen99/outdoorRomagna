@@ -15,6 +15,7 @@ import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackViewModel
+import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsViewModel
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.profile.ProfileViewModel
@@ -102,6 +103,8 @@ val appModule = module {
     viewModel { ProfileViewModel() }
 
     viewModel { AddTrackViewModel() }
+
+    viewModel { AddTrackDetailsViewModel() }
 
     viewModel { ActivitiesViewModel(get()) }
 

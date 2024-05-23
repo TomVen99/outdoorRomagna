@@ -47,6 +47,7 @@ import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
+import com.example.outdoorromagna.ui.screens.addtrack.AddTrackState
 import com.example.outdoorromagna.ui.screens.home.rememberPermission
 import com.example.outdoorromagna.ui.screens.home.requestLocation
 import com.example.outdoorromagna.utils.LocationService
@@ -64,7 +65,8 @@ fun TrackingScreen(
     trackingState: TrackingState,
     user: User,
     activitiesViewModel: ActivitiesViewModel,
-    tracksDbVm: TracksDbViewModel
+    tracksDbVm: TracksDbViewModel,
+    addTrackState: AddTrackState,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -130,8 +132,12 @@ fun TrackingScreen(
                 if (isTrackingStarted) {
                     startTracking(presenter)
                 } else {
-                    stopTracking(context, presenter, user.username, activitiesViewModel)
-                    navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute)
+                    val result = stopTracking(context, presenter, user.username, activitiesViewModel, addTrackState)
+                    if(result) {
+                        navController.navigate(OutdoorRomagnaRoute.AddTrackDetails.currentRoute)
+                    }else {
+                        navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute)
+                    }
                 }
             },
             modifier = Modifier
@@ -232,10 +238,11 @@ private fun stopTracking(
     context: Context,
     presenter: MapPresenter,
     username: String,
-    activitiesViewModel: ActivitiesViewModel
-) {
+    activitiesViewModel: ActivitiesViewModel,
+    addTrackState: AddTrackState,
+): Boolean {
     //val elapsedTime = (SystemClock.elapsedRealtime() - /*presenter.startTime*/10) / 1000
-    presenter.stopTracking(context, username, activitiesViewModel)//, elapsedTime)
+    return presenter.stopTracking(context, username, activitiesViewModel, addTrackState)//, elapsedTime)
 }
 
 @Composable
