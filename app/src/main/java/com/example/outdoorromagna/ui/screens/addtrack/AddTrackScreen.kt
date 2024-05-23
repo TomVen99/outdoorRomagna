@@ -158,7 +158,7 @@ fun AddTrackScreen(
                     ),
                     onClick = {
                         Log.d("TAG", "Prima di vado in tracking")
-                        navController.navigate(OutdoorRomagnaRoute.Tracking.buildRoute(user.username))
+                        navController.navigate(OutdoorRomagnaRoute.Tracking.currentRoute)
                         Log.d("TAG", "Vado in tracking")
                         /*val trackingIntent = Intent(context, TrackingActivity::class.java).apply {
                             putExtra(TrackingActivity.EXTRA_PARAMETER, user.username)

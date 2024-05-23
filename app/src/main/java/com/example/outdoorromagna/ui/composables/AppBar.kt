@@ -178,6 +178,7 @@ fun BottomAppBar(
                 OutdoorRomagnaRoute.Tracks.buildRoute(user.username, false)
                 OutdoorRomagnaRoute.Settings.buildRoute(user.username)
                 OutdoorRomagnaRoute.AddTrackDetails.buildRoute(user.username)
+                OutdoorRomagnaRoute.AddTrack.buildRoute(user.username)
                 Button(
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.Tracks.currentRoute)

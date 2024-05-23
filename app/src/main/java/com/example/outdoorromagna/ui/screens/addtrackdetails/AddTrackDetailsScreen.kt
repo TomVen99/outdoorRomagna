@@ -80,8 +80,8 @@ fun AddTrackDetailsScreen(
                                 city = addTrackState.city,
                                 duration = addTrackState.duration,
                                 trackPositions = addTrackState.trackPositions,
-                                startLat = addTrackState.startLat,
-                                startLng = addTrackState.startLng,
+                                startLat = addTrackState.trackPositions[0].latitude,//addTrackState.startLat,
+                                startLng = addTrackState.trackPositions[0].longitude,//addTrackState.startLng,
                                 description = addTrackDetailsState.description,
                                 name = addTrackDetailsState.title,
                                 imageUri = null
