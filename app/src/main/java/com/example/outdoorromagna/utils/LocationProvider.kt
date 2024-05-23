@@ -1,7 +1,10 @@
 package com.example.outdoorromagna.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Looper
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
@@ -10,10 +13,10 @@ import com.google.maps.android.SphericalUtil
 import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
-class LocationProvider(private val activity: AppCompatActivity, private val isStarted: MutableLiveData<Boolean>) {
+class LocationProvider(context: Context, private val isStarted: MutableLiveData<Boolean>) {
 
     private val client
-            by lazy { LocationServices.getFusedLocationProviderClient(activity) }
+            by lazy { LocationServices.getFusedLocationProviderClient(context) }
 
     private val locations = mutableListOf<LatLng>()
     private var distance = 0
@@ -36,6 +39,7 @@ class LocationProvider(private val activity: AppCompatActivity, private val isSt
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             val currentLocation = result.lastLocation
+            Log.d("Tag", "current location " + currentLocation)
             val latLng = currentLocation?.let { LatLng(it.latitude, currentLocation.longitude) }
 
             val lastLocation = locations.lastOrNull()
@@ -48,6 +52,7 @@ class LocationProvider(private val activity: AppCompatActivity, private val isSt
 
             if (latLng != null) {
                 locations.add(latLng)
+                Log.d("TAG", "latLng " + latLng)
             }
             liveLocations.value = locations
         }
@@ -64,7 +69,7 @@ class LocationProvider(private val activity: AppCompatActivity, private val isSt
 
     fun stopTracking() {
         client.removeLocationUpdates(locationCallback)
-        locations.clear()
+        //locations.clear()
         distance = 0
     }
 

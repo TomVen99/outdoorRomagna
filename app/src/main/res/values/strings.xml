@@ -12,4 +12,5 @@
     <string name="start_label">Inizia</string>
     <string name="stop_label">Stop</string>
     <string name="distance_value">%d metri</string>
+    <string name="steps_value">%d passi</string>
 </resources>

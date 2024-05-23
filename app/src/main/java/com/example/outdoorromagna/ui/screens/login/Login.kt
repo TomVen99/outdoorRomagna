@@ -136,7 +136,8 @@ fun Login(
                     onSubmit()
                     val edit = sharedPreferences.edit()
                     edit.putBoolean("isUserLogged", true)
-                    edit.putString("username", state.username)
+                    edit.putString("username",state.username)
+                    edit.putString("password",state.password)
                     edit.apply()
                     //sharedPreferences.getString("username", "")?.let { Log.d("TAG", "dentro Login " + it) }
                 },

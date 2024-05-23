@@ -7,6 +7,7 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.provider.Settings
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,15 +39,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
-import com.example.outdoorromagna.ui.TrackingActivity
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
+import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsViewModel
 
 @Composable
 fun AddTrackScreen(
@@ -157,10 +157,14 @@ fun AddTrackScreen(
                         contentColor = MaterialTheme.colorScheme.primary
                     ),
                     onClick = {
-                        val trackingIntent = Intent(context, TrackingActivity::class.java).apply {
+                        Log.d("TAG", "Prima di vado in tracking")
+                        navController.navigate(OutdoorRomagnaRoute.Tracking.buildRoute(user.username))
+                        Log.d("TAG", "Vado in tracking")
+                        /*val trackingIntent = Intent(context, TrackingActivity::class.java).apply {
                             putExtra(TrackingActivity.EXTRA_PARAMETER, user.username)
                         }
-                        ContextCompat.startActivity(context, trackingIntent, null)
+                        ContextCompat.startActivity(context, trackingIntent, null)*/
+
                     },
                     enabled = gpsChecker && internetConnChecker,
                     shape = CircleShape,

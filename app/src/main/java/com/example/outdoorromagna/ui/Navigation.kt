@@ -19,8 +19,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.outdoorromagna.data.repositories.UsersRepository
+import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackScreen
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackViewModel
+import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsScreen
+import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsViewModel
 import com.example.outdoorromagna.ui.screens.home.HomeScreen
 import com.example.outdoorromagna.ui.screens.home.HomeScreenViewModel
 import com.example.outdoorromagna.ui.screens.login.Login
@@ -32,6 +35,8 @@ import com.example.outdoorromagna.ui.screens.settings.SettingsViewModel
 import com.example.outdoorromagna.ui.screens.signin.SigninScreen
 import com.example.outdoorromagna.ui.screens.signin.SigninViewModel
 import com.example.outdoorromagna.ui.screens.trackdetails.TrackDetails
+import com.example.outdoorromagna.ui.screens.tracking.TrackingScreen
+import com.example.outdoorromagna.ui.screens.tracking.TrackingViewModel
 import com.example.outdoorromagna.ui.screens.tracks.TracksScreen
 import com.example.outdoorromagna.ui.screens.tracks.TracksViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -136,6 +141,26 @@ sealed class OutdoorRomagnaRoute(
 
     }
 
+    data object Tracking : OutdoorRomagnaRoute(
+        "tracking/{userUsername}",
+        "tracking",
+        "",
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType },
+        )
+    ) {
+        fun buildRoute(userUsername: String) : String {
+            setMyCurrentRoute("tracking/$userUsername")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
+
+
+    }
+
     data object Settings : OutdoorRomagnaRoute(
         "settings/{userUsername}",
         "Settings",
@@ -172,8 +197,26 @@ sealed class OutdoorRomagnaRoute(
         }
     }
 
+    data object AddTrackDetails : OutdoorRomagnaRoute(
+        "addtrackdetails/{userUsername}",
+        "AddTrack",
+        "",
+        listOf(
+            navArgument("userUsername") { type = NavType.StringType }
+        )
+    ) {
+        fun buildRoute(userUsername: String): String{
+            setMyCurrentRoute("addtrackdetails/$userUsername")
+            return currentRoute
+        }
+
+        private fun setMyCurrentRoute (route : String) {
+            currentRoute = route
+        }
+    }
+
     companion object {
-        val routes = setOf(Login, Signin, Home, Settings, Profile, AddTrack)
+        val routes = setOf(Login, Signin, Home, Settings, Profile, AddTrack, Tracking, AddTrackDetails)
     }
 }
 
@@ -185,6 +228,7 @@ fun OutdoorRomagnaNavGraph(
     modifier: Modifier = Modifier,
     activity : Activity,
     intentRoute: String?,
+    //usersVm: UsersViewModel,
 ) {
 
     val usersVm = koinViewModel<UsersViewModel>()
@@ -193,10 +237,13 @@ fun OutdoorRomagnaNavGraph(
     val tracksDbVm = koinViewModel<TracksDbViewModel>()
     val tracksDbState by tracksDbVm.state.collectAsStateWithLifecycle()
     val groupedTracksState by tracksDbVm.groupedTracksState.collectAsStateWithLifecycle()
+    val addTrackVm = koinViewModel<AddTrackViewModel>()
+    val addTrackState by addTrackVm.state.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
 
     val sharedPreferences = context.getSharedPreferences("isUserLogged", Context.MODE_PRIVATE)
+    /**RIMUOVE LA ISUSERLOGGED*/
     /*val edit = sharedPreferences.edit()
     edit.putBoolean("isUserLogged", false)
     edit.putString("username", "")
@@ -220,13 +267,26 @@ fun OutdoorRomagnaNavGraph(
     } else {
         startDestination = OutdoorRomagnaRoute.Login.route
     }
-    Log.d("TAG", "start destiantion: " + startDestination)
+    /*//var startDestination = ""
+    if(intentRoute?.isNotEmpty() == true) {
+        sharedPreferences.getString("username", "")?.let { usersVm.login(it,
+            sharedPreferences.getString("password", "")!!
+        ) }
+        Log.d("TAG", "Login eseguito")
+        //startDestination = OutdoorRomagnaRoute.Home.currentRoute
+        /*sharedPreferences.getString("username", "")
+            ?.let { OutdoorRomagnaRoute.Home.buildWithoutPosition(it) }*/
+    } else {
+        //startDestination = OutdoorRomagnaRoute.Login.route
+    }
+    //Log.d("TAG", "start destiantion: " + startDestination)*/
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
-    ) {
+    )
+    {
         with(OutdoorRomagnaRoute.Login) {
             composable(route) {
                 usersVm.resetValues()
@@ -326,6 +386,7 @@ fun OutdoorRomagnaNavGraph(
                 )
             }
         }
+
         with(OutdoorRomagnaRoute.Settings) {
             composable(route) {backStackEntry ->
                 val user = requireNotNull(usersState.users.find {
@@ -339,20 +400,67 @@ fun OutdoorRomagnaNavGraph(
                 )
             }
         }
+
         with(OutdoorRomagnaRoute.AddTrack) {
             composable(route) {backStackEntry ->
                 val user = requireNotNull(usersState.users.find {
                     it.username == backStackEntry.arguments?.getString("userUsername")
                 })
-                val addTrackVm = koinViewModel<AddTrackViewModel>()
-                val state by addTrackVm.state.collectAsStateWithLifecycle()
+                //val addTrackVm = koinViewModel<AddTrackViewModel>()
+                //val addTrackState by addTrackVm.state.collectAsStateWithLifecycle()
                 AddTrackScreen(
-                    state = state,
+                    state = addTrackState,
                     actions = addTrackVm.actions,
                     onSubmit = { /*tracksDbVm.addTrack(state.toPlace())*/ Log.d("TAG",  "add track to db")},
                     navController = navController,
                     user = user,
-                    activity = activity
+                    activity = activity,
+                )
+            }
+        }
+
+        with(OutdoorRomagnaRoute.Tracking) {
+            composable(route) {backStackEntry ->
+                val user = requireNotNull(usersState.users.find {
+                    it.username == backStackEntry.arguments?.getString("userUsername")
+                })
+                val trackingVm = koinViewModel<TrackingViewModel>()
+                val trackingState by trackingVm.state.collectAsStateWithLifecycle()
+                val activitiesViewModel = koinViewModel<ActivitiesViewModel>()
+                //val addTrackVm = koinViewModel<AddTrackViewModel>()
+                //val addTrackState by addTrackVm.state.collectAsStateWithLifecycle()
+                TrackingScreen(
+                    navController = navController,
+                    trackingState = trackingState,
+                    user = user,
+                    /*trackingViewModel = trackingVm,*/
+                    trackingActions = trackingVm.actions,
+                    activitiesViewModel = activitiesViewModel,
+                    tracksDbVm = tracksDbVm,
+                    addTrackState = addTrackState,
+                    addTrackActions = addTrackVm.actions
+                )
+            }
+        }
+        with(OutdoorRomagnaRoute.AddTrackDetails) {
+            composable(route) {backStackEntry ->
+                val user = requireNotNull(usersState.users.find {
+                    it.username == backStackEntry.arguments?.getString("userUsername")
+                })
+                val addTrackDetailsVm = koinViewModel<AddTrackDetailsViewModel>()
+                val addTrackDetailsState by addTrackDetailsVm.state.collectAsStateWithLifecycle()
+                //val addTrackVm = koinViewModel<AddTrackViewModel>()
+                //val addTrackState by addTrackVm.state.collectAsStateWithLifecycle()
+                Log.d("viewModel", addTrackState.trackPositions.toString())
+                AddTrackDetailsScreen(
+                    navController = navController,
+                    addTrackDetailsVm = addTrackDetailsVm,
+                    addTrackDetailsState = addTrackDetailsState,
+                    addTrackDetailsActions = addTrackDetailsVm.actions,
+                    addTrackState = addTrackState,
+                    tracksDbVm = tracksDbVm,
+                    //onSubmit = { /*tracksDbVm.addTrack(state.toPlace())*/ Log.d("TAG",  "add track to db")},
+                    user = user,
                 )
             }
         }
@@ -362,14 +470,14 @@ fun OutdoorRomagnaNavGraph(
                 val user = requireNotNull(usersState.users.find {
                     it.username == backStackEntry.arguments?.getString("userUsername")
                 })
-                Log.d("io porco", tracksDbState.tracks.toString())
                 val track = requireNotNull(tracksDbState.tracks.find {
                     it.id == backStackEntry.arguments?.getInt("trackId")
                 })
                 TrackDetails(
                     navController = navController,
                     user = user,
-                    track = track)
+                    track = track
+                )
             }
         }
     }

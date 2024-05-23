@@ -84,7 +84,7 @@ data class Track (
     val imageUri: String?,
 
     @ColumnInfo
-    var duration: Double,
+    var duration: Long,
 )
 
 @Entity(primaryKeys = ["userId", "markerId"])

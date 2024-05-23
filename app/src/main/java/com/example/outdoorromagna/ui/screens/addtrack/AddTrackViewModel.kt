@@ -3,36 +3,41 @@ package com.example.outdoorromagna.ui.screens.addtrack
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.example.outdoorromagna.data.database.Place
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class AddTrackState(
-    val destination: String = "",
-    val date: String = "",
-    val description: String = "",
-    val imageUri: Uri = Uri.EMPTY,
+    var title: String = "",
+    var description: String = "",
+    var city: String = "",
+    var startLat: Double = 0.0,
+    var startLng: Double = 0.0,
+    var duration: Long = 0,
+    var trackPositions: List<LatLng> = listOf(),
+    var imageUri: Uri = Uri.EMPTY,
 
     val showLocationDisabledAlert: Boolean = false,
     val showLocationPermissionDeniedAlert: Boolean = false,
     val showLocationPermissionPermanentlyDeniedSnackbar: Boolean = false,
     val showNoInternetConnectivitySnackbar: Boolean = false
 ) {
-    val canSubmit get() = destination.isNotBlank() && date.isNotBlank() && description.isNotBlank()
-
-    fun toPlace() = Place(
-        name = destination,
-        description =  description,
-        date = date,
-        imageUri = imageUri.toString()
-    )
 }
 
 interface AddTrackActions {
-    fun setDestination(title: String)
-    fun setDate(date: String)
+    fun setTitle(title: String)
     fun setDescription(description: String)
+    fun setCity(city: String)
+
+    fun setStartLat(startLat: Double)
+    fun setStartLng(startLng: Double)
+    fun setDuration(duration: Long)
+    fun setTrackPositions(trackPositions: List<LatLng>)
     fun setImageUri(imageUri: Uri)
+
+
+
 
     fun setShowLocationDisabledAlert(show: Boolean)
     fun setShowLocationPermissionDeniedAlert(show: Boolean)
@@ -45,14 +50,31 @@ class AddTrackViewModel : ViewModel() {
     val state = _state.asStateFlow()
 
     val actions = object : AddTrackActions {
-        override fun setDestination(title: String) =
-            _state.update { it.copy(destination = title) }
-
-        override fun setDate(date: String) =
-            _state.update { it.copy(date = date) }
+        override fun setTitle(title: String) =
+            _state.update { it.copy(title = title) }
 
         override fun setDescription(description: String) =
             _state.update { it.copy(description = description) }
+
+        override fun setCity(city: String) {
+            _state.update { it.copy(city = city) }
+        }
+
+        override fun setStartLat(startLat: Double) {
+            _state.update { it.copy(startLat = startLat) }
+        }
+
+        override fun setStartLng(startLng: Double) {
+            _state.update { it.copy(startLng = startLng) }
+        }
+
+        override fun setDuration(duration: Long) {
+            _state.update { it.copy(duration = duration) }
+        }
+
+        override fun setTrackPositions(trackPositions: List<LatLng>) {
+            _state.update { it.copy(trackPositions = trackPositions) }
+        }
 
         override fun setImageUri(imageUri: Uri) =
             _state.update { it.copy(imageUri = imageUri) }

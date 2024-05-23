@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Directions
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material.icons.outlined.Map
@@ -75,6 +77,12 @@ val items = listOf(
         selectedIcon = Icons.Filled.Map,
         unselectedIcon = Icons.Outlined.Map,
         route = OutdoorRomagnaRoute.Home
+    ),
+    NavigationItem(
+        title = "Registra",
+        selectedIcon = Icons.Filled.AddCircle,
+        unselectedIcon = Icons.Outlined.AddCircle,
+        route = OutdoorRomagnaRoute.AddTrack
     ),
     NavigationItem(
         title = "Percorsi",

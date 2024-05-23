@@ -197,6 +197,8 @@ fun BottomAppBar(
                 }
                 OutdoorRomagnaRoute.Tracks.buildRoute(user.username, false)
                 OutdoorRomagnaRoute.Settings.buildRoute(user.username)
+                OutdoorRomagnaRoute.AddTrackDetails.buildRoute(user.username)
+                OutdoorRomagnaRoute.AddTrack.buildRoute(user.username)
                 Button(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
