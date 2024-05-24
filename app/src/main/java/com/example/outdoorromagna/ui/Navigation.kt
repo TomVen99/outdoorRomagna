@@ -133,12 +133,6 @@ sealed class OutdoorRomagnaRoute(
         private fun setMyCurrentRoute (route : String) {
             currentRoute = route
         }
-
-        /*fun buildRouteLatLng (userUsername: String,  latitude: String, longitude: String) : String {
-            setMyCurrentRoute("tracks/$userUsername/$latitude/$longitude")
-            return currentRoute
-        }*/
-
     }
 
     data object Tracking : OutdoorRomagnaRoute(

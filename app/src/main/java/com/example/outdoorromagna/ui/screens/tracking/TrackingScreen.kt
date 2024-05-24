@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -106,7 +107,7 @@ fun TrackingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.background_color))
+            .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
         IndicatorsLayout(uiState, elapsedTimeState.value)
         Box(modifier = Modifier.weight(1f)) {
@@ -122,10 +123,6 @@ fun TrackingScreen(
                     requestLocation(locationPermission, locationService)
                 }
             }
-            /*GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
-            )*/
         }
 
         Button(
