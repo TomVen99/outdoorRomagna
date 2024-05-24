@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +33,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -159,7 +161,8 @@ fun BottomAppBar(
                             )
                         )
                     },
-                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+                    contentPadding = PaddingValues(15.dp),
+                    shape = RectangleShape
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -169,7 +172,7 @@ fun BottomAppBar(
                             imageVector = Icons.Outlined.Map,
                             contentDescription = "Mappa"
                         )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Spacer(Modifier.size(5.dp))
                         Text("Mappa")
                     }
                 }
@@ -181,7 +184,8 @@ fun BottomAppBar(
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute)
                     },
-                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+                    contentPadding = PaddingValues(15.dp),
+                    shape = RectangleShape
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -191,7 +195,7 @@ fun BottomAppBar(
                             imageVector = Icons.Outlined.AddCircle,
                             contentDescription = "Registra"
                         )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Spacer(Modifier.size(5.dp))
                         Text("Registra")
                     }
                 }
@@ -207,7 +211,8 @@ fun BottomAppBar(
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.Tracks.currentRoute)
                     },
-                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+                    contentPadding = PaddingValues(15.dp),
+                    shape = RectangleShape
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -217,7 +222,7 @@ fun BottomAppBar(
                             imageVector = Icons.Outlined.Signpost,
                             contentDescription = "Percorsi"
                         )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Spacer(Modifier.size(5.dp))
                         Text("Percorsi")
                     }
                 }
@@ -231,7 +236,8 @@ fun BottomAppBar(
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.Profile.currentRoute)
                     },
-                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+                    contentPadding = PaddingValues(15.dp),
+                    shape = RectangleShape
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -239,9 +245,9 @@ fun BottomAppBar(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Person,
-                            contentDescription = "Profilo"
+                            contentDescription = "Profilo",
                         )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Spacer(Modifier.size(5.dp))
                         Text("Profilo")
                     }
                 }

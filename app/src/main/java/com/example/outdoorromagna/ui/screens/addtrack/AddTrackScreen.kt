@@ -115,8 +115,8 @@ fun AddTrackScreen(
 
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onPrimary,
-                            contentColor = MaterialTheme.colorScheme.primary
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         ),
                         onClick = {
                             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -133,8 +133,8 @@ fun AddTrackScreen(
 
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onPrimary,
-                            contentColor = MaterialTheme.colorScheme.primary
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         ),
                         onClick = {
                             val intent = Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS).apply {
@@ -153,8 +153,8 @@ fun AddTrackScreen(
 
                 OutlinedButton(
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onPrimary,
-                        contentColor = MaterialTheme.colorScheme.primary
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     onClick = {
                         Log.d("TAG", "Prima di vado in tracking")

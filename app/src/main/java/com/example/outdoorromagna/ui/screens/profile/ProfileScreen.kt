@@ -9,6 +9,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -158,12 +159,13 @@ fun ProfileScreen(
             Column(
                 modifier = Modifier
                     .padding(contentPadding)
+                    .padding(top = 20.dp)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Log.d("TAG", "dentro myscaffold")
                 Text(
-                    text = "Nome e Cognome",
+                    text = user.name + " " + user.surname,
                     fontSize = 25.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
@@ -222,11 +224,11 @@ fun ProfileScreen(
                 ) {
                     Icon(
                         Icons.Filled.Mail,
-                        contentDescription = "mail"//stringResource(id = 1)
+                        contentDescription = "email"
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
-                        text = "email",
+                        text = user.mail,
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,

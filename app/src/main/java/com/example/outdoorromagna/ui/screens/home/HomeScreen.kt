@@ -8,14 +8,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -27,6 +33,9 @@ import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -49,11 +58,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.camera.utils.PermissionHandler
 import com.example.camera.utils.PermissionStatus
+import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.repositories.generateTestTracks
 import com.example.outdoorromagna.ui.GroupedTracksState
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
@@ -84,14 +97,14 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.DelicateCoroutinesApi
 import org.koin.compose.koinInject
 
-data class MapTypes(val mapTypeId: MapType, val title: String, val url: String)
+data class MapTypes(val mapTypeId: MapType, val title: String, val drawableId: Int)
 
 data class PlaceDetails(val latLng: LatLng, val name: String)
 
 val mapTypes = listOf(
-    MapTypes(MapType.NORMAL, "Default", ""),
-    MapTypes(MapType.HYBRID, "Satellite", ""),
-    MapTypes(MapType.TERRAIN, "Rilievo", "")
+    MapTypes(MapType.NORMAL, "Default", R.drawable.defaultmap),
+    MapTypes(MapType.HYBRID, "Satellite", R.drawable.satellitemap),
+    MapTypes(MapType.TERRAIN, "Rilievo", R.drawable.reliefmap)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -223,20 +236,57 @@ fun HomeScreen(
                         }
 
                         if (showPopUp)
-                            ModalBottomSheet(
+                            Dialog(
                                 onDismissRequest = { showPopUp = false }
                             ) {
-                                Column(modifier = Modifier.padding(bottom = 50.dp)) {
-                                    mapTypes.forEach { type ->
-                                        Row {
-                                            Button(onClick = {
-                                                actions.setMapView(type.mapTypeId)
-                                                showPopUp = false
-                                            }) {
-                                                Text(text = type.title)
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.background
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    shape = RoundedCornerShape(16.dp),
+                                ) {
+                                    Text(text = "Tipo di mappa:", modifier = Modifier.padding(10.dp))
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 15.dp)
+                                    ) {
+
+                                        mapTypes.forEach { type ->
+                                            Button(
+                                                onClick = {
+                                                    actions.setMapView(type.mapTypeId)
+                                                    showPopUp = false
+                                                },
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = Color.Transparent,
+                                                    contentColor = MaterialTheme.colorScheme.primary
+                                                ),
+                                                shape = RectangleShape,
+                                                modifier = Modifier.padding(0.dp),
+                                                contentPadding = PaddingValues(0.dp)
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = type.drawableId),
+                                                    contentDescription = type.title,
+                                                    modifier = Modifier
+                                                        .size(70.dp)
+                                                        .padding(0.dp)
+                                                        .border(
+                                                            BorderStroke(
+                                                                1.dp,
+                                                                MaterialTheme.colorScheme.onBackground
+                                                            )
+                                                        )
+                                                )
                                             }
                                         }
                                     }
+                                Spacer(modifier = Modifier.size(10.dp))
                                 }
                             }
                         if (state.showSearchBar) {
