@@ -8,14 +8,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -27,6 +33,9 @@ import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -37,6 +46,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -49,11 +60,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.camera.utils.PermissionHandler
 import com.example.camera.utils.PermissionStatus
+import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.repositories.generateTestTracks
 import com.example.outdoorromagna.ui.GroupedTracksState
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
@@ -84,14 +99,14 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.DelicateCoroutinesApi
 import org.koin.compose.koinInject
 
-data class MapTypes(val mapTypeId: MapType, val title: String, val url: String)
+data class MapTypes(val mapTypeId: MapType, val title: String, val drawableId: Int)
 
 data class PlaceDetails(val latLng: LatLng, val name: String)
 
 val mapTypes = listOf(
-    MapTypes(MapType.NORMAL, "Default", ""),
-    MapTypes(MapType.HYBRID, "Satellite", ""),
-    MapTypes(MapType.TERRAIN, "Rilievo", "")
+    MapTypes(MapType.NORMAL, "Default", R.drawable.defaultmap),
+    MapTypes(MapType.HYBRID, "Satellite", R.drawable.satellitemap),
+    MapTypes(MapType.TERRAIN, "Rilievo", R.drawable.reliefmap)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -215,7 +230,7 @@ fun HomeScreen(
                             },
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
-                                .padding(end = 10.dp, top = 10.dp)
+                                .padding(end = 10.dp, top = 8.dp)
                                 .size(48.dp),
                             shape = CircleShape
                         ) {
@@ -223,20 +238,57 @@ fun HomeScreen(
                         }
 
                         if (showPopUp)
-                            ModalBottomSheet(
+                            Dialog(
                                 onDismissRequest = { showPopUp = false }
                             ) {
-                                Column(modifier = Modifier.padding(bottom = 50.dp)) {
-                                    mapTypes.forEach { type ->
-                                        Row {
-                                            Button(onClick = {
-                                                actions.setMapView(type.mapTypeId)
-                                                showPopUp = false
-                                            }) {
-                                                Text(text = type.title)
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.background
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    shape = RoundedCornerShape(16.dp),
+                                ) {
+                                    Text(text = "Tipo di mappa:", modifier = Modifier.padding(10.dp))
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 15.dp)
+                                    ) {
+
+                                        mapTypes.forEach { type ->
+                                            Button(
+                                                onClick = {
+                                                    actions.setMapView(type.mapTypeId)
+                                                    showPopUp = false
+                                                },
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = Color.Transparent,
+                                                    contentColor = MaterialTheme.colorScheme.primary
+                                                ),
+                                                shape = RectangleShape,
+                                                modifier = Modifier.padding(0.dp),
+                                                contentPadding = PaddingValues(0.dp)
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = type.drawableId),
+                                                    contentDescription = type.title,
+                                                    modifier = Modifier
+                                                        .size(70.dp)
+                                                        .padding(0.dp)
+                                                        .border(
+                                                            BorderStroke(
+                                                                1.dp,
+                                                                MaterialTheme.colorScheme.onBackground
+                                                            )
+                                                        )
+                                                )
                                             }
                                         }
                                     }
+                                Spacer(modifier = Modifier.size(10.dp))
                                 }
                             }
                         if (state.showSearchBar) {
@@ -246,7 +298,6 @@ fun HomeScreen(
                                             performSearch(query = query, context = context) { results ->
                                                 if (results.isNotEmpty()) {
                                                     placeSearch = results
-                                                    Log.d("tag", results.toString())
                                                 }
                                             }
                                         }
@@ -288,7 +339,7 @@ fun HomeScreen(
                                                     .padding(vertical = 0.dp)
                                                     .fillMaxWidth(),
                                                 shape = RectangleShape,
-                                                contentPadding = PaddingValues(vertical = 0.dp),
+                                                contentPadding = PaddingValues(0.dp),
                                             ) {
                                                 Text(text = place.name)
                                             }
@@ -296,15 +347,11 @@ fun HomeScreen(
                                     }
                                 }
                             }
+                        } else {
+                            placeSearch = emptyList()
                         }
-
-
-                        /*if (showButton) { //se clicca su un punto della mappa
-                        addLocation()*/
-
                     }
                 }
-
             }
         }
     }
@@ -313,24 +360,6 @@ fun HomeScreen(
         navController
     )
 }
-
-
-@Composable
-fun addLocation() {
-    FloatingActionButton(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        onClick = { },
-        modifier = Modifier
-            .padding(start = 16.dp, bottom = 32.dp)
-    ) {
-        Row (modifier = Modifier.padding(8.dp)){
-            Icon(Icons.Outlined.Add, "Share Travel")
-            Text(text = "Aggiungi percorso")
-        }
-    }
-}
-
 
 fun requestLocation(locationPermission: PermissionHandler, locationService: LocationService) {
     if (locationPermission.status.isGranted) {
@@ -341,7 +370,6 @@ fun requestLocation(locationPermission: PermissionHandler, locationService: Loca
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun MapView(
     cameraPositionState: CameraPositionState,
@@ -359,16 +387,6 @@ fun MapView(
         onMapClick = {  },
         properties = MapProperties(mapType = mapView)
     ) {
-
-        // Visualizza il marker
-        /*markerPosition?.let {
-            Marker(
-                state = MarkerState(position = it),
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)  // Imposta il marker di colore giallo
-            )
-            onMarkerClick()
-        }*/
-
         groupedTracksState.tracks.forEach { location ->
             Marker(
                 state = MarkerState(position = LatLng(location.groupedLat, location.groupedLng)),
@@ -382,53 +400,8 @@ fun MapView(
                 }
             )
         }
-
-        /**PROVA DELL'ONCLICK DI UN PERCORSO*/
-        var showPoly by remember {mutableStateOf(false)}
-        Marker(state = MarkerState(position = LatLng(37.772, -122.23)),
-            onClick = {
-                showPoly = true
-                true
-            }
-        )
-
-        /**ESEMPIO DI UNA POLYLINE, LA LISTA DI PUNTI SARA POI RELATIVA LA MARKER CLICCATO  */
-        if(showPoly) {
-            val flightPlanCoordinates = listOf(
-                LatLng(37.772, -122.214),
-                LatLng( 21.291, -157.821),
-                LatLng( -18.142, 178.431),
-                LatLng( -27.467, 153.027),
-            )
-            val poly = Polyline(
-                points = flightPlanCoordinates,
-                color = Color.Red
-            )
-        }
-        /*state.markers.forEach{marker ->
-            Marker(
-                state = MarkerState(LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())),
-                icon =
-                if (isFavorite(marker))
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                else
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
-                onClick = {
-                    navController.navigate(TravelDiaryRoute.HomeMarkDetail.buildRoute(
-                        user.username,
-                        marker.latitude,
-                        marker.longitude
-                    ))
-                    true
-                }
-            )
-        }*/
     }
-
-
-
 }
-
 
 @Composable
 fun rememberPermission(
@@ -482,7 +455,11 @@ private fun SearchBar(onQueryChanged: (String) -> Unit, actions: HomeScreenActio
             IconButton(onClick = { actions.setShowSearchBar(false) }) {
                 Icon(Icons.Outlined.Close, contentDescription = "Chiudi")
             }
-        }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.background,
+            unfocusedContainerColor = MaterialTheme.colorScheme.background
+        )
     )
 }
 

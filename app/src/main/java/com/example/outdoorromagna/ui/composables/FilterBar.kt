@@ -27,7 +27,6 @@ import com.example.outdoorromagna.ui.screens.tracks.TracksActions
 enum class FilterOption(val title: String) {
     ALL_TRACKS("Tutti i percorsi"),
     YOUR_TRACKS("Tuoi percorsi"),
-    FAVORITES("Percorsi preferiti"),
 }
 @Composable
 fun FilterBar(
@@ -60,7 +59,6 @@ fun FilterBar(
                     when (FilterOption.entries[selectedItemIndex]) {
                         FilterOption.YOUR_TRACKS -> actions.setFilter(FilterOption.YOUR_TRACKS)
                         FilterOption.ALL_TRACKS -> actions.setFilter(FilterOption.ALL_TRACKS)
-                        FilterOption.FAVORITES -> actions.setFilter(FilterOption.FAVORITES)
                     }
                 },
                 icon = { /*TODO*/ },

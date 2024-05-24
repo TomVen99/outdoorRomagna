@@ -49,7 +49,7 @@ interface TracksDAO {
     suspend fun getUserTracks(id: Int): List<Track>
 
     @Query("SELECT * FROM Track WHERE userId = :id")
-    fun getFavoriteTracks(id: Int): List<Track>
+    suspend fun getFavoriteTracks(id: Int): List<Track>
 
     @Query("""
     SELECT 

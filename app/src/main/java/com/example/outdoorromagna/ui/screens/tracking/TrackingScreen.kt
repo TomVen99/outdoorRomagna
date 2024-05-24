@@ -52,7 +52,6 @@ import androidx.navigation.NavController
 import com.example.camera.utils.PermissionStatus
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
-import com.example.outdoorromagna.data.database.dto.TrackDto
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
@@ -211,8 +210,7 @@ fun TrackingScreen(
                 if (isTrackingStarted) {
                     startTracking(presenter)
                 } else {
-                    val result = stopTracking(context, presenter, user.username, activitiesViewModel, addTrackState, addTrackActions)
-                    Log.d("result", result.toString())
+                    stopTracking(context, presenter, user.username, activitiesViewModel, addTrackState, addTrackActions)
                     navController.navigate(OutdoorRomagnaRoute.AddTrackDetails.currentRoute)
                 }
             },
@@ -318,9 +316,9 @@ private fun stopTracking(
     activitiesViewModel: ActivitiesViewModel,
     addTrackState: AddTrackState,
     addTrackActions: AddTrackActions
-): TrackDto {
+) {
     //val elapsedTime = (SystemClock.elapsedRealtime() - /*presenter.startTime*/10) / 1000
-    return presenter.stopTracking(context, username, activitiesViewModel, addTrackState, addTrackActions)//, elapsedTime)
+    presenter.stopTracking(context, username, activitiesViewModel, addTrackState, addTrackActions)//, elapsedTime)
 }
 
 @Composable

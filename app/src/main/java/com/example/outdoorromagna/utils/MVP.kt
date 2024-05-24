@@ -15,8 +15,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.Activity
-import com.example.outdoorromagna.data.database.Track
-import com.example.outdoorromagna.data.database.dto.TrackDto
 import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackActions
@@ -150,13 +148,12 @@ class MapPresenter(private val context: Context,
         activitiesViewModel: ActivitiesViewModel,
         addTrackState: AddTrackState,
         addTrackActions: AddTrackActions
-    ): TrackDto {
+    ) {
 
         Log.d("TAG", "myLocations stopTracking " + myLocations.toString())
-        val result = updateTrackState(myLocations, addTrackState, addTrackActions)
+        updateTrackState(myLocations, addTrackState, addTrackActions)
         locationProvider.stopTracking()
         stepCounter.unloadStepCounter()
-        return result
     }
 
     private fun updateTrackState(
@@ -166,7 +163,7 @@ class MapPresenter(private val context: Context,
         myLocations: List<LatLng>,
         addTrackState: AddTrackState,
         addTrackActions: AddTrackActions
-    ): TrackDto {
+    ) {
 
         Log.d("TAG", "myLocations addTrack " + myLocations.toString())
         val city = getCityFromLatLng(context, myLocations[0])
@@ -175,16 +172,6 @@ class MapPresenter(private val context: Context,
         addTrackActions.setTrackPositions(myLocations)
         addTrackActions.setStartLat(myLocations[0].latitude)
         addTrackActions.setStartLng(myLocations[0].longitude)
-        return TrackDto(
-            name = "",
-            description = "",
-            city = city ?: "",
-            duration = elapsedTime.value ?: 0,
-            trackPositions = myLocations,
-            startLat = myLocations[0].latitude,
-            startLng = myLocations[0].longitude,
-            imageUri = null
-        )
         /*addTrackState.imageUri = "URI"*/
         /*tracksDbVm.addTrack(
             Track(

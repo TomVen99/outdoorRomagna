@@ -116,6 +116,8 @@ fun TracksScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (state.showFilterBar) {
+                    Log.d("tracks", tracksDbState.tracks.toString())
+                    Log.d("specifictrackList", specificTracksList.toString())
                     stickyHeader {
                         Box (
                             modifier = Modifier.background(MaterialTheme.colorScheme.background)
@@ -135,23 +137,17 @@ fun TracksScreen(
                                 }
                             }
                         }
+                    }
+                    actualFilterOption = when(state.filter) {
+                        FilterOption.YOUR_TRACKS -> {
+                            tracksDbVm.getUserTracks(user.id)
+                            FilterOption.YOUR_TRACKS.ordinal
+                        }
 
-                    }
-                }
-                when(state.filter) {
-                    FilterOption.YOUR_TRACKS -> {
-                        tracksDbVm.getUserTracks(user.id)
-                        actualFilterOption = FilterOption.YOUR_TRACKS.ordinal
-                    Log.d("QUERY", tracksDbState.tracks.toString())
-                    }
-                    FilterOption.ALL_TRACKS -> {
-                        tracksDbVm.getAllTracks()
-                        actualFilterOption = FilterOption.ALL_TRACKS.ordinal
-                        Log.d("QUERY", tracksDbState.tracks.toString())
-                    }
-                    FilterOption.FAVORITES -> {
-                        tracksDbVm.getFavoriteTracks(user.id)
-                        actualFilterOption = FilterOption.FAVORITES.ordinal
+                        FilterOption.ALL_TRACKS -> {
+                            tracksDbVm.resetSpecificTracks()
+                            FilterOption.ALL_TRACKS.ordinal
+                        }
                     }
                 }
                 items(getTrackListToPrint(specificTracksList, tracksDbState.tracks)) { item ->

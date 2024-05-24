@@ -3,6 +3,8 @@ package com.example.outdoorromagna.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -238,11 +240,6 @@ fun OutdoorRomagnaNavGraph(
     val context = LocalContext.current
 
     val sharedPreferences = context.getSharedPreferences("isUserLogged", Context.MODE_PRIVATE)
-    /**RIMUOVE LA ISUSERLOGGED*/
-    /*val edit = sharedPreferences.edit()
-    edit.putBoolean("isUserLogged", false)
-    edit.putString("username", "")
-    edit.apply()*/
     var startDestination = ""
     /*if(intentRoute?.isNotEmpty() == true) {
         startDestination = OutdoorRomagnaRoute.Home.currentRoute
@@ -318,9 +315,20 @@ fun OutdoorRomagnaNavGraph(
                 var userName =  backStackEntry.arguments?.getString("userUsername") ?: userDefault
                 userName = if (userName == "null") userDefault else userName
                 userDefault = userName
-                Log.d("TAG", "username sharedPreferences " + sharedPreferences.getString("username", ""))
-                Log.d("TAG", "lista username " + usersState.users)
+                //controllo per non bloccarsi
+                val handler = Handler(Looper.getMainLooper())
+                val runnable = Runnable {
+                    if(usersState.users.isEmpty()) {
+                        val edit = sharedPreferences.edit()
+                        edit.putBoolean("isUserLogged", false)
+                        edit.putString("username", "")
+                        edit.apply()
+                        navController.navigate(OutdoorRomagnaRoute.Login.route)
+                    }
+                }
+                handler.postDelayed(runnable, 5000L)
                 if(usersState.users.isNotEmpty()) {
+                    handler.removeCallbacks(runnable)
                     val user = requireNotNull(usersState.users.find {
                         it.username == sharedPreferences.getString("username", "")//userName
                     })
@@ -369,7 +377,7 @@ fun OutdoorRomagnaNavGraph(
                 })
                 val isSpecificTrack = backStackEntry.arguments?.getBoolean("specificTrack") ?: false
                 if (!isSpecificTrack)
-                    tracksDbVm.resetSpecificTrackInRange()
+                    tracksDbVm.resetSpecificTracks()
                 TracksScreen(
                     navController = navController,
                     user = user,

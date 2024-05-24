@@ -15,7 +15,6 @@ class TracksRepository(
 ) {
     var tracks: Flow<List<Track>> = tracksDAO.getAllTracks()
 
-
     val groupedTracks: Flow<List<GroupedTrack>> = tracksDAO.getGroupedTracks()
 
     suspend fun upsert(track: Track) {
@@ -37,12 +36,14 @@ class TracksRepository(
 
     suspend fun getUserTracks(id: Int) = tracksDAO.getUserTracks(id)
 
-    fun getFavoriteTracks(id: Int) = tracksDAO.getFavoriteTracks(id)
+    suspend fun getFavoriteTracks(id: Int) = tracksDAO.getFavoriteTracks(id)
 
     //fun getGroupedTracks() = tracksDAO.getGroupedTracks()
 
     suspend fun getTracksInRange(startLat: Double, startLng: Double) = tracksDAO.getTracksInRange(startLat, startLng)
 }
+
+
 
 /**FUN PER INSERIRE TRACK DI TEST*/
 fun generateTestTracks(): List<Track> {
