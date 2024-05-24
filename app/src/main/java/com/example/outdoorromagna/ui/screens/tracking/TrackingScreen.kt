@@ -93,11 +93,6 @@ fun TrackingScreen(
     presenter.mySetUi(uiState)
     presenter.onViewCreated(lifecycleOwner)
 
-    /*LaunchedEffect(key1 = Unit) {
-        presenter.onMapLoaded(context)
-        presenter.mySetUi(uiState)
-        presenter.onViewCreated(lifecycleOwner)
-    }*/
     val locationPermissionDenied by presenter.permissionsManager.locationPermissionDenied.observeAsState(false)
     val activityRecognitionPermissionDenied by presenter.permissionsManager.activityRecognitionPermissionDenied.observeAsState(false)
 

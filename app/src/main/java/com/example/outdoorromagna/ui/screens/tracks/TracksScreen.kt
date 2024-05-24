@@ -67,7 +67,8 @@ fun TracksScreen(
     actions: TracksActions,
     usersViewModel : UsersViewModel,
     tracksDbVm: TracksDbViewModel,
-    tracksDbState: TracksDbState
+    tracksDbState: TracksDbState,
+    showFilter: Boolean,
 ) {
     val specificTracksList by tracksDbVm.specificTracksList.observeAsState()
     var actualFilterOption by remember { mutableIntStateOf(FilterOption.ALL_TRACKS.ordinal) }
@@ -84,7 +85,7 @@ fun TracksScreen(
                     drawerState = getMyDrawerState(),
                     trackActions = actions,
                     scope = scope,
-                    showFilter = true,
+                    showFilter = showFilter,
                     filterState = state
                 )
             },

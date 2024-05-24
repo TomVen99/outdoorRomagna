@@ -42,7 +42,6 @@ class MapPresenter(private val context: Context,
     private lateinit var stepCounter: StepCounter
     lateinit var permissionsManager: PermissionsManager
 
-
     val elapsedTime = MutableLiveData<Long>()
 
     private var startTime = 0L

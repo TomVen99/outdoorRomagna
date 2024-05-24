@@ -385,7 +385,9 @@ fun OutdoorRomagnaNavGraph(
                     actions = tracksVm.actions,
                     usersViewModel = usersVm,
                     tracksDbVm = tracksDbVm,
-                    tracksDbState = tracksDbState
+                    tracksDbState = tracksDbState,
+                    showFilter = !isSpecificTrack,
+
                 )
             }
         }
