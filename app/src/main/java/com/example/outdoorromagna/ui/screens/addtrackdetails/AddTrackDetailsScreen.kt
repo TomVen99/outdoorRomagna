@@ -84,7 +84,8 @@ fun AddTrackDetailsScreen(
                                 startLng = addTrackState.startLng,
                                 description = addTrackDetailsState.description,
                                 name = addTrackDetailsState.title,
-                                imageUri = null
+                                imageUri = null,
+                                userId = user.id,
                             )
                         )
                     }

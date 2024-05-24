@@ -45,8 +45,18 @@ class TracksDbViewModel(
     }
 
     fun getAllTracks() = viewModelScope.launch {
+        _specificTracksList.value = null
         repository.getAllTracks()
+
     }
+    fun getUserTracks(id: Int) = viewModelScope.launch {
+        val tracks = repository.getUserTracks(id)
+        _specificTracksList.value = tracks
+    }
+    fun getFavoriteTracks(id: Int) = viewModelScope.launch {
+        repository.getFavoriteTracks(id)
+    }
+
 
     /*fun getGroupedTracks() = viewModelScope.launch {
             repository.getGroupedTracks()

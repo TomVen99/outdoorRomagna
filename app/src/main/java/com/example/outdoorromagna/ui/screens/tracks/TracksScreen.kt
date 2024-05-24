@@ -32,8 +32,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +52,7 @@ import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.FilterBar
+import com.example.outdoorromagna.ui.composables.FilterOption
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
 
@@ -66,6 +70,7 @@ fun TracksScreen(
     tracksDbState: TracksDbState
 ) {
     val specificTracksList by tracksDbVm.specificTracksList.observeAsState()
+    var actualFilterOption by remember { mutableIntStateOf(FilterOption.ALL_TRACKS.ordinal) }
 
     Log.d("trackList", specificTracksList.toString())
     val scope = rememberCoroutineScope()
@@ -123,11 +128,30 @@ fun TracksScreen(
                             ) {
                                 Row(
                                 ) {
-                                    FilterBar(actions = actions)
+                                    FilterBar(
+                                        actions = actions,
+                                        filterOption = actualFilterOption,
+                                    )
                                 }
                             }
                         }
 
+                    }
+                }
+                when(state.filter) {
+                    FilterOption.YOUR_TRACKS -> {
+                        tracksDbVm.getUserTracks(user.id)
+                        actualFilterOption = FilterOption.YOUR_TRACKS.ordinal
+                    Log.d("QUERY", tracksDbState.tracks.toString())
+                    }
+                    FilterOption.ALL_TRACKS -> {
+                        tracksDbVm.getAllTracks()
+                        actualFilterOption = FilterOption.ALL_TRACKS.ordinal
+                        Log.d("QUERY", tracksDbState.tracks.toString())
+                    }
+                    FilterOption.FAVORITES -> {
+                        tracksDbVm.getFavoriteTracks(user.id)
+                        actualFilterOption = FilterOption.FAVORITES.ordinal
                     }
                 }
                 items(getTrackListToPrint(specificTracksList, tracksDbState.tracks)) { item ->
@@ -158,6 +182,7 @@ fun getTrackListToPrint(specificTracksList: List<Track>?, tracksState: List<Trac
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrintListItems(track: Track, onClick: () -> Unit) {
+    var isFavorite = false
     Card(
         onClick = { onClick() },
         modifier = Modifier
@@ -172,14 +197,14 @@ fun PrintListItems(track: Track, onClick: () -> Unit) {
                 Text(text = track.description)
             },
             trailingContent = {
-                /*IconButton(onClick = {
-                    item.isFavorite = !item.isFavorite
+                IconButton(onClick = {
+                    isFavorite = !isFavorite
                     Log.d("TAG", "addFavorite")
                 })
                 {
-                    Icon(imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Add to favorites")
-                }*/
+                }
             },
         )
     }

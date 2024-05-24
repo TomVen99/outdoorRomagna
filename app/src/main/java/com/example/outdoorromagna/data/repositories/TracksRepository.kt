@@ -13,7 +13,8 @@ class TracksRepository(
     private val tracksDAO: TracksDAO,
     private val contentResolver: ContentResolver
 ) {
-    val tracks: Flow<List<Track>> = tracksDAO.getAllTracks()
+    var tracks: Flow<List<Track>> = tracksDAO.getAllTracks()
+
 
     val groupedTracks: Flow<List<GroupedTrack>> = tracksDAO.getGroupedTracks()
 
@@ -33,6 +34,10 @@ class TracksRepository(
     suspend fun delete(track: Track) = tracksDAO.deleteTrack(track)
 
     fun getAllTracks() = tracksDAO.getAllTracks()
+
+    suspend fun getUserTracks(id: Int) = tracksDAO.getUserTracks(id)
+
+    fun getFavoriteTracks(id: Int) = tracksDAO.getFavoriteTracks(id)
 
     //fun getGroupedTracks() = tracksDAO.getGroupedTracks()
 
@@ -61,7 +66,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.0690, 12.5740)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 1,
         ),
         Track(
             name = "Trekking Cesena 1",
@@ -82,7 +88,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.1460, 12.2510)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 1,
         ),
         Track(
             name = "Trekking Ravenna 1",
@@ -103,7 +110,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.4240, 12.2050)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 1,
         ),
         Track(
             name = "Trekking Rimini 2",
@@ -124,7 +132,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.0490, 12.5540)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 1,
         ),
         Track(
             name = "Trekking Cesena 2",
@@ -145,7 +154,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.1360, 12.2410)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 1,
         ),
         Track(
             name = "Trekking Ravenna 2",
@@ -166,7 +176,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.4140, 12.1950)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 1,
         ),
         Track(
             name = "Trekking Rimini 3",
@@ -187,7 +198,9 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.0890, 12.6040)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 4,
+
         ),
         Track(
             name = "Trekking Cesena 3",
@@ -208,7 +221,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.1560, 12.2610)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 5,
         ),
         Track(
             name = "Trekking Ravenna 3",
@@ -229,7 +243,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.4340, 12.2150)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 2,
         ),
         Track(
             name = "Trekking Rimini 3",
@@ -250,7 +265,8 @@ fun generateTestTracks(): List<Track> {
                 LatLng(44.0890, 12.6040)
             ),
             imageUri = null,
-            duration = 1
+            duration = 1,
+            userId = 2,
         )
     )
 }

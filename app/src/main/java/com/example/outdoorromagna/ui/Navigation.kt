@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.outdoorromagna.data.repositories.UsersRepository
+import com.example.outdoorromagna.ui.composables.FilterOption
 import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackScreen
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackViewModel
@@ -122,7 +123,7 @@ sealed class OutdoorRomagnaRoute(
         "",
         listOf(
             navArgument("userUsername") { type = NavType.StringType },
-            navArgument("specificTrack") { type = NavType.BoolType }
+            navArgument("specificTrack") { type = NavType.BoolType },
         )
     ) {
         fun buildRoute(userUsername: String, specificTrack: Boolean) : String {
