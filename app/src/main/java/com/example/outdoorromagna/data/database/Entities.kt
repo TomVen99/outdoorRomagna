@@ -2,6 +2,7 @@ package com.example.outdoorromagna.data.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.serialization.Serializable
@@ -85,6 +86,9 @@ data class Track (
 
     @ColumnInfo
     var duration: Long,
+
+    @ColumnInfo
+    val userId: Int,
 )
 
 @Entity(primaryKeys = ["userId", "markerId"])

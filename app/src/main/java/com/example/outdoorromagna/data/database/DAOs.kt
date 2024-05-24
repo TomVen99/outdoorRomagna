@@ -59,6 +59,12 @@ interface TracksDAO {
     @Query("SELECT * FROM Track ")
     fun getAllTracks(): Flow<List<Track>>
 
+    @Query("SELECT * FROM Track WHERE userId = :id ")
+    suspend fun getUserTracks(id: Int): List<Track>
+
+    @Query("SELECT * FROM Track WHERE userId = :id")
+    suspend fun getFavoriteTracks(id: Int): List<Track>
+
     @Query("""
     SELECT 
         MIN(startLat) + (MAX(startLat) - MIN(startLat)) / 2 AS groupedLat, 

@@ -161,7 +161,7 @@ fun BottomAppBar(
                             )
                         )
                     },
-                    contentPadding = PaddingValues(15.dp),
+                    contentPadding = PaddingValues(horizontal = 15.dp, vertical = 10.dp),
                     shape = RectangleShape
                 ) {
                     Column(
@@ -184,7 +184,7 @@ fun BottomAppBar(
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute)
                     },
-                    contentPadding = PaddingValues(15.dp),
+                    contentPadding = PaddingValues(horizontal = 15.dp, vertical = 10.dp),
                     shape = RectangleShape
                 ) {
                     Column(
@@ -211,7 +211,7 @@ fun BottomAppBar(
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.Tracks.currentRoute)
                     },
-                    contentPadding = PaddingValues(15.dp),
+                    contentPadding = PaddingValues(horizontal = 15.dp, vertical = 10.dp),
                     shape = RectangleShape
                 ) {
                     Column(
@@ -236,7 +236,7 @@ fun BottomAppBar(
                     onClick = {
                         navController.navigate(OutdoorRomagnaRoute.Profile.currentRoute)
                     },
-                    contentPadding = PaddingValues(15.dp),
+                    contentPadding = PaddingValues(horizontal = 15.dp, vertical = 10.dp),
                     shape = RectangleShape
                 ) {
                     Column(

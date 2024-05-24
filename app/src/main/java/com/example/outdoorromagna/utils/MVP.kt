@@ -40,7 +40,7 @@ class MapPresenter(private val context: Context,
     private lateinit var googleMap: GoogleMap
     private lateinit var locationProvider: LocationProvider
     private lateinit var stepCounter: StepCounter
-    private lateinit var permissionsManager: PermissionsManager
+    lateinit var permissionsManager: PermissionsManager
 
 
     val elapsedTime = MutableLiveData<Long>()

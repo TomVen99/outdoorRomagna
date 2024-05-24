@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -235,8 +236,24 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
+                Spacer(modifier = Modifier.size(15.dp))
 
-
+                Row(
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Icon(
+                        Icons.Filled.Numbers,
+                        contentDescription = "n percorsi"
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(
+                        text = "numero percorsi",
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         }
     }

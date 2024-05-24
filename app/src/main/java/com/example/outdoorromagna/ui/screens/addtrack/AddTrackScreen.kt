@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -35,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,7 +60,6 @@ fun AddTrackScreen(
     activity: Activity
 ) {
     val context = LocalContext.current
-    val snackbarHostState = remember { SnackbarHostState() }
 
     // UI
     val gpsChecker by rememberSaveable { mutableStateOf(checkGPS(context)) }
@@ -182,6 +183,23 @@ fun AddTrackScreen(
     SideBarMenu(
         myScaffold = myScaffold,
         navController
+    )
+}
+
+@Composable
+private fun ShowAlertDialog(navController: NavHostController) {
+    AlertDialog(
+        onDismissRequest = { /* Gestisci la chiusura dell'alert */ },
+        title = { Text("Configurazione errata") },
+        text = { Text("È necessario che localizzazione e internet siano attivi.") },
+        confirmButton = {
+            Button(onClick = { navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute) }) {
+                Text(
+                    text = "OK",
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
+            }
+        }
     )
 }
 
