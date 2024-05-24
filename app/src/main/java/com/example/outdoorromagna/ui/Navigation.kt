@@ -377,7 +377,7 @@ fun OutdoorRomagnaNavGraph(
                 })
                 val isSpecificTrack = backStackEntry.arguments?.getBoolean("specificTrack") ?: false
                 if (!isSpecificTrack)
-                    tracksDbVm.resetSpecificTrackInRange()
+                    tracksDbVm.resetSpecificTracks()
                 TracksScreen(
                     navController = navController,
                     user = user,

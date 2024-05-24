@@ -46,6 +46,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -228,7 +230,7 @@ fun HomeScreen(
                             },
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
-                                .padding(end = 10.dp, top = 10.dp)
+                                .padding(end = 10.dp, top = 8.dp)
                                 .size(48.dp),
                             shape = CircleShape
                         ) {
@@ -296,7 +298,6 @@ fun HomeScreen(
                                             performSearch(query = query, context = context) { results ->
                                                 if (results.isNotEmpty()) {
                                                     placeSearch = results
-                                                    Log.d("tag", results.toString())
                                                 }
                                             }
                                         }
@@ -338,7 +339,7 @@ fun HomeScreen(
                                                     .padding(vertical = 0.dp)
                                                     .fillMaxWidth(),
                                                 shape = RectangleShape,
-                                                contentPadding = PaddingValues(vertical = 0.dp),
+                                                contentPadding = PaddingValues(0.dp),
                                             ) {
                                                 Text(text = place.name)
                                             }
@@ -346,15 +347,11 @@ fun HomeScreen(
                                     }
                                 }
                             }
+                        } else {
+                            placeSearch = emptyList()
                         }
-
-
-                        /*if (showButton) { //se clicca su un punto della mappa
-                        addLocation()*/
-
                     }
                 }
-
             }
         }
     }
@@ -363,24 +360,6 @@ fun HomeScreen(
         navController
     )
 }
-
-
-@Composable
-fun addLocation() {
-    FloatingActionButton(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        onClick = { },
-        modifier = Modifier
-            .padding(start = 16.dp, bottom = 32.dp)
-    ) {
-        Row (modifier = Modifier.padding(8.dp)){
-            Icon(Icons.Outlined.Add, "Share Travel")
-            Text(text = "Aggiungi percorso")
-        }
-    }
-}
-
 
 fun requestLocation(locationPermission: PermissionHandler, locationService: LocationService) {
     if (locationPermission.status.isGranted) {
@@ -391,7 +370,6 @@ fun requestLocation(locationPermission: PermissionHandler, locationService: Loca
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun MapView(
     cameraPositionState: CameraPositionState,
@@ -409,16 +387,6 @@ fun MapView(
         onMapClick = {  },
         properties = MapProperties(mapType = mapView)
     ) {
-
-        // Visualizza il marker
-        /*markerPosition?.let {
-            Marker(
-                state = MarkerState(position = it),
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)  // Imposta il marker di colore giallo
-            )
-            onMarkerClick()
-        }*/
-
         groupedTracksState.tracks.forEach { location ->
             Marker(
                 state = MarkerState(position = LatLng(location.groupedLat, location.groupedLng)),
@@ -432,53 +400,8 @@ fun MapView(
                 }
             )
         }
-
-        /**PROVA DELL'ONCLICK DI UN PERCORSO*/
-        var showPoly by remember {mutableStateOf(false)}
-        Marker(state = MarkerState(position = LatLng(37.772, -122.23)),
-            onClick = {
-                showPoly = true
-                true
-            }
-        )
-
-        /**ESEMPIO DI UNA POLYLINE, LA LISTA DI PUNTI SARA POI RELATIVA LA MARKER CLICCATO  */
-        if(showPoly) {
-            val flightPlanCoordinates = listOf(
-                LatLng(37.772, -122.214),
-                LatLng( 21.291, -157.821),
-                LatLng( -18.142, 178.431),
-                LatLng( -27.467, 153.027),
-            )
-            val poly = Polyline(
-                points = flightPlanCoordinates,
-                color = Color.Red
-            )
-        }
-        /*state.markers.forEach{marker ->
-            Marker(
-                state = MarkerState(LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())),
-                icon =
-                if (isFavorite(marker))
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                else
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
-                onClick = {
-                    navController.navigate(TravelDiaryRoute.HomeMarkDetail.buildRoute(
-                        user.username,
-                        marker.latitude,
-                        marker.longitude
-                    ))
-                    true
-                }
-            )
-        }*/
     }
-
-
-
 }
-
 
 @Composable
 fun rememberPermission(
@@ -532,7 +455,11 @@ private fun SearchBar(onQueryChanged: (String) -> Unit, actions: HomeScreenActio
             IconButton(onClick = { actions.setShowSearchBar(false) }) {
                 Icon(Icons.Outlined.Close, contentDescription = "Chiudi")
             }
-        }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.background,
+            unfocusedContainerColor = MaterialTheme.colorScheme.background
+        )
     )
 }
 

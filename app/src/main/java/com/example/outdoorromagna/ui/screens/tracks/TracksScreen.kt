@@ -138,20 +138,20 @@ fun TracksScreen(
                             }
                         }
                     }
-                    when(state.filter) {
+                    actualFilterOption = when(state.filter) {
                         FilterOption.YOUR_TRACKS -> {
                             tracksDbVm.getUserTracks(user.id)
-                            actualFilterOption = FilterOption.YOUR_TRACKS.ordinal
-                            Log.d("QUERY", tracksDbState.tracks.toString())
+                            FilterOption.YOUR_TRACKS.ordinal
                         }
+
                         FilterOption.ALL_TRACKS -> {
-                            tracksDbVm.getAllTracks()
-                            actualFilterOption = FilterOption.ALL_TRACKS.ordinal
-                            Log.d("QUERY", tracksDbState.tracks.toString())
+                            tracksDbVm.resetSpecificTracks()
+                            FilterOption.ALL_TRACKS.ordinal
                         }
+
                         FilterOption.FAVORITES -> {
                             tracksDbVm.getFavoriteTracks(user.id)
-                            actualFilterOption = FilterOption.FAVORITES.ordinal
+                            FilterOption.FAVORITES.ordinal
                         }
                     }
                 }
