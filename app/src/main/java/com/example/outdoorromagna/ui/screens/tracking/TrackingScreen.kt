@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
@@ -141,7 +142,8 @@ fun TrackingScreen(
                 .fillMaxWidth()
                 .padding(5.dp)
         ) {
-            Text(text = if (isTrackingStarted) stringResource(R.string.stop_label) else stringResource(R.string.start_label))
+            Text(text = if (isTrackingStarted) stringResource(R.string.stop_label) else stringResource(R.string.start_label),
+            color = Color.White)
         }
     }
     DisposableEffect(lifecycleOwner) {

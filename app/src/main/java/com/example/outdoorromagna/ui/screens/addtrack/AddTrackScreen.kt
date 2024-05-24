@@ -35,6 +35,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -116,7 +117,7 @@ fun AddTrackScreen(
                     Button(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.onPrimary,
-                            contentColor = MaterialTheme.colorScheme.primary
+                            contentColor = MaterialTheme.colorScheme.secondary
                         ),
                         onClick = {
                             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -134,7 +135,7 @@ fun AddTrackScreen(
                     Button(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.onPrimary,
-                            contentColor = MaterialTheme.colorScheme.primary
+                            contentColor = MaterialTheme.colorScheme.secondary
                         ),
                         onClick = {
                             val intent = Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS).apply {
@@ -154,7 +155,7 @@ fun AddTrackScreen(
                 OutlinedButton(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onPrimary,
-                        contentColor = MaterialTheme.colorScheme.primary
+                        contentColor = MaterialTheme.colorScheme.secondary
                     ),
                     onClick = {
                         Log.d("TAG", "Prima di vado in tracking")
