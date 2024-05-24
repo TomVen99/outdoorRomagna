@@ -2,10 +2,14 @@ package com.example.outdoorromagna.ui.screens.tracking
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.MutableLiveData
@@ -82,9 +88,81 @@ fun TrackingScreen(
     val uiState = remember { MutableLiveData(Ui.EMPTY)}
     val elapsedTimeState = presenter.elapsedTime.observeAsState(0L)
     val mapView = rememberMapViewWithLifecycle()
-    LaunchedEffect(key1 = Unit) {
+    val openAppSettingsLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
+
+    presenter.onMapLoaded(context)
+    presenter.mySetUi(uiState)
+    presenter.onViewCreated(lifecycleOwner)
+
+    /*LaunchedEffect(key1 = Unit) {
         presenter.onMapLoaded(context)
         presenter.mySetUi(uiState)
+        presenter.onViewCreated(lifecycleOwner)
+    }*/
+    val locationPermissionDenied by presenter.permissionsManager.locationPermissionDenied.observeAsState(false)
+    val activityRecognitionPermissionDenied by presenter.permissionsManager.activityRecognitionPermissionDenied.observeAsState(false)
+
+    // Osservare i permessi negati e mostrare i messaggi appropriati
+    if (locationPermissionDenied) {
+        AlertDialog(
+            onDismissRequest = { /* Gestisci la chiusura dell'alert */ },
+            title = { Text("Permesso Negato") },
+            text = { Text("Il permesso per la posizione è stato negato. Non è possibile tracciare la posizione.") },
+            confirmButton = {
+                Button(onClick = { navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute) }) {
+                    Text(
+                        text = "OK",
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    openAppSettingsLauncher.launch(
+                        Intent().apply {
+                            action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                    )
+                }) {
+                    Text(
+                        text = "Impostazioni",
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+            }
+        )
+    }
+
+    if (activityRecognitionPermissionDenied) {
+        AlertDialog(
+            onDismissRequest = { /* Gestisci la chiusura dell'alert */ },
+            title = { Text("Permesso Negato") },
+            text = { Text("Il permesso per il riconoscimento dell'attività è stato negato. Non possiamo tracciare i tuoi passi.") },
+            confirmButton = {
+                Button(onClick = { navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute) }) {
+                    Text(
+                        text = "OK",
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    openAppSettingsLauncher.launch(
+                        Intent().apply {
+                            action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                    )
+                }) {
+                    Text(
+                        text = "Impostazioni",
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+            }
+        )
     }
 
     val locationService = koinInject<LocationService>()

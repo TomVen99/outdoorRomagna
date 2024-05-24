@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -163,7 +164,7 @@ fun ProfileScreen(
             ) {
                 Log.d("TAG", "dentro myscaffold")
                 Text(
-                    text = "Nome e Cognome",
+                    text = user.name + " " + user.surname,
                     fontSize = 25.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
@@ -226,15 +227,31 @@ fun ProfileScreen(
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
-                        text = "email",
+                        text = user.mail,
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
+                Spacer(modifier = Modifier.size(15.dp))
 
-
+                Row(
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Icon(
+                        Icons.Filled.Numbers,
+                        contentDescription = "n percorsi"
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(
+                        text = "numero percorsi",
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         }
     }

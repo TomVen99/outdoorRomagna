@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultRegistry
+import androidx.lifecycle.MutableLiveData
 
 class PermissionsManager(
     registry: ActivityResultRegistry,
@@ -15,10 +16,15 @@ class PermissionsManager(
     private val stepCounter: StepCounter
 ) {
 
+    val locationPermissionDenied = MutableLiveData<Boolean>()
+    val activityRecognitionPermissionDenied = MutableLiveData<Boolean>()
+
     private val locationPermissionProvider =
         registry.register("locationPermission", ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
                 locationProvider.getUserLocation()
+            } else {
+                locationPermissionDenied.value = true
             }
         }
 
@@ -26,6 +32,8 @@ class PermissionsManager(
         registry.register("activityRecognitionPermission", ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
                 stepCounter.setupStepCounter()
+            } else {
+                activityRecognitionPermissionDenied.value = true
             }
         }
 
