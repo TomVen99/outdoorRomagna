@@ -31,6 +31,9 @@ class TracksDbViewModel(
     private val _specificTracksList = MutableLiveData<List<Track>?>()
     val specificTracksList: LiveData<List<Track>?> = _specificTracksList
 
+    private val _userTracksNumber = MutableLiveData<Int>()
+    val userTracksNumber: LiveData<Int> = _userTracksNumber
+
     val groupedTracksState = repository.groupedTracks.map { GroupedTracksState(tracks = it) }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
@@ -68,6 +71,11 @@ class TracksDbViewModel(
 
     fun resetSpecificTracks() {
         _specificTracksList.value = null
+    }
+
+    fun getUserTracksNumber(userId: Int) = viewModelScope.launch {
+        val userTracksNum = repository.getUserTracksNumber(userId)
+        _userTracksNumber.value = userTracksNum
     }
 
 }

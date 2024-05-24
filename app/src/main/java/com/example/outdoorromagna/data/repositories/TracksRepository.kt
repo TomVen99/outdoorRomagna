@@ -41,6 +41,8 @@ class TracksRepository(
     //fun getGroupedTracks() = tracksDAO.getGroupedTracks()
 
     suspend fun getTracksInRange(startLat: Double, startLng: Double) = tracksDAO.getTracksInRange(startLat, startLng)
+
+    suspend fun getUserTracksNumber(userId: Int) = tracksDAO.getUserTracksNumber(userId)
 }
 
 

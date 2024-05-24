@@ -16,7 +16,6 @@ data class TracksState(
     val canSubmitPassword get() = password.isNotBlank()
 
     val isShowFilterEnabled get() = showFilterBar
-
 }
 
 interface TracksActions {

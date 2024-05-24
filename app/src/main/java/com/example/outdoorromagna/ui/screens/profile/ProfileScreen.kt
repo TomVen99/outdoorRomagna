@@ -66,6 +66,7 @@ fun ProfileScreen(
     usersViewModel : UsersViewModel,
     sharedPreferences: SharedPreferences,
     tracksDbState: TracksDbState,
+    userTracksNumber: Int,
 ) {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
@@ -246,7 +247,7 @@ fun ProfileScreen(
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
-                        text = "numero percorsi",
+                        text = "Numero percorsi: $userTracksNumber",
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,

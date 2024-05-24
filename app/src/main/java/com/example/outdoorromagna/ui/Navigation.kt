@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -349,6 +350,8 @@ fun OutdoorRomagnaNavGraph(
         with(OutdoorRomagnaRoute.Profile) {
             composable(route, arguments) {backStackEntry ->
                 val profileVm = koinViewModel<ProfileViewModel>()
+                val userTrackNumber by tracksDbVm.userTracksNumber.observeAsState(0)
+
                 val state by profileVm.state.collectAsStateWithLifecycle()
                 /*val user =  backStackEntry.arguments?.getString("userUsername") ?: userDefault
                 user = if (user == "null") userDefault else user
@@ -357,12 +360,14 @@ fun OutdoorRomagnaNavGraph(
                     //it.id == backStackEntry.arguments?.getString("userId")!!.toInt()
                     it.username == backStackEntry.arguments?.getString("userUsername")
                 })
+                tracksDbVm.getUserTracksNumber(user.id)
                 ProfileScreen(
                     navController = navController,
                     user = user,
                     usersViewModel = usersVm,
                     sharedPreferences = sharedPreferences,
                     tracksDbState = tracksDbState,
+                    userTracksNumber = userTrackNumber
                 )
             }
         }

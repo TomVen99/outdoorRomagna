@@ -75,6 +75,9 @@ interface TracksDAO {
 
     @Delete
     suspend fun deleteTrack(track: Track)
+
+    @Query("SELECT count(*) AS numeroPercorsi FROM Track t WHERE t.userId =:userId ")
+    suspend fun getUserTracksNumber(userId: Int): Int
 }
 
 @Dao
