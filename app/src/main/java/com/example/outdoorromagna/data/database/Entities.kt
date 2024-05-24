@@ -97,26 +97,9 @@ data class Favorite (
     var userId : Int,
 
     @ColumnInfo
-    var markerId : Int
+    var trackId : Int
 )
 
-@Entity
-data class Place (
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
-    @ColumnInfo
-    val name: String,
-
-    @ColumnInfo
-    val date: String,
-
-    @ColumnInfo
-    val description: String,
-
-    @ColumnInfo
-    val imageUri: String?
-)
 
 @Entity(tableName = "activity")
 data class Activity(

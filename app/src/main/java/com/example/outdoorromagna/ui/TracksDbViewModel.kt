@@ -8,6 +8,7 @@ import com.example.outdoorromagna.data.database.GroupedTrack
 import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.repositories.TracksRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -47,7 +48,6 @@ class TracksDbViewModel(
     fun getAllTracks() = viewModelScope.launch {
         _specificTracksList.value = null
         repository.getAllTracks()
-
     }
     fun getUserTracks(id: Int) = viewModelScope.launch {
         val tracks = repository.getUserTracks(id)

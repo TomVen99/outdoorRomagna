@@ -131,7 +131,6 @@ fun AddTrackScreen(
                     }
 
                     Spacer(modifier = Modifier.size(15.dp))
-
                     Button(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.onPrimary,

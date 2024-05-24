@@ -24,8 +24,8 @@ interface UsersDAO {
     /*@Query("SELECT * FROM Track WHERE start = :latitude AND longitude = :longitude")
     fun getTrackByLatLng(latitude: Float, longitude: Float): Flow<Track?>*/
 
-    @Query("SELECT * FROM favorite WHERE userId = :userID AND markerId = :markerId")
-    fun getFavorite(userID : Int, markerId : Int) : Flow<Favorite?>
+    /*@Query("SELECT * FROM favorite WHERE userId = :userID AND markerId = :markerId")
+    fun getFavorite(userID : Int, markerId : Int) : Flow<Favorite?>*/
 
     @Query("UPDATE user SET urlProfilePicture = :profileImg WHERE username = :username")
     suspend fun updateProfileImg(username: String, profileImg: String)
@@ -122,6 +122,11 @@ interface ActivityDAO {
     @Query("SELECT * FROM activity WHERE userCreatorUsername = :usernameSelected and favourite = true")
     fun getFavouriteActivitiesFromUser(usernameSelected: String): Flow<List<Activity>>
 
+}
+
+interface FavoriteDAO {
+    @Query("SELECT * FROM track WHERE id in (SELECT trackId FROM Favorite WHERE userId = :userId)")
+    fun getFavoriteTracks(userId: Int): List<Track>
 }
 
 data class GroupedTrack(
