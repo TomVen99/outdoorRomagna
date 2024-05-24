@@ -44,7 +44,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.R
-import com.example.outdoorromagna.data.database.Place
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.UsersViewModel
@@ -174,63 +173,4 @@ fun PasswordTextField(
             keyboardType = KeyboardType.Password
         )
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TravelItem(item: Place, onClick: () -> Unit) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier
-            .size(150.dp)
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val imageUri = Uri.parse(item.imageUri)
-            ImageWithPlaceholder(imageUri, Size.Sm)
-            Spacer(Modifier.size(8.dp))
-            Text(
-                item.name,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-fun NoItemsPlaceholder(modifier: Modifier = Modifier) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Icon(
-            Icons.Outlined.LocationOn, "Location icon",
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .size(48.dp),
-            tint = MaterialTheme.colorScheme.secondary
-        )
-        Text(
-            "No items",
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Text(
-            "Tap the + button to add a new place.",
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
 }

@@ -6,7 +6,6 @@ import androidx.room.Room
 import com.example.outdoorromagna.data.database.OutdoorRomagnaDatabase
 import com.example.outdoorromagna.data.remote.OSMDataSource
 import com.example.outdoorromagna.data.repositories.ActivityRepository
-import com.example.outdoorromagna.data.repositories.PlacesRepository
 import com.example.outdoorromagna.data.repositories.SettingsRepository
 import com.example.outdoorromagna.data.repositories.ThemeRepository
 import com.example.outdoorromagna.data.repositories.TracksRepository
@@ -72,13 +71,6 @@ val appModule = module {
     single {
         TracksRepository(
             get<OutdoorRomagnaDatabase>().tracksDAO(),
-            get<Context>().applicationContext.contentResolver
-        )
-    }
-
-    single {
-        PlacesRepository(
-            get<OutdoorRomagnaDatabase>().usersDAO(),
             get<Context>().applicationContext.contentResolver
         )
     }

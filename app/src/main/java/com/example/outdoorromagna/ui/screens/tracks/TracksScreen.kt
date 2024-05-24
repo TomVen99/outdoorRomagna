@@ -182,7 +182,6 @@ fun getTrackListToPrint(specificTracksList: List<Track>?, tracksState: List<Trac
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrintListItems(track: Track, onClick: () -> Unit) {
-    var isFavorite = false
     Card(
         onClick = { onClick() },
         modifier = Modifier
@@ -195,16 +194,6 @@ fun PrintListItems(track: Track, onClick: () -> Unit) {
             headlineContent = { Text(text= track.name) },
             supportingContent = {
                 Text(text = track.description)
-            },
-            trailingContent = {
-                IconButton(onClick = {
-                    isFavorite = !isFavorite
-                    Log.d("TAG", "addFavorite")
-                })
-                {
-                    Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Add to favorites")
-                }
             },
         )
     }

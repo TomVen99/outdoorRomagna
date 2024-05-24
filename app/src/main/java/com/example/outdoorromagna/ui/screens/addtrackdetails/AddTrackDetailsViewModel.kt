@@ -2,8 +2,6 @@ package com.example.outdoorromagna.ui.screens.addtrackdetails
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import com.example.outdoorromagna.data.database.Place
-import com.example.outdoorromagna.utils.MapPresenter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

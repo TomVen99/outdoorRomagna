@@ -91,15 +91,6 @@ data class Track (
     val userId: Int,
 )
 
-@Entity(primaryKeys = ["userId", "markerId"])
-data class Favorite (
-    @ColumnInfo
-    var userId : Int,
-
-    @ColumnInfo
-    var trackId : Int
-)
-
 
 @Entity(tableName = "activity")
 data class Activity(

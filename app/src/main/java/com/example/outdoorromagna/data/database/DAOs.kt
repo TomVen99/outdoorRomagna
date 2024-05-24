@@ -15,9 +15,6 @@ interface UsersDAO {
     @Query("SELECT * FROM user ORDER BY username ASC")
     fun getAllUser(): Flow<List<User>>
 
-    @Query("SELECT * FROM favorite")
-    fun getAllFavorite(): Flow<List<Favorite>>
-
     @Query("SELECT * FROM user WHERE username = :user")
     fun getUser(user: String): Flow<User?>
 
@@ -35,20 +32,9 @@ interface UsersDAO {
     @Upsert
     suspend fun upsertUser(user: User)
 
-
-    @Upsert
-    suspend fun upsertFavorite(favorite: Favorite)
-
     @Delete
     suspend fun deleteUser(item: User)
 
-    /*@Delete
-    suspend fun deletePlace(item: Place)*/
-
-
-
-    @Delete
-    suspend fun deleteFavorite(item : Favorite)
 }
 
 @Dao
@@ -122,11 +108,6 @@ interface ActivityDAO {
     @Query("SELECT * FROM activity WHERE userCreatorUsername = :usernameSelected and favourite = true")
     fun getFavouriteActivitiesFromUser(usernameSelected: String): Flow<List<Activity>>
 
-}
-
-interface FavoriteDAO {
-    @Query("SELECT * FROM track WHERE id in (SELECT trackId FROM Favorite WHERE userId = :userId)")
-    fun getFavoriteTracks(userId: Int): List<Track>
 }
 
 data class GroupedTrack(
