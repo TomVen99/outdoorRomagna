@@ -55,6 +55,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.TracksDbState
+import com.example.outdoorromagna.ui.TracksDbViewModel
 import kotlinx.coroutines.launch
 
 data class NavigationItem(
@@ -88,7 +90,7 @@ val items = listOf(
         title = "Percorsi",
         selectedIcon = Icons.Filled.Directions,
         unselectedIcon = Icons.Outlined.Directions,
-        badgeCount = 45,
+        badgeCount = 0,
         route = OutdoorRomagnaRoute.Tracks
     ),
     NavigationItem(
@@ -108,7 +110,8 @@ var currentRoute by mutableStateOf("")
 @Composable
 fun SideBarMenu (
     myScaffold: @Composable () -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    tracksDbState: TracksDbState? = null,
 ){
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -191,7 +194,7 @@ fun SideBarMenu (
                             },
                             badge = {
                                 item.badgeCount?.let {
-                                    Text(text = item.badgeCount.toString())
+                                    Text(text = tracksDbState?.tracks?.count().toString())//item.badgeCount.toString())
                                 }
                             },
                         )

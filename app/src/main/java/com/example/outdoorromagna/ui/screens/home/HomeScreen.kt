@@ -357,7 +357,8 @@ fun HomeScreen(
     }
     SideBarMenu(
         myScaffold = myScaffold,
-        navController
+        navController,
+        tracksDbState,
     )
 }
 

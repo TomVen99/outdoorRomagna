@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.TopAppBar
@@ -52,12 +53,9 @@ import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsView
 
 @Composable
 fun AddTrackScreen(
-    state: AddTrackState,
-    actions: AddTrackActions,
-    onSubmit: () -> Unit,
     navController: NavHostController,
     user: User,
-    activity: Activity
+    tracksDbState: TracksDbState,
 ) {
     val context = LocalContext.current
 
@@ -181,7 +179,8 @@ fun AddTrackScreen(
     }
     SideBarMenu(
         myScaffold = myScaffold,
-        navController
+        navController,
+        tracksDbState,
     )
 }
 

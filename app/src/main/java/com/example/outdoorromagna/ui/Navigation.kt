@@ -360,11 +360,9 @@ fun OutdoorRomagnaNavGraph(
                 ProfileScreen(
                     navController = navController,
                     user = user,
-                    onModify = usersVm::addUserWithoutControl,
-                    /*state = state,
-                    actions = profileVm.actions,*/
                     usersViewModel = usersVm,
-                    sharedPreferences = sharedPreferences
+                    sharedPreferences = sharedPreferences,
+                    tracksDbState = tracksDbState,
                 )
             }
         }
@@ -399,9 +397,10 @@ fun OutdoorRomagnaNavGraph(
                 })
                 val settingsVm = koinViewModel<SettingsViewModel>()
                 SettingsScreen(
-                    settingsVm,
-                    navController,
-                    user = user
+                    settingsVm = settingsVm,
+                    navController = navController,
+                    user = user,
+                    tracksDbState = tracksDbState,
                 )
             }
         }
@@ -414,12 +413,9 @@ fun OutdoorRomagnaNavGraph(
                 //val addTrackVm = koinViewModel<AddTrackViewModel>()
                 //val addTrackState by addTrackVm.state.collectAsStateWithLifecycle()
                 AddTrackScreen(
-                    state = addTrackState,
-                    actions = addTrackVm.actions,
-                    onSubmit = { /*tracksDbVm.addTrack(state.toPlace())*/ Log.d("TAG",  "add track to db")},
                     navController = navController,
                     user = user,
-                    activity = activity,
+                    tracksDbState = tracksDbState,
                 )
             }
         }
@@ -432,13 +428,10 @@ fun OutdoorRomagnaNavGraph(
                 val trackingVm = koinViewModel<TrackingViewModel>()
                 val trackingState by trackingVm.state.collectAsStateWithLifecycle()
                 val activitiesViewModel = koinViewModel<ActivitiesViewModel>()
-                //val addTrackVm = koinViewModel<AddTrackViewModel>()
-                //val addTrackState by addTrackVm.state.collectAsStateWithLifecycle()
                 TrackingScreen(
                     navController = navController,
                     trackingState = trackingState,
                     user = user,
-                    /*trackingViewModel = trackingVm,*/
                     trackingActions = trackingVm.actions,
                     activitiesViewModel = activitiesViewModel,
                     tracksDbVm = tracksDbVm,

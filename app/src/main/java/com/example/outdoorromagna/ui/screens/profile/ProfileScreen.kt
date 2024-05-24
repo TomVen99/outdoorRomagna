@@ -48,6 +48,7 @@ import coil.request.ImageRequest
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
@@ -62,11 +63,9 @@ import com.example.outdoorromagna.utils.saveImage
 fun ProfileScreen(
     navController: NavHostController,
     user: User,
-    onModify: (User) -> Unit,
-    //state: ProfileState,
-    //actions: ProfileActions,
     usersViewModel : UsersViewModel,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    tracksDbState: TracksDbState,
 ) {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
@@ -260,7 +259,8 @@ fun ProfileScreen(
 
     SideBarMenu(
         myScaffold = myScaffold,
-        navController
+        navController,
+        tracksDbState,
     )
 }
 

@@ -91,24 +91,6 @@ fun TracksScreen(
             },
             bottomBar = { BottomAppBar(navController, user) },
         ) { contentPadding ->
-            /*Column(
-                modifier = Modifier
-                    .padding(contentPadding)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (state.showFilterBar) {
-                    Column {
-                        Row {
-                            FilterBar(actions = actions)
-                        }
-                    }
-                }
-                specificTracksList?.let { PrintListItems(trackItems = it) }
-                if (specificTracksList == null)
-                    PrintListItems(trackItems = tracksDbState.tracks)
-            }*/
-
             LazyColumn (
                 modifier = Modifier
                     .fillMaxSize()
@@ -166,7 +148,8 @@ fun TracksScreen(
     }
     SideBarMenu(
         myScaffold = myScaffold,
-        navController
+        navController,
+        tracksDbState,
     )
 }
 
@@ -194,23 +177,6 @@ fun PrintListItems(track: Track, onClick: () -> Unit) {
             },
         )
     }
-
-    /*ListItem(
-        headlineContent = { Text(text= track.name) },
-        supportingContent = {
-            Text(text = track.description)
-        },
-        trailingContent = {
-            /*IconButton(onClick = {
-                item.isFavorite = !item.isFavorite
-                Log.d("TAG", "addFavorite")
-            })
-            {
-                Icon(imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Add to favorites")
-            }*/
-        },
-    )*/
 }
 
 

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
+import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
@@ -36,29 +37,11 @@ import com.example.outdoorromagna.ui.theme.OutdoorRomagnaTheme
 
 @Composable
 fun SettingsScreen(
-    /*state: SettingsState,
-    onUsernameChanged: (String) -> Unit,*/
     settingsVm : SettingsViewModel,
     navController: NavHostController,
-    user: User
-) {/*
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(12.dp).fillMaxSize()
-    ) {
-        OutlinedTextField(
-            value = state.username,
-            onValueChange = onUsernameChanged,
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.size(36.dp))
-        Text(
-            text = state.username,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }*/
+    user: User,
+    tracksDbState: TracksDbState,
+) {
     val scope = rememberCoroutineScope()
     val myScaffold: @Composable () -> Unit = {
         val theme by settingsVm.theme.collectAsState(initial = "")
@@ -133,66 +116,7 @@ fun SettingsScreen(
     }
     SideBarMenu(
         myScaffold = myScaffold,
-        navController
+        navController,
+        tracksDbState,
     )
 }
-/*
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SettingsScreen(settingsViewModel: SettingsViewModel) {
-    val theme by settingsViewModel.theme.collectAsState(initial = "")
-    Mobile_projectTheme(darkTheme = theme == "Dark") {
-
-        Scaffold { paddingValues ->
-            Column(
-                Modifier
-                    .selectableGroup()
-                    .padding(paddingValues)
-                    .padding(10.dp)
-                    .fillMaxSize(),
-            ) {
-                Text(
-                    text = "Tema dell'app",
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(3.dp)
-                )
-
-                Spacer(modifier = Modifier.size(3.dp))
-
-                val radioOptions = listOf("Light", "Dark")
-                radioOptions.forEach { text ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .selectable(
-                                selected = (text == theme),
-                                onClick = {
-                                    settingsViewModel.saveTheme(text)
-                                },
-                                role = Role.RadioButton
-                            )
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (text == theme),
-                            onClick = null, // null recommended for accessibility with screenreaders
-                            colors = RadioButtonDefaults.colors(
-                                selectedColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        )
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}*/
-
