@@ -26,16 +26,14 @@ import com.example.outdoorromagna.ui.screens.tracks.TracksActions
 
 enum class FilterOption(val title: String) {
     ALL_TRACKS("Tutti i percorsi"),
-    YOUR_TRACKS("Tuoi percorsi"),
+    YOUR_TRACKS("I tuoi percorsi"),
 }
 @Composable
 fun FilterBar(
     actions: TracksActions,
     filterOption: Int,
 ) {
-    /*var text by remember { mutableStateOf("") }*/
     Log.d("TAG", "Dentro filter bar")
-    /*var selectedFilter by remember { mutableStateOf("Tutti") }*/
     val scrollState = rememberScrollState()
     var selectedItemIndex by rememberSaveable {
         mutableIntStateOf(filterOption)
@@ -49,13 +47,11 @@ fun FilterBar(
             .padding(vertical = 1.dp),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
-        FilterOption.entries.forEachIndexed { index, text ->
+        FilterOption.entries.forEachIndexed { index, _ ->
             NavigationBarItem(
                 modifier = Modifier.padding(horizontal = 2.dp),
                 onClick = {
-                    Log.d("TAG", "cliccato " + text)
                     selectedItemIndex = index
-                    /*val filteredItems = */
                     when (FilterOption.entries[selectedItemIndex]) {
                         FilterOption.YOUR_TRACKS -> actions.setFilter(FilterOption.YOUR_TRACKS)
                         FilterOption.ALL_TRACKS -> actions.setFilter(FilterOption.ALL_TRACKS)

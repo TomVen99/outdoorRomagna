@@ -8,15 +8,10 @@ import kotlinx.coroutines.flow.update
 data class ProfileState(
     val username: String = "",
     val password: String = ""
-) {
-    val canSubmitUser get() = username.isNotBlank()
-    val canSubmitPassword get() = password.isNotBlank()
-
-}
+)
 
 interface ProfileActions {
-    fun setUsername(title: String)
-    fun setPassword(date: String)
+
 }
 
 class ProfileViewModel : ViewModel() {
@@ -24,10 +19,6 @@ class ProfileViewModel : ViewModel() {
     val state = _state.asStateFlow()
 
     val actions = object : ProfileActions {
-        override fun setUsername(title: String) =
-            _state.update { it.copy(username = title) }
 
-        override fun setPassword(date: String) =
-            _state.update { it.copy(password = date) }
     }
 }

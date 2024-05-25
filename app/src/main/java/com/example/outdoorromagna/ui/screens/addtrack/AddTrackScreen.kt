@@ -58,8 +58,6 @@ fun AddTrackScreen(
     tracksDbState: TracksDbState,
 ) {
     val context = LocalContext.current
-
-    // UI
     val gpsChecker by rememberSaveable { mutableStateOf(checkGPS(context)) }
     val internetConnChecker by rememberSaveable { mutableStateOf(checkInternet(context)) }
     val scope = rememberCoroutineScope()
@@ -142,14 +140,7 @@ fun AddTrackScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     onClick = {
-                        Log.d("TAG", "Prima di vado in tracking")
                         navController.navigate(OutdoorRomagnaRoute.Tracking.buildRoute(user.username))
-                        Log.d("TAG", "Vado in tracking")
-                        /*val trackingIntent = Intent(context, TrackingActivity::class.java).apply {
-                            putExtra(TrackingActivity.EXTRA_PARAMETER, user.username)
-                        }
-                        ContextCompat.startActivity(context, trackingIntent, null)*/
-
                     },
                     enabled = gpsChecker && internetConnChecker,
                     shape = CircleShape,

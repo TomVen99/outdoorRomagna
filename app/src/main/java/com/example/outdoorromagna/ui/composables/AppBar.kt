@@ -93,8 +93,7 @@ fun TopAppBar(
                         }
                         navController.navigate(OutdoorRomagnaRoute.Login.route)
                         }
-                )
-                {
+                ){
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
                         contentDescription = "Logout",

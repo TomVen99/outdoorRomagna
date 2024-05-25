@@ -58,7 +58,6 @@ import com.example.outdoorromagna.ui.composables.getMyDrawerState
 import com.example.outdoorromagna.utils.rememberCameraLauncher
 import com.example.outdoorromagna.utils.saveImage
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
@@ -133,10 +132,6 @@ fun ProfileScreen(
             )
         }
     }
-
-
-
-
     val myScaffold: @Composable () -> Unit = {
 
         Scaffold(
@@ -206,10 +201,6 @@ fun ProfileScreen(
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
-                        /*text = if (user?.firstName?.isNotEmpty() == true
-                    && user?.lastName?.isNotEmpty() == true) {
-                    user.firstName + " " + user.lastName
-                } else "Nome Cognome",*/
                         text = user.username,
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onBackground,

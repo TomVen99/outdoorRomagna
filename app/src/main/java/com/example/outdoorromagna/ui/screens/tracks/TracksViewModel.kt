@@ -7,20 +7,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class TracksState(
-    val username: String = "",
-    val password: String = "",
+    /*val username: String = "",
+    val password: String = "",*/
     val showFilterBar: Boolean = false,
     val filter: FilterOption = FilterOption.ALL_TRACKS,
 ) {
-    val canSubmitUser get() = username.isNotBlank()
-    val canSubmitPassword get() = password.isNotBlank()
-
     val isShowFilterEnabled get() = showFilterBar
 }
 
 interface TracksActions {
-    fun setUsername(title: String)
-    fun setPassword(date: String)
+    /*fun setUsername(title: String)
+    fun setPassword(date: String)*/
     fun setShowFilter(show: Boolean)
     fun setFilter(filter: FilterOption)
 }
@@ -30,11 +27,11 @@ class TracksViewModel : ViewModel() {
     val state = _state.asStateFlow()
 
     val actions = object : TracksActions {
-        override fun setUsername(title: String) =
+        /*override fun setUsername(title: String) =
             _state.update { it.copy(username = title) }
 
         override fun setPassword(date: String) =
-            _state.update { it.copy(password = date) }
+            _state.update { it.copy(password = date) }*/
 
         override fun setShowFilter(show: Boolean) =
             _state.update { it.copy(showFilterBar = show) }
@@ -50,8 +47,8 @@ class TracksViewModel : ViewModel() {
     }
 }
 
-data class TrackItem (
+/*data class TrackItem (
     val title: String,
     var isFavorite: Boolean,
     val shortDescription: String?
-)
+)*/

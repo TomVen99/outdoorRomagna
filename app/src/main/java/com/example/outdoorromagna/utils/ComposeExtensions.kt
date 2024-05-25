@@ -16,6 +16,5 @@ fun <T> MutableLiveData<T>.observeAsState(initial: T): State<T> {
         observeForever(observer)
         onDispose { removeObserver(observer) }
     }
-    Log.d("TAG", "USATO FUNZIONE")
     return state
 }

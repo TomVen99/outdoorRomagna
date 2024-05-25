@@ -40,15 +40,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.UsersViewModel
-import com.example.outdoorromagna.ui.composables.ImageWithPlaceholder
-import com.example.outdoorromagna.ui.composables.Size
 
 @Composable
 fun SigninScreen(

@@ -6,42 +6,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-/*
-data class LoginState(val username: String)
-
-class LoginViewModel (
-    private val repository: SettingsRepository
-) : ViewModel() {
-    var state by mutableStateOf(LoginState(""))
-        private set
-
-    fun setUsername(value: String) {
-        state = LoginState(value)
-        viewModelScope.launch { repository.setUsername(value) }
-    }
-
-    init {
-        viewModelScope.launch {
-            state = LoginState(repository.username.first())
-        }
-    }
-}*/
 data class LoginState(
     val username: String = "",
     val password: String = "",
     val salt: ByteArray = ByteArray(800)
 ) {
     val canSubmit get() = username.isNotBlank() && password.isNotBlank()
-
-    fun toUser() = User(
-        username = username,
-        password = password,
-        urlProfilePicture = "",
-        name = "",
-        surname = "",
-        mail = "",
-        salt = salt
-    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

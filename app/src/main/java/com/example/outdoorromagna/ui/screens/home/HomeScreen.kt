@@ -156,6 +156,7 @@ fun HomeScreen(
                 var markerPosition by remember { mutableStateOf<LatLng?>(null) }
                 val locationService = koinInject<LocationService>()
 
+                /*TOGLIERE ??*/
                 val locationPermission = rememberPermission(
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) { status ->

@@ -23,12 +23,6 @@ data class HomeScreenState(
 ) {
     val canSubmit get() = destination.isNotBlank() && date.isNotBlank() && description.isNotBlank()
 
-    /*fun toPlace() = Place(
-        name = destination,
-        description =  description,
-        date = date,
-        imageUri = imageUri.toString()
-    )*/
 }
 
 interface HomeScreenActions {

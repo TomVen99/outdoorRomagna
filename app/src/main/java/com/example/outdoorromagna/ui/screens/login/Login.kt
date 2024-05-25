@@ -189,11 +189,3 @@ fun PasswordTextField(
         )
     )
 }
-
-fun saveLoggedUser(username: String, sharedPreferences: SharedPreferences, context: Context) {
-    val editor: SharedPreferences.Editor = sharedPreferences.edit()
-
-    editor.putBoolean(context.getString(R.string.username_shared_pref), true)
-    editor.putString(context.getString(R.string.username_shared_pref), username)
-    editor.apply()
-}

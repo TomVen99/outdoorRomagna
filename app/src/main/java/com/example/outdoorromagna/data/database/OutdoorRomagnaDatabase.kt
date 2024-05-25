@@ -11,5 +11,4 @@ abstract class OutdoorRomagnaDatabase : RoomDatabase() {
 
     abstract fun tracksDAO(): TracksDAO
 
-    /*abstract fun activityDAO(): ActivityDAO*/
 }

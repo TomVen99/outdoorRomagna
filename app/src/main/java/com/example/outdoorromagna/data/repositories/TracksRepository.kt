@@ -38,7 +38,6 @@ class TracksRepository(
 
     suspend fun getFavoriteTracks(id: Int) = tracksDAO.getFavoriteTracks(id)
 
-    //fun getGroupedTracks() = tracksDAO.getGroupedTracks()
 
     suspend fun getTracksInRange(startLat: Double, startLng: Double) = tracksDAO.getTracksInRange(startLat, startLng)
 

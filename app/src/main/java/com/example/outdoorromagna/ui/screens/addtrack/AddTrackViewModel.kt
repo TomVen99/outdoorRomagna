@@ -17,10 +17,10 @@ data class AddTrackState(
     var trackPositions: List<LatLng> = listOf(),
     var imageUri: Uri = Uri.EMPTY,
 
-    val showLocationDisabledAlert: Boolean = false,
+    /*val showLocationDisabledAlert: Boolean = false,
     val showLocationPermissionDeniedAlert: Boolean = false,
     val showLocationPermissionPermanentlyDeniedSnackbar: Boolean = false,
-    val showNoInternetConnectivitySnackbar: Boolean = false
+    val showNoInternetConnectivitySnackbar: Boolean = false*/
 ) {
 }
 
@@ -34,14 +34,11 @@ interface AddTrackActions {
     fun setDuration(duration: Long)
     fun setTrackPositions(trackPositions: List<LatLng>)
     fun setImageUri(imageUri: Uri)
-
-
-
-
+    /*
     fun setShowLocationDisabledAlert(show: Boolean)
     fun setShowLocationPermissionDeniedAlert(show: Boolean)
     fun setShowLocationPermissionPermanentlyDeniedSnackbar(show: Boolean)
-    fun setShowNoInternetConnectivitySnackbar(show: Boolean)
+    fun setShowNoInternetConnectivitySnackbar(show: Boolean)*/
 }
 
 class AddTrackViewModel : ViewModel() {
@@ -78,7 +75,7 @@ class AddTrackViewModel : ViewModel() {
         override fun setImageUri(imageUri: Uri) =
             _state.update { it.copy(imageUri = imageUri) }
 
-        override fun setShowLocationDisabledAlert(show: Boolean) =
+        /*override fun setShowLocationDisabledAlert(show: Boolean) =
             _state.update { it.copy(showLocationDisabledAlert = show) }
 
         override fun setShowLocationPermissionDeniedAlert(show: Boolean) =
@@ -88,6 +85,6 @@ class AddTrackViewModel : ViewModel() {
             _state.update { it.copy(showLocationPermissionPermanentlyDeniedSnackbar = show) }
 
         override fun setShowNoInternetConnectivitySnackbar(show: Boolean) =
-            _state.update { it.copy(showNoInternetConnectivitySnackbar = show) }
+            _state.update { it.copy(showNoInternetConnectivitySnackbar = show) }*/
     }
 }

@@ -449,12 +449,10 @@ fun OutdoorRomagnaNavGraph(
                 Log.d("viewModel", addTrackState.trackPositions.toString())
                 AddTrackDetailsScreen(
                     navController = navController,
-                    addTrackDetailsVm = addTrackDetailsVm,
                     addTrackDetailsState = addTrackDetailsState,
                     addTrackDetailsActions = addTrackDetailsVm.actions,
                     addTrackState = addTrackState,
                     tracksDbVm = tracksDbVm,
-                    //onSubmit = { /*tracksDbVm.addTrack(state.toPlace())*/ Log.d("TAG",  "add track to db")},
                     user = user,
                 )
             }

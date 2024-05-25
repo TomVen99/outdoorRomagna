@@ -35,7 +35,6 @@ import com.example.outdoorromagna.ui.screens.addtrack.AddTrackState
 @Composable
 fun AddTrackDetailsScreen(
     navController: NavController,
-    addTrackDetailsVm: AddTrackDetailsViewModel,
     addTrackDetailsState: AddTrackDetailsState,
     addTrackDetailsActions: AddTrackDetailsActions,
     user: User,

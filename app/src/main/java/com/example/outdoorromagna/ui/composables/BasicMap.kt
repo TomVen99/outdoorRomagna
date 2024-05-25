@@ -42,7 +42,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 
-/*data class MapTypes(val mapTypeId: MapType, val title: String, val url: String)
+/*/*data class MapTypes(val mapTypeId: MapType, val title: String, val url: String)
 
 private val mapTypes = listOf(
     MapTypes(MapType.NORMAL, "Default", ""),
@@ -167,31 +167,6 @@ fun BasicMap(
 }*/
 
 @Composable
-fun addLocation() {
-    FloatingActionButton(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        onClick = { },
-        modifier = Modifier
-            .padding(start = 16.dp, bottom = 32.dp)
-    ) {
-        Row (modifier = Modifier.padding(8.dp)){
-            Icon(Icons.Outlined.Add, "Share Travel")
-            Text(text = "Aggiungi location")
-        }
-    }
-}
-
-
-/*fun requestLocation(locationPermission: PermissionHandler, locationService: LocationService) {
-    if (locationPermission.status.isGranted) {
-        locationService.requestCurrentLocation()
-    } else {
-        locationPermission.launchPermissionRequest()
-    }
-}*/
-
-@Composable
 fun MapView(
     placeLocations: List<LatLng>,
     cameraPositionState: CameraPositionState,
@@ -287,7 +262,7 @@ private fun fetchPlaceDetails(placeId: String, placesClient: PlacesClient, onRes
         Log.e("FetchPlaceDetails", "Error fetching place details", exception)
         onResult(null)
     }
-}
+}*/
 
 @Composable
 fun rememberPermission(

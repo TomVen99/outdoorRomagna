@@ -13,26 +13,12 @@ data class AddTrackDetailsState(
 
 ) {
     val canSubmit get() = title.isNotBlank() &&  description.isNotBlank()
-
-    /*fun toPlace() = Place(
-        name = title,
-        description =  description,
-        date = date,
-        imageUri = imageUri.toString()
-    )*/
 }
 
 interface AddTrackDetailsActions {
     fun setTitle(title: String)
     fun setDescription(description: String)
     fun setImageUri(imageUri: Uri)
-
-    //fun setPresenter(presenter: MapPresenter)
-/*
-    fun setShowLocationDisabledAlert(show: Boolean)
-    fun setShowLocationPermissionDeniedAlert(show: Boolean)
-    fun setShowLocationPermissionPermanentlyDeniedSnackbar(show: Boolean)
-    fun setShowNoInternetConnectivitySnackbar(show: Boolean)*/
 }
 
 class AddTrackDetailsViewModel : ViewModel() {
@@ -48,21 +34,5 @@ class AddTrackDetailsViewModel : ViewModel() {
 
         override fun setImageUri(imageUri: Uri) =
             _state.update { it.copy(imageUri = imageUri) }
-
-        /*override fun setPresenter(presenter: MapPresenter) {
-            _state.update { it.copy(presenter = presenter) }
-        }*/
-
-        /*override fun setShowLocationDisabledAlert(show: Boolean) =
-            _state.update { it.copy(showLocationDisabledAlert = show) }
-
-        override fun setShowLocationPermissionDeniedAlert(show: Boolean) =
-            _state.update { it.copy(showLocationPermissionDeniedAlert = show) }
-
-        override fun setShowLocationPermissionPermanentlyDeniedSnackbar(show: Boolean) =
-            _state.update { it.copy(showLocationPermissionPermanentlyDeniedSnackbar = show) }
-
-        override fun setShowNoInternetConnectivitySnackbar(show: Boolean) =
-            _state.update { it.copy(showNoInternetConnectivitySnackbar = show) }*/
     }
 }

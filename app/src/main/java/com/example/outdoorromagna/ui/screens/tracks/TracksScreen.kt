@@ -62,10 +62,8 @@ import com.example.outdoorromagna.ui.composables.getMyDrawerState
 fun TracksScreen(
     navController: NavHostController,
     user: User,
-    //onModify: (User) -> Unit,
     state: TracksState,
     actions: TracksActions,
-    usersViewModel : UsersViewModel,
     tracksDbVm: TracksDbViewModel,
     tracksDbState: TracksDbState,
     showFilter: Boolean,

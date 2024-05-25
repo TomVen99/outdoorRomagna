@@ -8,36 +8,22 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class TrackingState(
-    val username: String = "",
+    /*val username: String = "",
     val duration: Long = 0,
     val distance: Int = 0,
     var isTracking: Boolean = false,
-    val steps: Int = 0,
-    val showLocationPermissionDeniedAlert: Boolean = false,
-    val showLocationPermissionPermanentlyDeniedSnackbar: Boolean = false,
-    val showLocationPermissionDenied: Boolean = false,
-
-    ) {
-
-}
-
+    val steps: Int = 0,*/
+    val showLocationPermissionDenied: Boolean = false
+)
 interface TrackingActions {
-    fun setUsername(title: String)
-    //fun setPassword(date: String)
-
+    /*fun setUsername(title: String)
     fun setTracking(isTracking: Boolean)
-
     fun isTracking(): MutableLiveData<Boolean?>
-
-    fun setShowLocationPermissionDeniedAlert(show: Boolean)
+    fun setDuration(duration: Long)
+    fun setDistance(distance: Int)//Forse da cambiare
+    fun setSteps(steps: Int)*/
 
     fun setShowLocationPermissionDenied(show: Boolean)
-
-    fun setDuration(duration: Long)
-
-    fun setDistance(distance: Int)//Forse da cambiare
-
-    fun setSteps(steps: Int)
 }
 
 class TrackingViewModel : ViewModel() {
@@ -56,11 +42,11 @@ class TrackingViewModel : ViewModel() {
 
     val actions = object : TrackingActions {
 
+        override fun setShowLocationPermissionDenied(show: Boolean) =
+            _state.update { it.copy(showLocationPermissionDenied = show) }
+        /*
         override fun setUsername(title: String) =
             _state.update { it.copy(username = title) }
-
-        /*override fun setPassword(date: String) =
-            _state.update { it.copy(password = date) }*/
 
         override fun setTracking(isTracking: Boolean) {
             _state.update { it.copy(isTracking = isTracking) }
@@ -69,12 +55,6 @@ class TrackingViewModel : ViewModel() {
         override fun isTracking(): MutableLiveData<Boolean?> {
             return _isTracking
         }
-
-        override fun setShowLocationPermissionDeniedAlert(show: Boolean) =
-            _state.update { it.copy(showLocationPermissionDeniedAlert = show) }
-
-        override fun setShowLocationPermissionDenied(show: Boolean) =
-            _state.update { it.copy(showLocationPermissionDenied = show) }
 
         override fun setDuration(duration: Long) {
             _state.update { it.copy(duration = duration) }
@@ -87,5 +67,6 @@ class TrackingViewModel : ViewModel() {
         override fun setSteps(steps: Int) {
             _state.update { it.copy(steps = steps) }
         }
+*/
     }
 }

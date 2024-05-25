@@ -80,28 +80,3 @@ class SigninViewModel : ViewModel() {
         }
     }
 }
-
-
-
-
-
-/*data class SigninState(val username: String)
-
-class SigninViewModel (
-    private val repository: SettingsRepository
-) : ViewModel() {
-    var state by mutableStateOf(SigninState(""))
-        private set
-
-    fun setUsername(value: String) {
-        state = SigninState(value)
-        viewModelScope.launch { repository.setUsername(value) }
-    }
-
-    init {
-        viewModelScope.launch {
-            state = SigninState(repository.username.first())
-        }
-    }
-}
-*/

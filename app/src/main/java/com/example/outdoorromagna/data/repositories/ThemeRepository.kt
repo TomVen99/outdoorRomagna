@@ -22,6 +22,5 @@ class ThemeRepository(
                 Theme.System
             }
         }
-
     suspend fun setTheme(theme: String) = dataStore.edit { it[THEME_KEY] = theme }
 }

@@ -164,7 +164,7 @@ fun TrackingScreen(
         Button(
             onClick = {
                 isTrackingStarted = !isTrackingStarted
-                trackingState.isTracking = isTrackingStarted
+                //trackingState.isTracking = isTrackingStarted
                 if (isTrackingStarted) {
                     startTracking(presenter)
                 } else {
