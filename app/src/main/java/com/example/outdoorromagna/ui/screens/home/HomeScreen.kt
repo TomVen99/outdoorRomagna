@@ -151,29 +151,12 @@ fun HomeScreen(
                     position = CameraPosition(center, 10f, 0f, 0f)
                 }
                 val context = LocalContext.current
-                var showButton by remember { mutableStateOf(false) }
                 var showPopUp by remember { mutableStateOf(false) }
-                var markerPosition by remember { mutableStateOf<LatLng?>(null) }
                 val locationService = koinInject<LocationService>()
 
-                /*TOGLIERE ??*/
                 val locationPermission = rememberPermission(
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) { status ->
-                    when (status) {
-                        PermissionStatus.Granted ->
-                            locationService.requestCurrentLocation()
-
-                        PermissionStatus.Denied ->
-                            actions.setShowLocationPermissionDeniedAlert(true)
-
-                        PermissionStatus.PermanentlyDenied ->
-                            actions.setShowLocationPermissionPermanentlyDeniedSnackbar(true)
-
-                        PermissionStatus.Unknown -> {}
-                    }
-                }
-
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
                 Scaffold { innerPadding ->
                     Box(
                         modifier = Modifier
