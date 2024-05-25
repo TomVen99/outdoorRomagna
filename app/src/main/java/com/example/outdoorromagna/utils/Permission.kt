@@ -26,35 +26,3 @@ interface PermissionHandler {
     val status: PermissionStatus
     fun launchPermissionRequest()
 }
-
-/*@Composable
-fun rememberPermission(
-    permission: String,
-    onResult: (status: PermissionStatus) -> Unit = {}
-): PermissionHandler {
-    var status by remember { mutableStateOf(PermissionStatus.Unknown) }
-
-    val activity = (LocalContext.current as ComponentActivity)
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        status = when {
-            isGranted -> PermissionStatus.Granted
-            activity.shouldShowRequestPermissionRationale(permission) -> PermissionStatus.Denied
-            else -> PermissionStatus.PermanentlyDenied
-        }
-        onResult(status)
-    }
-
-    val permissionHandler by remember {
-        derivedStateOf {
-            object : PermissionHandler {
-                override val permission = permission
-                override val status = status
-                override fun launchPermissionRequest() = permissionLauncher.launch(permission)
-            }
-        }
-    }
-    return permissionHandler
-}*/

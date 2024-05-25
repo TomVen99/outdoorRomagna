@@ -24,24 +24,12 @@ fun saveImage(contentResolver: ContentResolver, capturedImageUri: Uri): String {
         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
 
     val outputStream = imageUri?.let { contentResolver.openOutputStream(it) }
-    /*bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-    outputStream?.close()*/
     if (outputStream != null) {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         outputStream.close()
     }
 
     return imageUri.toString()
-}
-
-fun Context.createImageFile(): File {
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    val imageFileName = "JPEG_" + timeStamp + "_"
-    return File.createTempFile(
-        imageFileName,
-        ".jpg",
-        externalCacheDir
-    )
 }
 
 private fun getBitmap(selectedPhotoUri: Uri, contentResolver: ContentResolver): Bitmap {
