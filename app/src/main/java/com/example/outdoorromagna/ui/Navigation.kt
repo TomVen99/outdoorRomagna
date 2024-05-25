@@ -312,129 +312,143 @@ fun OutdoorRomagnaNavGraph(
                         user,
                         tracksDbVm,
                         tracksDbState,
-                        groupedTracksState,
-                        tracksDbState
+                        groupedTracksState
                     )
                 }
             }
         }
         with(OutdoorRomagnaRoute.Profile) {
             composable(route, arguments) {backStackEntry ->
-                val userTrackNumber by tracksDbVm.userTracksNumber.observeAsState(0)
-                val user = requireNotNull(usersState.users.find {
-                    it.username == backStackEntry.arguments?.getString("userUsername")
-                })
-                tracksDbVm.getUserTracksNumber(user.id)
-                ProfileScreen(
-                    navController = navController,
-                    user = user,
-                    usersViewModel = usersVm,
-                    sharedPreferences = sharedPreferences,
-                    tracksDbState = tracksDbState,
-                    userTracksNumber = userTrackNumber
-                )
+                if(usersState.users.isNotEmpty()) {
+                    val userTrackNumber by tracksDbVm.userTracksNumber.observeAsState(0)
+                    val user = requireNotNull(usersState.users.find {
+                        it.username == backStackEntry.arguments?.getString("userUsername")
+                    })
+                    tracksDbVm.getUserTracksNumber(user.id)
+                    ProfileScreen(
+                        navController = navController,
+                        user = user,
+                        usersViewModel = usersVm,
+                        sharedPreferences = sharedPreferences,
+                        tracksDbState = tracksDbState,
+                        userTracksNumber = userTrackNumber
+                    )
+                }
             }
         }
         with(OutdoorRomagnaRoute.Tracks) {
             composable(route, arguments) {backStackEntry ->
                 val tracksVm = koinViewModel<TracksViewModel>()
                 val state by tracksVm.state.collectAsStateWithLifecycle()
-                val user = requireNotNull(usersState.users.find {
-                    it.username == backStackEntry.arguments?.getString("userUsername")
-                })
-                val isSpecificTrack = backStackEntry.arguments?.getBoolean("specificTrack") ?: false
-                if (!isSpecificTrack)
-                    tracksDbVm.resetSpecificTracks()
-                TracksScreen(
-                    navController = navController,
-                    user = user,
-                    state = state,
-                    actions = tracksVm.actions,
-                    tracksDbVm = tracksDbVm,
-                    tracksDbState = tracksDbState,
-                    showFilter = !isSpecificTrack,
+                if(usersState.users.isNotEmpty()) {
+                    val user = requireNotNull(usersState.users.find {
+                        it.username == backStackEntry.arguments?.getString("userUsername")
+                    })
+                    val isSpecificTrack = backStackEntry.arguments?.getBoolean("specificTrack") ?: false
+                    if (!isSpecificTrack)
+                        tracksDbVm.resetSpecificTracks()
+                    TracksScreen(
+                        navController = navController,
+                        user = user,
+                        state = state,
+                        actions = tracksVm.actions,
+                        tracksDbVm = tracksDbVm,
+                        tracksDbState = tracksDbState,
+                        showFilter = !isSpecificTrack,
 
-                )
+                        )
+                }
             }
         }
 
         with(OutdoorRomagnaRoute.Settings) {
             composable(route) {backStackEntry ->
-                val user = requireNotNull(usersState.users.find {
-                    it.username == backStackEntry.arguments?.getString("userUsername")
-                })
-                val settingsVm = koinViewModel<SettingsViewModel>()
-                SettingsScreen(
-                    settingsVm = settingsVm,
-                    navController = navController,
-                    user = user,
-                    tracksDbState = tracksDbState,
-                )
+                if(usersState.users.isNotEmpty()) {
+                    val user = requireNotNull(usersState.users.find {
+                        it.username == backStackEntry.arguments?.getString("userUsername")
+                    })
+                    val settingsVm = koinViewModel<SettingsViewModel>()
+                    SettingsScreen(
+                        settingsVm = settingsVm,
+                        navController = navController,
+                        user = user,
+                        tracksDbState = tracksDbState,
+                    )
+                }
             }
         }
 
         with(OutdoorRomagnaRoute.AddTrack) {
             composable(route) {backStackEntry ->
-                val user = requireNotNull(usersState.users.find {
-                    it.username == backStackEntry.arguments?.getString("userUsername")
-                })
-                AddTrackScreen(
-                    navController = navController,
-                    user = user,
-                    tracksDbState = tracksDbState,
-                )
+                if(usersState.users.isNotEmpty()) {
+                    val user = requireNotNull(usersState.users.find {
+                        it.username == backStackEntry.arguments?.getString("userUsername")
+                    })
+                    AddTrackScreen(
+                        navController = navController,
+                        user = user,
+                        tracksDbState = tracksDbState,
+                    )
+                }
             }
         }
 
         with(OutdoorRomagnaRoute.Tracking) {
             composable(route) {backStackEntry ->
-                val user = requireNotNull(usersState.users.find {
-                    it.username == backStackEntry.arguments?.getString("userUsername")
-                })
-                val trackingVm = koinViewModel<TrackingViewModel>()
-                val trackingState by trackingVm.state.collectAsStateWithLifecycle()
-                TrackingScreen(
-                    navController = navController,
-                    trackingState = trackingState,
-                    user = user,
-                    trackingActions = trackingVm.actions,
-                    tracksDbVm = tracksDbVm,
-                    addTrackActions = addTrackVm.actions
-                )
+                if(usersState.users.isNotEmpty()) {
+                    val user = requireNotNull(usersState.users.find {
+                        it.username == backStackEntry.arguments?.getString("userUsername")
+                    })
+                    val trackingVm = koinViewModel<TrackingViewModel>()
+                    val trackingState by trackingVm.state.collectAsStateWithLifecycle()
+                    TrackingScreen(
+                        navController = navController,
+                        trackingState = trackingState,
+                        user = user,
+                        trackingActions = trackingVm.actions,
+                        tracksDbVm = tracksDbVm,
+                        addTrackActions = addTrackVm.actions
+                    )
+                }
             }
         }
         with(OutdoorRomagnaRoute.AddTrackDetails) {
             composable(route) {backStackEntry ->
-                val user = requireNotNull(usersState.users.find {
-                    it.username == backStackEntry.arguments?.getString("userUsername")
-                })
-                val addTrackDetailsVm = koinViewModel<AddTrackDetailsViewModel>()
-                val addTrackDetailsState by addTrackDetailsVm.state.collectAsStateWithLifecycle()
-                Log.d("viewModel", addTrackState.trackPositions.toString())
-                AddTrackDetailsScreen(
-                    navController = navController,
-                    addTrackDetailsState = addTrackDetailsState,
-                    addTrackDetailsActions = addTrackDetailsVm.actions,
-                    addTrackState = addTrackState,
-                    tracksDbVm = tracksDbVm,
-                    user = user,
-                )
+                if(usersState.users.isNotEmpty()) {
+                    val user = requireNotNull(usersState.users.find {
+                        it.username == backStackEntry.arguments?.getString("userUsername")
+                    })
+                    val addTrackDetailsVm = koinViewModel<AddTrackDetailsViewModel>()
+                    val addTrackDetailsState by addTrackDetailsVm.state.collectAsStateWithLifecycle()
+                    Log.d("viewModel", addTrackState.trackPositions.toString())
+                    AddTrackDetailsScreen(
+                        navController = navController,
+                        addTrackDetailsState = addTrackDetailsState,
+                        addTrackDetailsActions = addTrackDetailsVm.actions,
+                        addTrackState = addTrackState,
+                        tracksDbVm = tracksDbVm,
+                        user = user,
+                    )
+                }
             }
         }
 
         with(OutdoorRomagnaRoute.TrackDetails) {
             composable(route, arguments) { backStackEntry ->
-                val user = requireNotNull(usersState.users.find {
-                    it.username == backStackEntry.arguments?.getString("userUsername")
-                })
-                val track = requireNotNull(tracksDbState.tracks.find {
-                    it.id == backStackEntry.arguments?.getInt("trackId")
-                })
-                TrackDetails(
-                    navController = navController,
-                    user = user,
-                    track = track
-                )
+                if(usersState.users.isNotEmpty()) {
+                    val user = requireNotNull(usersState.users.find {
+                        it.username == backStackEntry.arguments?.getString("userUsername")
+                    })
+                    val track = requireNotNull(tracksDbState.tracks.find {
+                        it.id == backStackEntry.arguments?.getInt("trackId")
+                    })
+                    TrackDetails(
+                        navController = navController,
+                        user = user,
+                        track = track,
+                        tracksDbState = tracksDbState
+                    )
+                }
             }
         }
     }

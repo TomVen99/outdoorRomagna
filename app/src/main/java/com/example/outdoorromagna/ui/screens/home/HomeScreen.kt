@@ -3,6 +3,10 @@ package com.example.outdoorromagna.ui.screens.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.location.LocationManager
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -44,6 +48,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -107,15 +112,19 @@ fun HomeScreen(
     user : User,
     tracksDbVm: TracksDbViewModel,
     tracksDbState: TracksDbState,
-    groupedTracksState: GroupedTracksState,
-    tracksState: TracksDbState
+    groupedTracksState: GroupedTracksState
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    Log.d("grouped", groupedTracksState.toString())
-    Log.d("Tutti i track", tracksDbState.tracks.map { track -> track.id }.toString())
+    var isLocationActive by remember { mutableStateOf(isLocationEnabled(context)) }
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("mapViewType", Context.MODE_PRIVATE)
+    actions.setMapView(intToMapType(
+        context.getSharedPreferences("mapViewType", Context.MODE_PRIVATE)
+            .getInt("mapViewType", 1)))
+    var canViewCurrentPosition by remember { mutableStateOf(false) }
 
     /**PER ELIMINARE TUTTI I TRACK*/
-    /*tracksState.tracks.forEach { track ->
+    /*tracksDbState.tracks.forEach { track ->
         tracksDbVm.deleteTrack(track)
     }*/
     val myScaffold: @Composable () -> Unit = {
@@ -123,7 +132,7 @@ fun HomeScreen(
             topBar = {
                 TopAppBar(
                     navController = navController,
-                    currentRoute = "OutdoorRomagna",
+                    currentRoute = "Home",
                     actions = actions,
                     showSearch = true,
                     drawerState = getMyDrawerState(),
@@ -150,30 +159,24 @@ fun HomeScreen(
                 val cameraPositionState = rememberCameraPositionState {
                     position = CameraPosition(center, 10f, 0f, 0f)
                 }
-                val context = LocalContext.current
                 var showButton by remember { mutableStateOf(false) }
                 var showPopUp by remember { mutableStateOf(false) }
-                var markerPosition by remember { mutableStateOf<LatLng?>(null) }
                 val locationService = koinInject<LocationService>()
 
-                /*TOGLIERE ??*/
                 val locationPermission = rememberPermission(
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 ) { status ->
                     when (status) {
                         PermissionStatus.Granted ->
                             locationService.requestCurrentLocation()
-
                         PermissionStatus.Denied ->
                             actions.setShowLocationPermissionDeniedAlert(true)
-
                         PermissionStatus.PermanentlyDenied ->
                             actions.setShowLocationPermissionPermanentlyDeniedSnackbar(true)
-
                         PermissionStatus.Unknown -> {}
                     }
                 }
-
+                canViewCurrentPosition = locationPermission.status.isGranted && isLocationActive
                 Scaffold { innerPadding ->
                     Box(
                         modifier = Modifier
@@ -187,7 +190,8 @@ fun HomeScreen(
                             state.mapView,
                             tracksDbState,
                             groupedTracksState,
-                            tracksDbVm
+                            tracksDbVm,
+                            canViewCurrentPosition
                         )
 
                         FloatingActionButton( //bottone del gps
@@ -195,22 +199,30 @@ fun HomeScreen(
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             onClick = {
                                 requestLocation(locationPermission, locationService)
+                                isLocationActive = isLocationEnabled(context)
+                                if(!isLocationActive) {
+                                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    if (intent.resolveActivity(context.packageManager) != null) {
+                                        context.startActivity(intent)
+                                    }
+                                }
                             },
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
-                                .padding(start = 10.dp, bottom = 30.dp)
-                                .size(48.dp),
+                                .padding(start = 10.dp, bottom = 34.dp)
+                                .size(40.dp),
                             shape = CircleShape
                         ) {
                             Icon(Icons.Outlined.GpsFixed, "Use localization")
                         }
-
+                        val buttonPadding = if(canViewCurrentPosition) 58.dp else 8.dp
                         FloatingActionButton( //bottone per cambiare la modalità di visualizzazione
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             onClick = {
                                 /**PER INSERIRE I TRACK DI TEST*/
-                                if (tracksState.tracks.isEmpty()) {
+                                if (tracksDbState.tracks.isEmpty()) {
                                     val testTracks = generateTestTracks()
                                     testTracks.forEach { testTrack ->
                                         tracksDbVm.addTrack(testTrack)
@@ -220,8 +232,8 @@ fun HomeScreen(
                             },
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
-                                .padding(end = 10.dp, top = 8.dp)
-                                .size(48.dp),
+                                .padding(end = 12.dp, top = buttonPadding)
+                                .size(40.dp),
                             shape = CircleShape
                         ) {
                             Icon(Icons.Outlined.Layers, "Choose map type")
@@ -251,6 +263,9 @@ fun HomeScreen(
                                         mapTypes.forEach { type ->
                                             Button(
                                                 onClick = {
+                                                    val edit = sharedPreferences.edit()
+                                                    edit.putInt("mapViewType", type.mapTypeId.value)
+                                                    edit.apply()
                                                     actions.setMapView(type.mapTypeId)
                                                     showPopUp = false
                                                 },
@@ -278,7 +293,7 @@ fun HomeScreen(
                                             }
                                         }
                                     }
-                                Spacer(modifier = Modifier.size(10.dp))
+                                Spacer(modifier = Modifier.size(25.dp))
                                 }
                             }
                         if (state.showSearchBar) {
@@ -352,11 +367,26 @@ fun HomeScreen(
     )
 }
 
+fun isLocationEnabled(context: Context): Boolean {
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+}
+
 fun requestLocation(locationPermission: PermissionHandler, locationService: LocationService) {
     if (locationPermission.status.isGranted) {
         locationService.requestCurrentLocation()
     } else {
         locationPermission.launchPermissionRequest()
+    }
+}
+
+fun intToMapType(intType: Int): MapType {
+    return when (intType) {
+        1 -> MapType.NORMAL
+        3 -> MapType.TERRAIN
+        4 -> MapType.HYBRID
+        else -> MapType.NORMAL
     }
 }
 
@@ -366,17 +396,21 @@ fun MapView(
     cameraPositionState: CameraPositionState,
     navController: NavHostController,
     user : User,
-    mapView: MapType,
+    mapViewType: MapType,
     tracksDbState: TracksDbState,
     groupedTracksState: GroupedTracksState,
-    tracksDbVm: TracksDbViewModel
+    tracksDbVm: TracksDbViewModel,
+    canViewCurrentPosition: Boolean
 ) {
     var markerPosition by remember { mutableStateOf<LatLng?>(null) }
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         onMapClick = {  },
-        properties = MapProperties(mapType = mapView)
+        properties = MapProperties(
+            mapType = mapViewType,
+            isMyLocationEnabled = canViewCurrentPosition
+        )
     ) {
         groupedTracksState.tracks.forEach { location ->
             Marker(

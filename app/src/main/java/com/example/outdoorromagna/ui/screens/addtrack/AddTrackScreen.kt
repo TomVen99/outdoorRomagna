@@ -65,8 +65,9 @@ fun AddTrackScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
+
                     navController = navController,
-                    currentRoute = OutdoorRomagnaRoute.AddTrack.title,
+                    currentRoute = "Registra un percorso",
                     drawerState = getMyDrawerState(),
                     scope = scope
                 )
@@ -88,7 +89,7 @@ fun AddTrackScreen(
                 Text(
                     text = "GPS e connessione ad internet sono necessari!\nAttivali per iniziare l'attività",
                     fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium
                 )

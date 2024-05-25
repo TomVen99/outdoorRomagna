@@ -29,7 +29,9 @@ import coil.compose.rememberImagePainter
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.database.User
+import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.composables.BottomAppBar
+import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -46,105 +48,112 @@ import com.google.maps.android.compose.Polyline
 fun TrackDetails(
     navController: NavHostController,
     user: User,
-    track: Track
+    track: Track,
+    tracksDbState: TracksDbState
 ) {
     val scope = rememberCoroutineScope()
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                navController = navController,
-                currentRoute = "Dettagli Percorso",
-                showSearch = false,
-                drawerState = getMyDrawerState(),
-                scope = scope,
-                showFilter = false
-            )
-        },
-        bottomBar = { BottomAppBar(navController, user) },
-    ) { contentPadding ->
-        Card(
-            modifier = Modifier
-                .padding(contentPadding)
-                .verticalScroll(rememberScrollState()),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            )
-        ) {
-            Text(
-                text = track.name,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth(),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-            Text(
-                text = track.description,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 5.dp, bottom = 10.dp),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Start,
-                fontFamily = FontFamily.Default
-            )
-            if (track.imageUri != null) {
-                val painter = rememberAsyncImagePainter(model = track.imageUri)
-                Image(
-                    painter = painter,
-                    contentDescription = "Track Image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(top = 16.dp)
+    val myScaffold: @Composable () -> Unit = {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navController = navController,
+                    currentRoute = "Dettagli Percorso",
+                    showSearch = false,
+                    drawerState = getMyDrawerState(),
+                    scope = scope,
+                    showFilter = false
                 )
-            }
-            Text(
-                text = "Città: ${track.city}",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 5.dp),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Start
-            )
-            val minutes = if (track.duration > 1) "minuti" else "minuto"
-            Text(
-                text = "Durata: ${track.duration}  $minutes",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 5.dp, top = 10.dp, bottom = 10.dp),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Start
-            )
+            },
+            bottomBar = { BottomAppBar(navController, user) },
+        ) { contentPadding ->
             Card(
-                modifier = Modifier.padding(bottom = 10.dp)
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .verticalScroll(rememberScrollState()),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
             ) {
-                GoogleMap(
+                Text(
+                    text = track.name,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth(),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+                Text(
+                    text = track.description,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(400.dp),
-                    cameraPositionState = CameraPositionState(
-                        CameraPosition(LatLng(track.startLat, track.startLng), 14f, 0f, 0f)
-                    )
-                ) {
-                    Marker(
-                        state = MarkerState(position = LatLng(track.startLat, track.startLng)),
-
-                    )
-
-                    Polyline(
-                        points = track.trackPositions,
-                        color = Color.Blue
+                        .padding(start = 5.dp, bottom = 10.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Start,
+                    fontFamily = FontFamily.Default
+                )
+                if (track.imageUri != null) {
+                    val painter = rememberAsyncImagePainter(model = track.imageUri)
+                    Image(
+                        painter = painter,
+                        contentDescription = "Track Image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(top = 16.dp)
                     )
                 }
+                Text(
+                    text = "Città: ${track.city}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 5.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                )
+                val minutes = if (track.duration > 1) "minuti" else "minuto"
+                Text(
+                    text = "Durata: ${track.duration}  $minutes",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 5.dp, top = 10.dp, bottom = 10.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                )
+                Card(
+                    modifier = Modifier.padding(bottom = 10.dp)
+                ) {
+                    GoogleMap(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp),
+                        cameraPositionState = CameraPositionState(
+                            CameraPosition(LatLng(track.startLat, track.startLng), 14f, 0f, 0f)
+                        )
+                    ) {
+                        Marker(
+                            state = MarkerState(position = LatLng(track.startLat, track.startLng)),
 
+                            )
+
+                        Polyline(
+                            points = track.trackPositions,
+                            color = Color.Blue
+                        )
+                    }
+                }
             }
         }
     }
+    SideBarMenu(
+        myScaffold = myScaffold,
+        navController,
+        tracksDbState,
+    )
 }

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -99,7 +101,7 @@ fun TrackingScreen(
                 Button(onClick = { navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute) }) {
                     Text(
                         text = "OK",
-                        color = MaterialTheme.colorScheme.onSecondary
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                 }
             },
@@ -114,7 +116,7 @@ fun TrackingScreen(
                 }) {
                     Text(
                         text = "Impostazioni",
-                        color = MaterialTheme.colorScheme.onSecondary
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                 }
             }
@@ -174,10 +176,14 @@ fun TrackingScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp)
+                .padding(5.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+            )
         ) {
             Text(text = if (isTrackingStarted) stringResource(R.string.stop_label) else stringResource(R.string.start_label),
-            color = Color.White)
+            color = MaterialTheme.colorScheme.onTertiaryContainer)
         }
     }
     DisposableEffect(lifecycleOwner) {
@@ -250,7 +256,8 @@ fun IndicatorRow(
         Image(
             painter = painterResource(id = iconResId),
             contentDescription = description,
-            modifier = Modifier.size(30.dp)
+            modifier = Modifier.size(30.dp),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(

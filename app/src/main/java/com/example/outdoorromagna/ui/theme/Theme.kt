@@ -19,6 +19,8 @@ private val DarkColorScheme = darkColorScheme(
     onPrimaryContainer = Color.White,
     secondaryContainer = LightBlue,
     onSecondaryContainer = Color.Black,
+    tertiaryContainer = UltraLightBlue,
+    onTertiaryContainer = Color.Black,
     secondary = DarkBLue,
     tertiary = DarkBLue,
     background = Color.DarkGray,
@@ -32,9 +34,11 @@ private val LightColorScheme = lightColorScheme(
     onPrimaryContainer = Color.Black,
     secondaryContainer = UltraLightBlue,
     onSecondaryContainer = Color.Black,
+    tertiaryContainer = UltraDarkBlue,
+    onTertiaryContainer = Color.White,
     secondary = LightBlue,
     tertiary = LightBlue,
-    background = Color.LightGray,
+    background = UltraLightGray,
     onBackground = Color.Black
 )
 
