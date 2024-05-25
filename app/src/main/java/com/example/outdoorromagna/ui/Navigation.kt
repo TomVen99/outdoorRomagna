@@ -387,7 +387,7 @@ fun OutdoorRomagnaNavGraph(
                     AddTrackScreen(
                         navController = navController,
                         user = user,
-                        tracksDbState = tracksDbState,
+                        tracksDbState = tracksDbState
                     )
                 }
             }

@@ -374,6 +374,7 @@ fun isLocationEnabled(context: Context): Boolean {
 }
 
 fun requestLocation(locationPermission: PermissionHandler, locationService: LocationService) {
+    Log.d("riga377", locationPermission.status.toString())
     if (locationPermission.status.isGranted) {
         locationService.requestCurrentLocation()
     } else {
