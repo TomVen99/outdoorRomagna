@@ -1,4 +1,4 @@
-package com.example.camera.utils
+package com.example.outdoorromagna.utils
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,7 +27,7 @@ interface PermissionHandler {
     fun launchPermissionRequest()
 }
 
-@Composable
+/*@Composable
 fun rememberPermission(
     permission: String,
     onResult: (status: PermissionStatus) -> Unit = {}
@@ -57,4 +57,4 @@ fun rememberPermission(
         }
     }
     return permissionHandler
-}
+}*/

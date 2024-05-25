@@ -15,6 +15,7 @@ data class TrackingState(
     val steps: Int = 0,
     val showLocationPermissionDeniedAlert: Boolean = false,
     val showLocationPermissionPermanentlyDeniedSnackbar: Boolean = false,
+    val showLocationPermissionDenied: Boolean = false,
 
     ) {
 
@@ -30,7 +31,7 @@ interface TrackingActions {
 
     fun setShowLocationPermissionDeniedAlert(show: Boolean)
 
-    fun setShowLocationPermissionPermanentlyDeniedSnackbar(show: Boolean)
+    fun setShowLocationPermissionDenied(show: Boolean)
 
     fun setDuration(duration: Long)
 
@@ -72,8 +73,8 @@ class TrackingViewModel : ViewModel() {
         override fun setShowLocationPermissionDeniedAlert(show: Boolean) =
             _state.update { it.copy(showLocationPermissionDeniedAlert = show) }
 
-        override fun setShowLocationPermissionPermanentlyDeniedSnackbar(show: Boolean) =
-            _state.update { it.copy(showLocationPermissionPermanentlyDeniedSnackbar = show) }
+        override fun setShowLocationPermissionDenied(show: Boolean) =
+            _state.update { it.copy(showLocationPermissionDenied = show) }
 
         override fun setDuration(duration: Long) {
             _state.update { it.copy(duration = duration) }

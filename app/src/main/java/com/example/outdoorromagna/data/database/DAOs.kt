@@ -81,7 +81,7 @@ interface TracksDAO {
 }
 
 @Dao
-interface ActivityDAO {
+/*interface ActivityDAO {
     @Query("SELECT * FROM activity")
     fun getActivities(): Flow<List<Activity>>
 
@@ -111,7 +111,7 @@ interface ActivityDAO {
     @Query("SELECT * FROM activity WHERE userCreatorUsername = :usernameSelected and favourite = true")
     fun getFavouriteActivitiesFromUser(usernameSelected: String): Flow<List<Activity>>
 
-}
+}*/
 
 data class GroupedTrack(
     val groupedLat: Double,

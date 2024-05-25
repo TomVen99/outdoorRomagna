@@ -14,22 +14,16 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import com.example.outdoorromagna.R
-import com.example.outdoorromagna.data.database.Activity
 import com.example.outdoorromagna.ui.TracksDbViewModel
-import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackActions
-import com.example.outdoorromagna.ui.screens.addtrack.AddTrackState
 import com.example.outdoorromagna.ui.screens.tracking.Ui
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import java.io.IOException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Collections
 import java.util.Locale
-import kotlin.math.round
 
 class MapPresenter(private val context: Context,
                    private val registry: ActivityResultRegistry,
@@ -141,26 +135,17 @@ class MapPresenter(private val context: Context,
     }
 
     fun stopTracking(
-        context: Context,
-        //sharedPreferences: SharedPreferences,
-        username: String,
-        activitiesViewModel: ActivitiesViewModel,
-        addTrackState: AddTrackState,
         addTrackActions: AddTrackActions
     ) {
 
         Log.d("TAG", "myLocations stopTracking " + myLocations.toString())
-        updateTrackState(myLocations, addTrackState, addTrackActions)
+        updateTrackState(myLocations, addTrackActions)
         locationProvider.stopTracking()
         stepCounter.unloadStepCounter()
     }
 
     private fun updateTrackState(
-        /*username: String,
-        activitiesViewModel: ActivitiesViewModel,
-        elapsedTime: Long*/
         myLocations: List<LatLng>,
-        addTrackState: AddTrackState,
         addTrackActions: AddTrackActions
     ) {
 
@@ -201,48 +186,6 @@ class MapPresenter(private val context: Context,
         }
 
         return city
-    }
-
-    /**
-     * returns true if the activity is saved correctly,
-     * false otherwise
-     */
-    private fun insertNewActivity(
-        context: Context,
-        //sharedPreferences: SharedPreferences,
-        username: String,
-        activitiesViewModel: ActivitiesViewModel,
-        elapsedTime: Long
-    ): Boolean {
-        val time = elapsedTime.toDouble()
-        val distance = ui.value?.distance
-        val steps = ui.value?.steps
-
-        if (distance != 0) {
-            val speed = (round(distance!! / time * 36) / 10)
-            val pace = (round(time / distance * 166.667) / 10)
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-
-            //sharedPreferences.getString(context.getString(R.string.username_shared_pref), "")?.let {
-            activitiesViewModel.insertActivity(
-                Activity(
-                    userCreatorUsername = username,//it,
-                    name = "Nuova attività",
-                    description = "Inserisci una descrizione",
-                    totalTime = elapsedTime,
-                    distance = distance,
-                    speed = speed,
-                    pace = pace,
-                    steps = steps,
-                    onFoot = null,
-                    favourite = false,
-                    date = LocalDateTime.now().format(dateFormatter)
-                )
-            )
-            //}
-            return true
-        }
-        return false
     }
 }
 

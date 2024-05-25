@@ -21,9 +21,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.outdoorromagna.data.repositories.UsersRepository
-import com.example.outdoorromagna.ui.composables.FilterOption
-import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackScreen
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackViewModel
 import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsScreen
@@ -44,8 +41,6 @@ import com.example.outdoorromagna.ui.screens.tracking.TrackingViewModel
 import com.example.outdoorromagna.ui.screens.tracks.TracksScreen
 import com.example.outdoorromagna.ui.screens.tracks.TracksViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 sealed class OutdoorRomagnaRoute(
@@ -432,15 +427,12 @@ fun OutdoorRomagnaNavGraph(
                 })
                 val trackingVm = koinViewModel<TrackingViewModel>()
                 val trackingState by trackingVm.state.collectAsStateWithLifecycle()
-                val activitiesViewModel = koinViewModel<ActivitiesViewModel>()
                 TrackingScreen(
                     navController = navController,
                     trackingState = trackingState,
                     user = user,
                     trackingActions = trackingVm.actions,
-                    activitiesViewModel = activitiesViewModel,
                     tracksDbVm = tracksDbVm,
-                    addTrackState = addTrackState,
                     addTrackActions = addTrackVm.actions
                 )
             }

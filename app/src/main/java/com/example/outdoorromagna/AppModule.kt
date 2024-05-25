@@ -5,14 +5,12 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.example.outdoorromagna.data.database.OutdoorRomagnaDatabase
 import com.example.outdoorromagna.data.remote.OSMDataSource
-import com.example.outdoorromagna.data.repositories.ActivityRepository
 import com.example.outdoorromagna.data.repositories.SettingsRepository
 import com.example.outdoorromagna.data.repositories.ThemeRepository
 import com.example.outdoorromagna.data.repositories.TracksRepository
 import com.example.outdoorromagna.data.repositories.UsersRepository
 import com.example.outdoorromagna.ui.TracksDbViewModel
 import com.example.outdoorromagna.ui.UsersViewModel
-import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackViewModel
 import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsViewModel
 import com.example.outdoorromagna.ui.screens.login.LoginViewModel
@@ -64,8 +62,6 @@ val appModule = module {
 
     single { ThemeRepository(get()) }
 
-    single { ActivityRepository(get<OutdoorRomagnaDatabase>().activityDAO()) }
-
     single { UsersRepository(get<OutdoorRomagnaDatabase>().usersDAO()) }
 
     single {
@@ -97,9 +93,6 @@ val appModule = module {
 
     viewModel { AddTrackDetailsViewModel() }
 
-    viewModel { ActivitiesViewModel(get()) }
-
     viewModel { TrackingViewModel() }
 
-    //viewModel { PlacesViewModel(get()) }
 }

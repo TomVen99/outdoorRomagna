@@ -79,19 +79,6 @@ fun AddTrackScreen(
                     user = user
                 )
             },
-            //snackbarHost = { SnackbarHost(snackbarHostState) },
-            /*floatingActionButton = {
-            FloatingActionButton(
-                containerColor = MaterialTheme.colorScheme.primary,
-                onClick = {
-                    if (!state.canSubmit) return@FloatingActionButton
-                    onSubmit()
-                    navController.navigateUp()
-                }
-            ) {
-                Icon(Icons.Outlined.Check, "Add Travel")
-            }
-        },*/
         ) { contentPadding ->
             Column(
                 modifier = Modifier

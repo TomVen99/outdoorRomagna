@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,22 +38,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
-import com.example.camera.utils.PermissionStatus
+import com.example.outdoorromagna.utils.PermissionStatus
 import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbViewModel
-import com.example.outdoorromagna.ui.screens.addtrack.ActivitiesViewModel
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackActions
 import com.example.outdoorromagna.ui.screens.addtrack.AddTrackState
 import com.example.outdoorromagna.ui.screens.home.rememberPermission
@@ -68,14 +64,11 @@ import org.koin.compose.koinInject
 
 @Composable
 fun TrackingScreen(
-    //isTracking: MutableState<Boolean>,
     navController: NavController,
     trackingActions: TrackingActions,
     trackingState: TrackingState,
     user: User,
-    activitiesViewModel: ActivitiesViewModel,
     tracksDbVm: TracksDbViewModel,
-    addTrackState: AddTrackState,
     addTrackActions: AddTrackActions
 ) {
     val context = LocalContext.current
@@ -95,9 +88,9 @@ fun TrackingScreen(
 
     val locationPermissionDenied by presenter.permissionsManager.locationPermissionDenied.observeAsState(false)
     val activityRecognitionPermissionDenied by presenter.permissionsManager.activityRecognitionPermissionDenied.observeAsState(false)
-
     // Osservare i permessi negati e mostrare i messaggi appropriati
-    if (locationPermissionDenied) {
+    /*if (locationPermissionDenied) {*/
+    if(trackingState.showLocationPermissionDenied) {
         AlertDialog(
             onDismissRequest = { /* Gestisci la chiusura dell'alert */ },
             title = { Text("Permesso Negato") },
@@ -126,52 +119,22 @@ fun TrackingScreen(
                 }
             }
         )
-    }
-
-    if (activityRecognitionPermissionDenied) {
-        AlertDialog(
-            onDismissRequest = { /* Gestisci la chiusura dell'alert */ },
-            title = { Text("Permesso Negato") },
-            text = { Text("Il permesso per il riconoscimento dell'attività è stato negato. Non possiamo tracciare i tuoi passi.") },
-            confirmButton = {
-                Button(onClick = { navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute) }) {
-                    Text(
-                        text = "OK",
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-            },
-            dismissButton = {
-                Button(onClick = {
-                    openAppSettingsLauncher.launch(
-                        Intent().apply {
-                            action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                            data = Uri.fromParts("package", context.packageName, null)
-                        }
-                    )
-                }) {
-                    Text(
-                        text = "Impostazioni",
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-            }
-        )
+        trackingActions.setShowLocationPermissionDenied(false)
     }
 
     val locationService = koinInject<LocationService>()
     val locationPermission = rememberPermission(
-        Manifest.permission.ACCESS_COARSE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION
     ) { status ->
         when (status) {
             PermissionStatus.Granted ->
                 locationService.requestCurrentLocation()
 
             PermissionStatus.Denied ->
-                trackingActions.setShowLocationPermissionDeniedAlert(true)
+                trackingActions.setShowLocationPermissionDenied(true)
 
             PermissionStatus.PermanentlyDenied ->
-                trackingActions.setShowLocationPermissionPermanentlyDeniedSnackbar(true)
+                trackingActions.setShowLocationPermissionDenied(true)
 
             PermissionStatus.Unknown -> {}
         }
@@ -205,7 +168,7 @@ fun TrackingScreen(
                 if (isTrackingStarted) {
                     startTracking(presenter)
                 } else {
-                    stopTracking(context, presenter, user.username, activitiesViewModel, addTrackState, addTrackActions)
+                    stopTracking(presenter, addTrackActions)
                     navController.navigate(OutdoorRomagnaRoute.AddTrackDetails.currentRoute)
                 }
             },
@@ -305,15 +268,10 @@ private fun startTracking(presenter: MapPresenter) {
 }
 
 private fun stopTracking(
-    context: Context,
     presenter: MapPresenter,
-    username: String,
-    activitiesViewModel: ActivitiesViewModel,
-    addTrackState: AddTrackState,
     addTrackActions: AddTrackActions
 ) {
-    //val elapsedTime = (SystemClock.elapsedRealtime() - /*presenter.startTime*/10) / 1000
-    presenter.stopTracking(context, username, activitiesViewModel, addTrackState, addTrackActions)//, elapsedTime)
+    presenter.stopTracking(addTrackActions)
 }
 
 @Composable

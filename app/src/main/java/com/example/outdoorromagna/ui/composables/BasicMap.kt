@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.camera.utils.PermissionHandler
-import com.example.camera.utils.PermissionStatus
+import com.example.outdoorromagna.utils.PermissionHandler
+import com.example.outdoorromagna.utils.PermissionStatus
 import com.example.outdoorromagna.utils.LocationService
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -183,13 +183,13 @@ fun addLocation() {
 }
 
 
-fun requestLocation(locationPermission: PermissionHandler, locationService: LocationService) {
+/*fun requestLocation(locationPermission: PermissionHandler, locationService: LocationService) {
     if (locationPermission.status.isGranted) {
         locationService.requestCurrentLocation()
     } else {
         locationPermission.launchPermissionRequest()
     }
-}
+}*/
 
 @Composable
 fun MapView(
