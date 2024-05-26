@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.R
@@ -44,6 +43,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import com.example.outdoorromagna.ui.composables.PasswordTextField
 
 @Composable
 fun SigninScreen(
@@ -141,7 +141,7 @@ fun SigninScreen(
                         .focusRequester(passwordFocusRequester),
                     label = "Password",
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    actions)
+                    signinActions = actions)
                 Spacer(Modifier.size(10.dp))
                 Button(
                     onClick = {
@@ -185,25 +185,3 @@ fun SigninScreen(
         }
 }
 
-@Composable
-fun PasswordTextField(
-    password: String,
-    onPasswordChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    label: String = "Password",
-    keyboardOptions: KeyboardOptions,
-    actions: SigninActions
-) {
-    actions.setPassword(password)
-    OutlinedTextField(
-        value = password,
-        onValueChange = onPasswordChange,
-        modifier = modifier,
-        label = { Text(label) },
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Password,
-            imeAction = keyboardOptions.imeAction
-        ),
-    )
-}
