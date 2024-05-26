@@ -52,9 +52,9 @@ import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.UsersViewModel
 import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
-import com.example.outdoorromagna.ui.composables.rememberPermission
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
+import com.example.outdoorromagna.ui.screens.home.rememberPermission
 import com.example.outdoorromagna.utils.rememberCameraLauncher
 import com.example.outdoorromagna.utils.saveImage
 
