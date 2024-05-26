@@ -50,7 +50,7 @@ fun SettingsScreen(
                 topBar = {
                     TopAppBar(
                         navController = navController,
-                        currentRoute = OutdoorRomagnaRoute.Profile.title,
+                        currentRoute = "Impostazioni",
                         drawerState = getMyDrawerState(),
                         scope = scope
                     )

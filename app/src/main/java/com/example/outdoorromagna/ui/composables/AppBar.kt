@@ -29,6 +29,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -107,9 +108,11 @@ fun TopAppBar(
                         trackActions?.setShowFilter(false)
                     } else {
                         trackActions?.setShowFilter(true)
-                        Log.d("TAG", "cliccato filtro")
                     }
-                }
+                },
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.FilterList,

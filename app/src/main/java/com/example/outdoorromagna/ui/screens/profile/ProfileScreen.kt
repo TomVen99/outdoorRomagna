@@ -117,7 +117,7 @@ fun ProfileScreen(
                 contentDescription = "image placeholder",
                 modifier = imageModifier.background(MaterialTheme.colorScheme.background),
                 contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onSecondaryContainer)
+                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
             )
         } else {
             Log.d("TAG", "urlProfilePicture not null " + user.urlProfilePicture.toString())
@@ -138,7 +138,7 @@ fun ProfileScreen(
             topBar = {
                 TopAppBar(
                     navController = navController,
-                    currentRoute = OutdoorRomagnaRoute.Profile.title,
+                    currentRoute = "Profilo",
                     drawerState = getMyDrawerState(),
                     scope = scope,
                     showLogout = true,

@@ -1,5 +1,6 @@
 package com.example.outdoorromagna.ui.screens.addtrack
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -17,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -50,23 +52,36 @@ import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
 import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsViewModel
+import com.example.outdoorromagna.ui.screens.home.rememberPermission
+import com.example.outdoorromagna.ui.screens.home.requestLocation
+import com.example.outdoorromagna.utils.LocationService
+import com.example.outdoorromagna.utils.PermissionHandler
+import com.example.outdoorromagna.utils.PermissionStatus
+import org.koin.compose.koinInject
 
 @Composable
 fun AddTrackScreen(
     navController: NavHostController,
     user: User,
-    tracksDbState: TracksDbState,
+    tracksDbState: TracksDbState
 ) {
     val context = LocalContext.current
-    val gpsChecker by rememberSaveable { mutableStateOf(checkGPS(context)) }
-    val internetConnChecker by rememberSaveable { mutableStateOf(checkInternet(context)) }
+    var gpsChecker by rememberSaveable { mutableStateOf(checkGPS(context)) }
+    var internetConnChecker by rememberSaveable { mutableStateOf(checkInternet(context)) }
+    var showGpsDialog by remember { mutableStateOf(false) }
+    var showInternetDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val locationService = koinInject<LocationService>()
+    val locationPermission = rememberPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    var isPermissionGranted by remember { mutableStateOf(false) }
+    var hasClicked by remember { mutableStateOf(false) }
     val myScaffold: @Composable () -> Unit = {
         Scaffold(
             topBar = {
                 TopAppBar(
+
                     navController = navController,
-                    currentRoute = OutdoorRomagnaRoute.AddTrack.title,
+                    currentRoute = "Registra un percorso",
                     drawerState = getMyDrawerState(),
                     scope = scope
                 )
@@ -85,74 +100,63 @@ fun AddTrackScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "GPS e connessione ad internet sono necessari!\nAttivali per iniziare l'attività",
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
-                )
 
-                Spacer(modifier = Modifier.size(15.dp))
-
-                Row {
-
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        onClick = {
-                            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            if (intent.resolveActivity(context.packageManager) != null) {
-                                context.startActivity(intent)
-                            }
-                        }
-                    ) {
-                        Text("GPS")
-                    }
-
-                    Spacer(modifier = Modifier.size(15.dp))
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        onClick = {
-                            val intent = Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS).apply {
-                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            }
-                            if (intent.resolveActivity(context.packageManager) != null) {
-                                context.startActivity(intent)
-                            }
-                        }
-                    ) {
-                        Text("Internet")
-                    }
-                }
-
-                Spacer(modifier = Modifier.size(15.dp))
-
-                OutlinedButton(
+                isPermissionGranted = locationPermission.status.isGranted
+                Button(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     onClick = {
-                        navController.navigate(OutdoorRomagnaRoute.Tracking.buildRoute(user.username))
+                        gpsChecker = checkGPS(context)
+                        internetConnChecker = checkInternet(context)
+                        hasClicked = true
+                        if(!locationPermission.status.isGranted) {
+                            requestLocation(locationPermission, locationService)
+                        } else if(!gpsChecker) {
+                            showGpsDialog = true
+                        } else if(!internetConnChecker) {
+                            showInternetDialog = true
+                        } else {
+                            hasClicked = false
+                            navController.navigate(OutdoorRomagnaRoute.Tracking.buildRoute(user.username))
+                        }
                     },
-                    enabled = gpsChecker && internetConnChecker,
                     shape = CircleShape,
-                    modifier = Modifier.size(70.dp),
+                    modifier = Modifier.size(120.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.DirectionsRun,
+                        imageVector = Icons.AutoMirrored.Filled.DirectionsRun,
                         contentDescription = "Start running",
-                        modifier = Modifier.scale(1.1F)
+                        modifier = Modifier.size(100.dp),
                     )
                 }
             }
+        if(
+            locationPermission.status.isGranted &&
+            gpsChecker &&
+            internetConnChecker &&
+            hasClicked
+        ) {
+            hasClicked = false
+            navController.navigate(OutdoorRomagnaRoute.Tracking.buildRoute(user.username))
+        }
+        if(showGpsDialog)
+        ShowDialog(
+            context = context,
+            title = "Gps richiesto",
+            text = "Per poter registrare un percorso è necessario che il GPS sia attivo",
+            onDismiss = {showGpsDialog = false},
+            onConfirm = { requestToActivateGps(context) }
+        )
+        if(showInternetDialog)
+            ShowDialog(
+                context = context,
+                title = "Internet richiesto",
+                text = "Per poter registrare un percorso è necessario che internet sia attivo",
+                onDismiss = {showInternetDialog = false},
+                onConfirm = { requestToActivateInternet(context) }
+            )
         }
     }
     SideBarMenu(
@@ -162,18 +166,45 @@ fun AddTrackScreen(
     )
 }
 
+private fun requestToActivateGps(context: Context) {
+    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
+    }
+}
+
+private fun requestToActivateInternet(context: Context) {
+    val intent = Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
+    }
+}
+
+
+
 @Composable
-private fun ShowAlertDialog(navController: NavHostController) {
+fun ShowDialog(
+    context: Context,
+    title: String,
+    text: String,
+    onDismiss: () -> Unit = {},
+    onConfirm: () -> Unit = {}
+) {
     AlertDialog(
-        onDismissRequest = { /* Gestisci la chiusura dell'alert */ },
-        title = { Text("Configurazione errata") },
-        text = { Text("È necessario che localizzazione e internet siano attivi.") },
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = title) },
+        text = { Text(text = text) },
         confirmButton = {
-            Button(onClick = { navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute) }) {
-                Text(
-                    text = "OK",
-                    color = MaterialTheme.colorScheme.onSecondary
-                )
+            Button(
+                onClick = {
+                    onDismiss()
+                    onConfirm()
+                }
+            ) {
+                Text("OK", color = MaterialTheme.colorScheme.onSecondary)
             }
         }
     )
