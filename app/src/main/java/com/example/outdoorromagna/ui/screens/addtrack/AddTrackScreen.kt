@@ -1,18 +1,17 @@
 package com.example.outdoorromagna.ui.screens.addtrack
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.provider.Settings
-import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,9 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,12 +34,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
@@ -51,12 +44,9 @@ import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
-import com.example.outdoorromagna.ui.screens.addtrackdetails.AddTrackDetailsViewModel
 import com.example.outdoorromagna.ui.screens.home.rememberPermission
 import com.example.outdoorromagna.ui.screens.home.requestLocation
 import com.example.outdoorromagna.utils.LocationService
-import com.example.outdoorromagna.utils.PermissionHandler
-import com.example.outdoorromagna.utils.PermissionStatus
 import org.koin.compose.koinInject
 
 @Composable
@@ -132,30 +122,37 @@ fun AddTrackScreen(
                     )
                 }
             }
+
         if(
-            locationPermission.status.isGranted &&
-            gpsChecker &&
-            internetConnChecker &&
-            hasClicked
+        locationPermission.status.isGranted &&
+        gpsChecker &&
+        internetConnChecker &&
+        hasClicked
         ) {
             hasClicked = false
             navController.navigate(OutdoorRomagnaRoute.Tracking.buildRoute(user.username))
         }
         if(showGpsDialog)
-        ShowDialog(
-            context = context,
-            title = "Gps richiesto",
-            text = "Per poter registrare un percorso è necessario che il GPS sia attivo",
-            onDismiss = {showGpsDialog = false},
-            onConfirm = { requestToActivateGps(context) }
-        )
+            ShowDialog(
+                title = "Gps richiesto",
+                text = "Per poter registrare un percorso è necessario che il GPS sia attivo",
+                onDismiss = {showGpsDialog = false},
+                onConfirm = { requestToActivateGps(context) }
+            )
         if(showInternetDialog)
             ShowDialog(
-                context = context,
                 title = "Internet richiesto",
                 text = "Per poter registrare un percorso è necessario che internet sia attivo",
                 onDismiss = {showInternetDialog = false},
                 onConfirm = { requestToActivateInternet(context) }
+            )
+        if(locationPermission.status.isDenied && hasClicked)
+            ShowLocationPermissionDenied(
+                context = context,
+                text = "Il permesso per la posizione è stato negato. Non è possibile avviare un percorso.",
+                onDismiss = {
+                    hasClicked = false
+                }
             )
         }
     }
@@ -187,7 +184,6 @@ private fun requestToActivateInternet(context: Context) {
 
 @Composable
 fun ShowDialog(
-    context: Context,
     title: String,
     text: String,
     onDismiss: () -> Unit = {},
@@ -205,6 +201,44 @@ fun ShowDialog(
                 }
             ) {
                 Text("OK", color = MaterialTheme.colorScheme.onSecondary)
+            }
+        }
+    )
+}
+
+@Composable
+fun ShowLocationPermissionDenied(
+    context: Context,
+    text: String,
+    onDismiss: () -> Unit = {},
+) {
+    val openAppSettingsLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text("Permesso Negato") },
+        text = { Text(text) },
+        confirmButton = {
+            Button(onClick = { onDismiss() }) {
+                Text(
+                    text = "OK",
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            }
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismiss()
+                openAppSettingsLauncher.launch(
+                    Intent().apply {
+                        action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                )
+            }) {
+                Text(
+                    text = "Impostazioni",
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
             }
         }
     )

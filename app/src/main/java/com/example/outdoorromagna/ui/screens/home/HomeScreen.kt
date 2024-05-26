@@ -48,7 +48,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -75,6 +74,7 @@ import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
+import com.example.outdoorromagna.ui.screens.addtrack.ShowLocationPermissionDenied
 import com.example.outdoorromagna.utils.LocationService
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -122,6 +122,7 @@ fun HomeScreen(
         context.getSharedPreferences("mapViewType", Context.MODE_PRIVATE)
             .getInt("mapViewType", 1)))
     var canViewCurrentPosition by remember { mutableStateOf(false) }
+    var showLocationPermissionDenied by remember { mutableStateOf(false) }
 
     /**PER ELIMINARE TUTTI I TRACK*/
     /*tracksDbState.tracks.forEach { track ->
@@ -201,6 +202,7 @@ fun HomeScreen(
                             onClick = {
                                 requestLocation(locationPermission, locationService)
                                 isLocationActive = isLocationEnabled(context)
+                                showLocationPermissionDenied = true
                                 if(!isLocationActive) {
                                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -297,6 +299,14 @@ fun HomeScreen(
                                 Spacer(modifier = Modifier.size(25.dp))
                                 }
                             }
+                        if(locationPermission.status.isDenied && showLocationPermissionDenied)
+                            ShowLocationPermissionDenied(
+                                context = context,
+                                text = "Il permesso per la posizione è stato negato. Non è possibile visualizzare la posizione",
+                                onDismiss = {
+                                    showLocationPermissionDenied = false
+                                } 
+                            )
                         if (state.showSearchBar) {
                             Column {
                                 Row {

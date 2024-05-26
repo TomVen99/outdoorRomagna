@@ -82,47 +82,10 @@ fun TrackingScreen(
     val uiState = remember { MutableLiveData(Ui.EMPTY)}
     val elapsedTimeState = presenter.elapsedTime.observeAsState(0L)
     val mapView = rememberMapViewWithLifecycle()
-    val openAppSettingsLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
     presenter.onMapLoaded(context)
     presenter.mySetUi(uiState)
     presenter.onViewCreated(lifecycleOwner)
-
-    val locationPermissionDenied by presenter.permissionsManager.locationPermissionDenied.observeAsState(false)
-    val activityRecognitionPermissionDenied by presenter.permissionsManager.activityRecognitionPermissionDenied.observeAsState(false)
-    // Osservare i permessi negati e mostrare i messaggi appropriati
-    /*if (locationPermissionDenied) {*/
-    if(trackingState.showLocationPermissionDenied) {
-        AlertDialog(
-            onDismissRequest = { /* Gestisci la chiusura dell'alert */ },
-            title = { Text("Permesso Negato") },
-            text = { Text("Il permesso per la posizione è stato negato. Non è possibile tracciare la posizione.") },
-            confirmButton = {
-                Button(onClick = { navController.navigate(OutdoorRomagnaRoute.AddTrack.currentRoute) }) {
-                    Text(
-                        text = "OK",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer
-                    )
-                }
-            },
-            dismissButton = {
-                Button(onClick = {
-                    openAppSettingsLauncher.launch(
-                        Intent().apply {
-                            action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                            data = Uri.fromParts("package", context.packageName, null)
-                        }
-                    )
-                }) {
-                    Text(
-                        text = "Impostazioni",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer
-                    )
-                }
-            }
-        )
-        trackingActions.setShowLocationPermissionDenied(false)
-    }
 
     val locationService = koinInject<LocationService>()
     val locationPermission = rememberPermission(
