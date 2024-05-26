@@ -1,7 +1,5 @@
 package com.example.outdoorromagna.ui.screens.signin
 
-import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,17 +14,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DoneOutline
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.runtime.getValue
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -46,6 +39,11 @@ import com.example.outdoorromagna.R
 import com.example.outdoorromagna.data.database.User
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.UsersViewModel
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 
 @Composable
 fun SigninScreen(
@@ -69,6 +67,16 @@ fun SigninScreen(
                     .padding(10.dp)
                     .border(1.dp, MaterialTheme.colorScheme.onBackground, RectangleShape)
             ) {
+
+                val focusManager = LocalFocusManager.current
+                val usernameFocusRequester = remember { FocusRequester() }
+                val passwordFocusRequester = remember { FocusRequester() }
+                val nameFocusRequester = remember { FocusRequester() }
+                val surnameFocusRequester = remember { FocusRequester() }
+                val mailFocusRequester = remember { FocusRequester() }
+                val buttonFocusRequester = remember { FocusRequester() }
+
+
                 Image(
                     painter = painterResource(id = R.drawable.logooudoorromagnarectangle),
                     contentDescription = null,
@@ -76,40 +84,64 @@ fun SigninScreen(
                         .fillMaxWidth()
                         .padding(20.dp)
                 )
-
-                OutlinedTextField(
-                    value = state.username,
-                    onValueChange = actions::setUsername,
-                    label = { Text("Username") },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp)
-                )
-                var pwd by remember { mutableStateOf(state.password) }
-                PasswordTextField(
-                    password = pwd,
-                    onPasswordChange = { newPassword -> pwd = newPassword},
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp),
-                    label = "Password",
-                    actions)
-
                 OutlinedTextField(
                     value = state.name,
                     onValueChange = actions::setFirstName,
-                    label = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp)
+                    label = { Text("Nome") },
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .focusRequester(nameFocusRequester),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { surnameFocusRequester.requestFocus() }
+                    )
                 )
                 OutlinedTextField(
                     value = state.surname,
                     onValueChange = actions::setSurname,
-                    label = { Text("Surname") },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp)
+                    label = { Text("Cognome") },
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .focusRequester(surnameFocusRequester),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { mailFocusRequester.requestFocus() }
+                    )
                 )
                 OutlinedTextField(
                     value = state.mail,
                     onValueChange = actions::setMail,
                     label = { Text("Mail") },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .focusRequester(mailFocusRequester),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { usernameFocusRequester.requestFocus() }
+                    )
                 )
+                OutlinedTextField(
+                    value = state.username,
+                    onValueChange = actions::setUsername,
+                    label = { Text("Username") },
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .focusRequester(usernameFocusRequester),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { passwordFocusRequester.requestFocus() }
+                    )
+                )
+                var pwd by remember { mutableStateOf(state.password) }
+                PasswordTextField(
+                    password = pwd,
+                    onPasswordChange = { newPassword -> pwd = newPassword},
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .focusRequester(passwordFocusRequester),
+                    label = "Password",
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    actions)
                 Spacer(Modifier.size(10.dp))
                 Button(
                     onClick = {
@@ -132,7 +164,9 @@ fun SigninScreen(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
-                    modifier = Modifier.align(Alignment.End).padding(end = 15.dp, bottom = 15.dp)
+                    modifier = Modifier.align(Alignment.End)
+                        .padding(end = 15.dp, bottom = 15.dp)
+                        .focusRequester(buttonFocusRequester)
                 ) {
                     Icon(
                         Icons.Outlined.DoneOutline,
@@ -157,6 +191,7 @@ fun PasswordTextField(
     onPasswordChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: String = "Password",
+    keyboardOptions: KeyboardOptions,
     actions: SigninActions
 ) {
     actions.setPassword(password)
@@ -167,7 +202,8 @@ fun PasswordTextField(
         label = { Text(label) },
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Password
-        )
+            keyboardType = KeyboardType.Password,
+            imeAction = keyboardOptions.imeAction
+        ),
     )
 }
