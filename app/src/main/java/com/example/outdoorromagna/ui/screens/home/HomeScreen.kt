@@ -305,7 +305,7 @@ fun HomeScreen(
                                 text = "Il permesso per la posizione è stato negato. Non è possibile visualizzare la posizione",
                                 onDismiss = {
                                     showLocationPermissionDenied = false
-                                } 
+                                }
                             )
                         if (state.showSearchBar) {
                             Column {
