@@ -61,7 +61,9 @@ class TracksDbViewModel(
     }
 
     fun getFavoriteTracks(id: Int) = viewModelScope.launch {
-        repository.getFavoriteTracks(id)
+        val tracks = repository.getFavoriteTracks(id)
+        _specificTracksList.value = tracks
+
     }
 
     fun getTracksInRange(startLat: Double, startLng: Double) = viewModelScope.launch {

@@ -2,11 +2,7 @@ package com.example.outdoorromagna.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
-import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
@@ -38,6 +34,19 @@ interface UsersDAO {
 }
 
 @Dao
+interface FavouritesDAO {
+    @Upsert
+    suspend fun upsertFavourite(favourite: Favourite)
+
+    @Delete
+    suspend fun deteleFavourite(favourite: Favourite)
+
+    @Query("SELECT trackId FROM FAVOURITE WHERE userId = :userId")
+    suspend fun getFavouritesByUser(userId: Int): List<Int>
+}
+
+
+@Dao
 interface TracksDAO {
     @Upsert
     suspend fun upsertTrack(track: Track)
@@ -48,8 +57,8 @@ interface TracksDAO {
     @Query("SELECT * FROM Track WHERE userId = :id ")
     suspend fun getUserTracks(id: Int): List<Track>
 
-    @Query("SELECT * FROM Track WHERE userId = :id")
-    suspend fun getFavoriteTracks(id: Int): List<Track>
+    @Query("SELECT * FROM Track WHERE id in (SELECT trackId FROM favourite WHERE userId = :userId)")
+    suspend fun getFavoriteTracks(userId: Int): List<Track>
 
     @Query("""
     SELECT 

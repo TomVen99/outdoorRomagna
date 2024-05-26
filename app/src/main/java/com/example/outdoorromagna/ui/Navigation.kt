@@ -225,6 +225,7 @@ fun OutdoorRomagnaNavGraph(
     val usersState by usersVm.state.collectAsStateWithLifecycle()
     var userDefault by remember{ mutableStateOf("null") }
     val tracksDbVm = koinViewModel<TracksDbViewModel>()
+    val favouritesDbVm= koinViewModel<FavouritesDbViewModel>()
     val tracksDbState by tracksDbVm.state.collectAsStateWithLifecycle()
     val groupedTracksState by tracksDbVm.groupedTracksState.collectAsStateWithLifecycle()
     val addTrackVm = koinViewModel<AddTrackViewModel>()
@@ -355,7 +356,7 @@ fun OutdoorRomagnaNavGraph(
                         tracksDbVm = tracksDbVm,
                         tracksDbState = tracksDbState,
                         showFilter = !isSpecificTrack,
-
+                        favouritesDbVm = favouritesDbVm,
                         )
                 }
             }
