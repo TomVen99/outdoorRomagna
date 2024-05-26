@@ -1,6 +1,7 @@
 package com.example.outdoorromagna.ui.screens.tracks
 
 import android.content.res.Resources.Theme
+import android.provider.CalendarContract.Colors
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -20,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,10 +45,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.outdoorromagna.data.database.Favourite
 import com.example.outdoorromagna.data.database.Track
 import com.example.outdoorromagna.data.database.User
+import com.example.outdoorromagna.ui.FavouritesDbViewModel
 import com.example.outdoorromagna.ui.OutdoorRomagnaRoute
 import com.example.outdoorromagna.ui.TracksDbState
 import com.example.outdoorromagna.ui.TracksDbViewModel
@@ -56,6 +62,7 @@ import com.example.outdoorromagna.ui.composables.FilterBar
 import com.example.outdoorromagna.ui.composables.FilterOption
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
+import okhttp3.internal.notify
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -68,9 +75,11 @@ fun TracksScreen(
     tracksDbVm: TracksDbViewModel,
     tracksDbState: TracksDbState,
     showFilter: Boolean,
+    favouritesDbVm: FavouritesDbViewModel
 ) {
     val specificTracksList by tracksDbVm.specificTracksList.observeAsState()
     var actualFilterOption by remember { mutableIntStateOf(FilterOption.ALL_TRACKS.ordinal) }
+    val specificFavouritesList by favouritesDbVm.specificFavouritesList.observeAsState()
 
     Log.d("trackList", specificTracksList.toString())
     val scope = rememberCoroutineScope()
@@ -130,17 +139,30 @@ fun TracksScreen(
                             tracksDbVm.resetSpecificTracks()
                             FilterOption.ALL_TRACKS.ordinal
                         }
+
+                        FilterOption.FAVOURITES -> {
+                            tracksDbVm.getFavoriteTracks(user.id)
+                            FilterOption.FAVOURITES.ordinal
+                        }
                     }
                 }
+                /*val favouriteTracks = */
+                favouritesDbVm.getFavouritesByUser(user.id)
                 items(getTrackListToPrint(specificTracksList, tracksDbState.tracks)) { item ->
-                    PrintListItems(item) {
-                        navController.navigate(
-                            OutdoorRomagnaRoute.TrackDetails.buildRoute(
-                                user.username,
-                                item.id
+                    PrintListItems(track = item,
+                        {
+                            navController.navigate(
+                                OutdoorRomagnaRoute.TrackDetails.buildRoute(
+                                    user.username,
+                                    item.id
+                                )
                             )
-                        )
-                    }
+                        },
+                        favouriteTracks = specificFavouritesList ?: listOf(),
+                        {
+                            upsertOrDeleteFavourite(favouritesDbVm,item.id, user.id, specificFavouritesList ?: listOf())
+                        }
+                    )
                 }
             }
         }
@@ -158,9 +180,22 @@ fun getTrackListToPrint(specificTracksList: List<Track>?, tracksState: List<Trac
     return tracksState
 }
 
+fun upsertOrDeleteFavourite (favouritesDbVm: FavouritesDbViewModel, trackId: Int, userId: Int, favouriteTracks: List<Int>) {
+    if(favouriteTracks.contains(trackId)) {
+        favouritesDbVm.delete(
+            Favourite(trackId, userId)
+        )
+    } else {
+        favouritesDbVm.upsert(
+            Favourite(trackId, userId)
+        )
+    }
+    favouritesDbVm.getFavouritesByUser(userId)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrintListItems(track: Track, onClick: () -> Unit) {
+fun PrintListItems(track: Track, onClick: () -> Unit, favouriteTracks: List<Int>, onFavouriteClick: () -> Unit ) {
     Card(
         onClick = { onClick() },
         modifier = Modifier
@@ -174,10 +209,33 @@ fun PrintListItems(track: Track, onClick: () -> Unit) {
             supportingContent = {
                 Text(text = track.description)
             },
+            trailingContent = {
+                IconButton(onClick = {
+                    onFavouriteClick()
+                }) {
+                    Icon(
+                        imageVector = chooseIcon(track.id, favouriteTracks),
+                        contentDescription = "Favorite Icon",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.Unspecified
+                    )
+                }
+            },
             colors = ListItemDefaults.colors(
-                supportingColor = MaterialTheme.colorScheme.onPrimaryContainer
+                supportingColor = MaterialTheme.colorScheme.onPrimaryContainer,
             )
         )
+    }
+}
+
+private fun chooseIcon(trackId: Int, favouriteTracks: List<Int>): ImageVector {
+    Log.d("FAVTR", favouriteTracks.toString())
+    Log.d("FAVTR", trackId.toString())
+    return if (favouriteTracks.contains(trackId)) {
+        Icons.Filled.Favorite
+    } else {
+        //Icons.Outlined.Favorite
+        Icons.Outlined.Star
     }
 }
 
