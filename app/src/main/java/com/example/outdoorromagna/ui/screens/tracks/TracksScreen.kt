@@ -18,10 +18,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -43,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -217,13 +222,9 @@ fun PrintListItems(track: Track, onClick: () -> Unit, favouriteTracks: List<Int>
                         imageVector = chooseIcon(track.id, favouriteTracks),
                         contentDescription = "Favorite Icon",
                         modifier = Modifier.size(24.dp),
-                        tint = Color.Unspecified
                     )
                 }
             },
-            colors = ListItemDefaults.colors(
-                supportingColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
         )
     }
 }
@@ -234,8 +235,7 @@ private fun chooseIcon(trackId: Int, favouriteTracks: List<Int>): ImageVector {
     return if (favouriteTracks.contains(trackId)) {
         Icons.Filled.Favorite
     } else {
-        //Icons.Outlined.Favorite
-        Icons.Outlined.Star
+        Icons.Outlined.FavoriteBorder
     }
 }
 
