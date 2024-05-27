@@ -39,6 +39,7 @@ fun FilterBar(
     var selectedItemIndex by rememberSaveable {
         mutableIntStateOf(filterOption)
     }
+    Log.d("selected item",selectedItemIndex.toString())
     //var currentFilter by remember { mutableStateOf(FilterOption.ALL_TRACKS) }
     NavigationBar(
         Modifier
@@ -59,7 +60,7 @@ fun FilterBar(
                         FilterOption.FAVOURITES -> actions.setFilter(FilterOption.FAVOURITES)
                     }
                 },
-                icon = { /*TODO*/ },
+                icon = {  },
                 selected = index == selectedItemIndex,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.primaryContainer,
