@@ -1,5 +1,7 @@
 package com.example.outdoorromagna.ui.screens.trackdetails
 
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,8 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -18,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -53,7 +60,35 @@ fun TrackDetails(
 ) {
     val scope = rememberCoroutineScope()
     val myScaffold: @Composable () -> Unit = {
+        val context = LocalContext.current
         Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "OUTDOOR ROMAGNA" +
+                                "\nTitolo: "+ track.name +
+                                    "\nDescrizione: " + track.description +
+                            "\nCittà di partenza: " + track.city +
+                            "\nTempo: " + track.duration + " secondi")
+                            type = "text/plain"
+                        }
+                        if (sendIntent.resolveActivity(context.packageManager) != null) {
+                            context.startActivity(sendIntent)
+                        } else {
+                            Toast.makeText(context, "Nessuna app per condividere il messaggio trovata", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ) {
+                    Icon(
+                        Icons.Filled.Share,
+                        contentDescription = "Condividi",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            },
             topBar = {
                 TopAppBar(
                     navController = navController,
@@ -115,7 +150,7 @@ fun TrackDetails(
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
-                val minutes = if (track.duration > 1) "minuti" else "minuto"
+                val minutes = if (track.duration > 1) "secondi" else "secondo"
                 Text(
                     text = "Durata: ${track.duration}  $minutes",
                     modifier = Modifier
