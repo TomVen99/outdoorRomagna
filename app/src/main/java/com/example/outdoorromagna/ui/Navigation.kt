@@ -237,7 +237,6 @@ fun OutdoorRomagnaNavGraph(
     var startDestination = ""
     if (sharedPreferences.getBoolean("isUserLogged", false)) {
         val username = sharedPreferences.getString("username", "")
-        Log.d("username", "username: " + username)
         if(username != null && username != "") {
             startDestination = OutdoorRomagnaRoute.Home.buildWithoutPosition(username)
         } else {
@@ -345,9 +344,9 @@ fun OutdoorRomagnaNavGraph(
                     val user = requireNotNull(usersState.users.find {
                         it.username == backStackEntry.arguments?.getString("userUsername")
                     })
+                    Log.d("no", backStackEntry.arguments?.getBoolean("specificTrack").toString())
                     val isSpecificTrack = backStackEntry.arguments?.getBoolean("specificTrack") ?: false
-                    if (!isSpecificTrack)
-                        tracksDbVm.resetSpecificTracks()
+                    Log.d("non devo passa", isSpecificTrack.toString())
                     TracksScreen(
                         navController = navController,
                         user = user,
@@ -357,6 +356,7 @@ fun OutdoorRomagnaNavGraph(
                         tracksDbState = tracksDbState,
                         showFilter = !isSpecificTrack,
                         favouritesDbVm = favouritesDbVm,
+                        isSpecificTrack = isSpecificTrack
                         )
                 }
             }

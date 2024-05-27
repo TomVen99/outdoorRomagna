@@ -80,7 +80,8 @@ fun TracksScreen(
     tracksDbVm: TracksDbViewModel,
     tracksDbState: TracksDbState,
     showFilter: Boolean,
-    favouritesDbVm: FavouritesDbViewModel
+    favouritesDbVm: FavouritesDbViewModel,
+    isSpecificTrack: Boolean
 ) {
     val specificTracksList by tracksDbVm.specificTracksList.observeAsState()
     var actualFilterOption by remember { mutableIntStateOf(FilterOption.ALL_TRACKS.ordinal) }
@@ -112,8 +113,6 @@ fun TracksScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (state.showFilterBar) {
-                    Log.d("tracks", tracksDbState.tracks.toString())
-                    Log.d("specifictrackList", specificTracksList.toString())
                     stickyHeader {
                         Box (
                             modifier = Modifier.background(MaterialTheme.colorScheme.background)
@@ -151,7 +150,9 @@ fun TracksScreen(
                         }
                     }
                 }
-                /*val favouriteTracks = */
+                /**Per evitare che si resetti se clicco per aprire la filter bar*/
+                if(!isSpecificTrack && actualFilterOption == FilterOption.ALL_TRACKS.ordinal)
+                    tracksDbVm.resetSpecificTracks()
                 favouritesDbVm.getFavouritesByUser(user.id)
                 items(getTrackListToPrint(specificTracksList, tracksDbState.tracks)) { item ->
                     PrintListItems(track = item,
@@ -165,7 +166,8 @@ fun TracksScreen(
                         },
                         favouriteTracks = specificFavouritesList ?: listOf(),
                         {
-                            upsertOrDeleteFavourite(favouritesDbVm,item.id, user.id, specificFavouritesList ?: listOf())
+                            favouritesDbVm.upsertOrDeleteFavourite(item.id, user.id)
+                            //upsertOrDeleteFavourite(favouritesDbVm,item.id, user.id, specificFavouritesList ?: listOf())
                         }
                     )
                 }
@@ -186,7 +188,7 @@ fun getTrackListToPrint(specificTracksList: List<Track>?, tracksState: List<Trac
 }
 
 fun upsertOrDeleteFavourite (favouritesDbVm: FavouritesDbViewModel, trackId: Int, userId: Int, favouriteTracks: List<Int>) {
-    if(favouriteTracks.contains(trackId)) {
+    if (favouriteTracks.contains(trackId)) {
         favouritesDbVm.delete(
             Favourite(trackId, userId)
         )
@@ -230,8 +232,6 @@ fun PrintListItems(track: Track, onClick: () -> Unit, favouriteTracks: List<Int>
 }
 
 private fun chooseIcon(trackId: Int, favouriteTracks: List<Int>): ImageVector {
-    Log.d("FAVTR", favouriteTracks.toString())
-    Log.d("FAVTR", trackId.toString())
     return if (favouriteTracks.contains(trackId)) {
         Icons.Filled.Favorite
     } else {

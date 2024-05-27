@@ -31,4 +31,19 @@ class FavouritesDbViewModel(
             val favourites = repository.getFavouritesByUser(userId)
             _specificFavouritesList.value = favourites
         }
+
+    fun upsertOrDeleteFavourite(trackId: Int, userId: Int) =
+        viewModelScope.launch {
+            if (_specificFavouritesList.value?.contains(trackId) == true) {
+                repository.delete(
+                    Favourite(trackId, userId)
+                )
+            } else {
+                repository.upsert(
+                    Favourite(trackId, userId)
+                )
+            }
+            val favourites = repository.getFavouritesByUser(userId)
+            _specificFavouritesList.value = favourites
+        }
 }
