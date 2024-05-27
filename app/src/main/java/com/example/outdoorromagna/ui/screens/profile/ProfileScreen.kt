@@ -230,7 +230,7 @@ fun ProfileScreen(
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text("Scatta foto")
+                    Text("Scegli foto")
                 }
 
                 Spacer(modifier = Modifier.size(15.dp))

@@ -3,12 +3,16 @@ package com.example.outdoorromagna.ui.screens.trackdetails
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -126,29 +131,8 @@ fun TrackDetails(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Start,
+                    textAlign = TextAlign.Start,
                     fontFamily = FontFamily.Default
-                )
-                if (track.imageUri != null) {
-                    val painter = rememberAsyncImagePainter(model = track.imageUri)
-                    Image(
-                        painter = painter,
-                        contentDescription = "Track Image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(top = 16.dp)
-                    )
-                }
-                Text(
-                    text = "Città: ${track.city}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 5.dp),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
                 var output = ""
                 val (hours, minutes, seconds) = convertSeconds(track.duration)
@@ -166,10 +150,41 @@ fun TrackDetails(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                    textAlign = TextAlign.Start
                 )
+                var align = TextAlign.Start
+                if (track.imageUri != null) {
+                    align = TextAlign.End
+                    Row(modifier = Modifier
+                        .border(1.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                        .padding(0.dp)
+                    ) {
+                        val painter = rememberAsyncImagePainter(model = track.imageUri)
+                        Image(
+                            painter = painter,
+                            contentDescription = "Track Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(150.dp, 300.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = "Città: ${track.city}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 5.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = align
+                )
+
                 Card(
-                    modifier = Modifier.padding(bottom = 10.dp)
+                    modifier = Modifier
+                        .padding(vertical = 20.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.onPrimaryContainer)
                 ) {
                     GoogleMap(
                         modifier = Modifier
