@@ -150,9 +150,16 @@ fun TrackDetails(
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
-                val minutes = if (track.duration > 1) "secondi" else "secondo"
+                var output = ""
+                val (hours, minutes, seconds) = convertSeconds(track.duration)
+                output = if(hours > 0 )
+                    "$hours h $minutes min $seconds s"
+                else if (minutes > 0)
+                    "$minutes min $seconds s"
+                else
+                    "$seconds s"
                 Text(
-                    text = "Durata: ${track.duration}  $minutes",
+                    text = "Durata: $output",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 5.dp, top = 10.dp, bottom = 10.dp),
@@ -191,4 +198,11 @@ fun TrackDetails(
         navController,
         tracksDbState,
     )
+}
+
+private fun convertSeconds(seconds: Long): Triple<Long, Long, Long> {
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    val remainingSeconds = seconds % 60
+    return Triple(hours, minutes, remainingSeconds)
 }
