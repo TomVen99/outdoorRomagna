@@ -81,12 +81,10 @@ fun ProfileScreen(
 ) {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
-    /*val check by remember {
-        mutableStateOf(false)
-    }*/
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
 
-    // Create an image file and URI for the camera
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var userImage = user.urlProfilePicture
+
     fun createImageUri(): Uri {
         val resolver = ctx.contentResolver
         val contentValues = ContentValues().apply {
@@ -101,16 +99,10 @@ fun ProfileScreen(
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 imageUri = uri
-                //aggiornamento da galleria
                 usersViewModel.updateProfileImg(user.username, uri.toString())
-                Log.d("URI", "sopra" + uri.toString())
             } ?: run {
                 imageUri?.let { uri ->
-                    //aggiornamento dopo scatto
-                    imageUri = uri
                     usersViewModel.updateProfileImg(user.username, uri.toString())
-                    Log.d("URI", "sotto" + uri.toString())
-
                 }
             }
         }
@@ -135,23 +127,6 @@ fun ProfileScreen(
         }
     }
 
-    /*val cameraLauncher = rememberCameraLauncher()
-
-    val cameraPermission = rememberPermission(Manifest.permission.CAMERA) { status ->
-        if (status.isGranted) {
-            cameraLauncher.captureImage()
-        } else {
-            Toast.makeText(ctx, "Permesso non concesso", Toast.LENGTH_SHORT).show()
-        }
-    }
-    fun takePicture() {
-        if (cameraPermission.status.isGranted) {
-            cameraLauncher.captureImage()
-        } else {
-            cameraPermission.launchPermissionRequest()
-        }
-    }*/
-
     @Composable
     fun setProfileImage() {
         val imageModifier = Modifier
@@ -163,7 +138,7 @@ fun ProfileScreen(
             .clip(CircleShape)
 
         when {
-            imageUri != null -> {
+            (imageUri != null && userImage != user.urlProfilePicture) -> {
                 AsyncImage(
                     model = ImageRequest.Builder(ctx)
                         .data(imageUri)
@@ -173,6 +148,7 @@ fun ProfileScreen(
                     modifier = imageModifier,
                     contentScale = ContentScale.Crop
                 )
+                userImage = user.urlProfilePicture
             }
             user.urlProfilePicture?.isNotEmpty() == true -> {
                 Log.d("IMG", "Immagine profilo")
@@ -198,51 +174,7 @@ fun ProfileScreen(
             }
         }
     }
-    /*@Composable
-    fun setProfileImage() {
-        val imageModifier = Modifier
-            .size(200.dp)
-            .border(
-                BorderStroke(2.dp, Color.Black),
-                CircleShape
-            )
-            .clip(CircleShape)
-        Log.d("TAG", "PRIMA imagePath not empty")
-        if(cameraLauncher.capturedImageUri.path?.isNotEmpty() == true){
-            Log.d("TAG", "imagePath not empty")
-            AsyncImage(
-                model = ImageRequest.Builder(ctx)
-                    .data(cameraLauncher.capturedImageUri)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "image taken",
-                modifier = imageModifier,
-                contentScale = ContentScale.Crop
-            )
-            user.username.let { usersViewModel.updateProfileImg(it, saveImage(ctx.applicationContext.contentResolver, cameraLauncher.capturedImageUri)) }
-            cameraLauncher.capturedImageUri = Uri.EMPTY
-        } else if (user.urlProfilePicture?.length == 0){
-            Log.d("TAG", "urlProfilePicture = null")
-            Image(
-                painter = painterResource(id = R.drawable.baseline_android_24),
-                contentDescription = "image placeholder",
-                modifier = imageModifier.background(MaterialTheme.colorScheme.background),
-                contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
-            )
-        } else {
-            Log.d("TAG", "urlProfilePicture not null " + user.urlProfilePicture.toString())
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(Uri.parse(user.urlProfilePicture))
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "profile img",
-                modifier = imageModifier,
-                contentScale = ContentScale.Crop
-            )
-        }
-    }*/
+
     val myScaffold: @Composable () -> Unit = {
 
         Scaffold(
