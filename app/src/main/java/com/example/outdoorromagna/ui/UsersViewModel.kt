@@ -1,5 +1,6 @@
 package com.example.outdoorromagna.ui
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -37,8 +38,6 @@ class UsersViewModel(
         started = SharingStarted.WhileSubscribed(),
         initialValue = UsersState(emptyList())
     )
-
-    val prova = repository
 
     fun addUser(user: User) {
         Log.d("TAG", "addUser")
