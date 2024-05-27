@@ -107,7 +107,6 @@ fun ProfileScreen(
             } ?: run {
                 imageUri?.let { uri ->
                     //aggiornamento dopo scatto
-                    imageUri = uri
                     usersViewModel.updateProfileImg(user.username, uri.toString())
                     Log.d("URI", "sotto" + uri.toString())
 
