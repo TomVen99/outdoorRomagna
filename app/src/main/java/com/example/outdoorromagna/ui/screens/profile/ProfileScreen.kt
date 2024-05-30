@@ -3,10 +3,8 @@ package com.example.outdoorromagna.ui.screens.profile
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
@@ -27,16 +25,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Mail
-import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,9 +61,6 @@ import com.example.outdoorromagna.ui.composables.BottomAppBar
 import com.example.outdoorromagna.ui.composables.TopAppBar
 import com.example.outdoorromagna.ui.composables.SideBarMenu
 import com.example.outdoorromagna.ui.composables.getMyDrawerState
-import com.example.outdoorromagna.ui.screens.home.rememberPermission
-import com.example.outdoorromagna.utils.rememberCameraLauncher
-import com.example.outdoorromagna.utils.saveImage
 
 @Composable
 fun ProfileScreen(
@@ -84,6 +76,8 @@ fun ProfileScreen(
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var userImage = user.urlProfilePicture
+
+    Log.d("userImage", userImage.toString())
 
     fun createImageUri(): Uri {
         val resolver = ctx.contentResolver
@@ -136,7 +130,6 @@ fun ProfileScreen(
                 CircleShape
             )
             .clip(CircleShape)
-
         when {
             (imageUri != null && userImage != user.urlProfilePicture) -> {
                 AsyncImage(
@@ -153,7 +146,7 @@ fun ProfileScreen(
             user.urlProfilePicture?.isNotEmpty() == true -> {
                 Log.d("IMG", "Immagine profilo")
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
+                    model = ImageRequest.Builder(ctx)
                         .data(user.urlProfilePicture!!.toUri())
                         .crossfade(true)
                         .build(),
@@ -202,15 +195,6 @@ fun ProfileScreen(
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = user.name + " " + user.surname,
-                    fontSize = 25.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-
-                Spacer(modifier = Modifier.size(15.dp))
                 setProfileImage()
                 Spacer(modifier = Modifier.size(15.dp))
 
@@ -221,7 +205,6 @@ fun ProfileScreen(
                     ),
                     onClick = {
                         requestCameraPermission.launch(Manifest.permission.CAMERA)
-                        //takePicture()
                     },
                 ) {
                     Icon(
@@ -232,10 +215,22 @@ fun ProfileScreen(
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text("Scegli foto")
                 }
-
                 Spacer(modifier = Modifier.size(15.dp))
-
+                Text(
+                    modifier = Modifier
+                        .background(Color.White, shape = CircleShape )
+                        .padding(8.dp),
+                    text = user.name + " " + user.surname,
+                    fontSize = 25.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Spacer(modifier = Modifier.size(15.dp))
                 Row(
+                    modifier = Modifier
+                        .background(Color.White, shape = CircleShape )
+                        .padding(8.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Icon(
@@ -255,6 +250,9 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.size(15.dp))
 
                 Row(
+                    modifier = Modifier
+                        .background(Color.White, shape = CircleShape )
+                        .padding(8.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Icon(
@@ -262,24 +260,28 @@ fun ProfileScreen(
                         contentDescription = "email"
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+
                     Text(
                         text = user.mail,
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
                 Spacer(modifier = Modifier.size(15.dp))
 
                 Row(
+                    modifier = Modifier
+                        .background(Color.White, shape = CircleShape )
+                        .padding(8.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    Icon(
+                    /*Icon(
                         Icons.Filled.Numbers,
                         contentDescription = "n percorsi"
                     )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))*/
                     Text(
                         text = "Numero percorsi: $userTracksNumber",
                         fontSize = 20.sp,

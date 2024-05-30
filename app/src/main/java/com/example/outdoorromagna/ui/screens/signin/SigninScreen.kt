@@ -43,6 +43,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.example.outdoorromagna.ui.composables.PasswordTextField
 
 @Composable
@@ -91,7 +92,10 @@ fun SigninScreen(
                     modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                         .focusRequester(nameFocusRequester),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Next
+                    ),
                     keyboardActions = KeyboardActions(
                         onNext = { surnameFocusRequester.requestFocus() }
                     )
@@ -103,7 +107,10 @@ fun SigninScreen(
                     modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                         .focusRequester(surnameFocusRequester),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Next
+                    ),
                     keyboardActions = KeyboardActions(
                         onNext = { mailFocusRequester.requestFocus() }
                     )
