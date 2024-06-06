@@ -145,7 +145,7 @@ fun SideBarMenu (
                             .padding(all = 5.dp)
                             .size(48.dp)
                     ) {
-                        Icon(Icons.Outlined.Close, "Use localization")
+                        Icon(Icons.Outlined.Close, "Back to menu")
                     }
 
                     Image(
@@ -157,7 +157,6 @@ fun SideBarMenu (
                         alignment = Alignment.Center
                     )
 
-                    Log.d("curentRoute", currentRoute.toString())
                     Spacer(modifier = Modifier.height(30.dp))
                     items.forEachIndexed { index, item ->
                         NavigationDrawerItem(

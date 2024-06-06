@@ -218,18 +218,18 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.size(15.dp))
                 Text(
                     modifier = Modifier
-                        .background(Color.White, shape = CircleShape )
+                        .background(MaterialTheme.colorScheme.primaryContainer, shape = CircleShape )
                         .padding(8.dp),
                     text = user.name + " " + user.surname,
                     fontSize = 25.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.size(15.dp))
                 Row(
                     modifier = Modifier
-                        .background(Color.White, shape = CircleShape )
+                        .background(MaterialTheme.colorScheme.primaryContainer, shape = CircleShape )
                         .padding(8.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
@@ -241,7 +241,7 @@ fun ProfileScreen(
                     Text(
                         text = user.username,
                         fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -251,7 +251,7 @@ fun ProfileScreen(
 
                 Row(
                     modifier = Modifier
-                        .background(Color.White, shape = CircleShape )
+                        .background(MaterialTheme.colorScheme.primaryContainer, shape = CircleShape )
                         .padding(8.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
@@ -264,7 +264,7 @@ fun ProfileScreen(
                     Text(
                         text = user.mail,
                         fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -273,7 +273,7 @@ fun ProfileScreen(
 
                 Row(
                     modifier = Modifier
-                        .background(Color.White, shape = CircleShape )
+                        .background(MaterialTheme.colorScheme.primaryContainer, shape = CircleShape )
                         .padding(8.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
@@ -285,7 +285,7 @@ fun ProfileScreen(
                     Text(
                         text = "Numero percorsi: $userTracksNumber",
                         fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                     )
